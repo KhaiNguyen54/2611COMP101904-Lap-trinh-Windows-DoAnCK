@@ -1,0 +1,1857 @@
+\documentclass[14pt]{report}
+
+% ====== Gói & định dạng chung ======
+\usepackage{fontspec}
+\setmainfont{Times New Roman} 
+\usepackage{polyglossia}
+\setmainlanguage{vietnamese}
+\usepackage[a4paper,left=3cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{pgfgantt}
+\definecolor{tv1}{RGB}{66,135,245}
+\definecolor{tv2}{RGB}{245,166,35}
+\definecolor{tv3}{RGB}{76,175,80}
+\definecolor{nhom}{RGB}{150,150,150}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,shapes.geometric}
+\captionsetup{font=small,labelfont=bf}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{fancyhdr}
+
+% --- Đánh số chương/mục kiểu báo cáo đồ án ---
+\renewcommand{\thechapter}{\arabic{chapter}}
+\renewcommand{\thesection}{\thechapter.\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+
+\titleformat{\chapter}[hang]{\normalfont\bfseries\Large}{CHƯƠNG \thechapter.}{0.6em}{\MakeUppercase}
+\titlespacing*{\chapter}{0pt}{0pt}{1.2cm}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\small\slshape \leftmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% --- Trình bày code (C#, SQL) ---
+\lstdefinelanguage{csharp}{
+  morekeywords={class,public,private,protected,static,void,int,string,bool,decimal,DateTime,
+    new,return,if,else,foreach,in,using,namespace,readonly,const,null,true,false,try,catch,finally,throw,switch,case,default,this,base,override,virtual,sealed,abstract,enum,struct,interface,get,set,var},
+  sensitive=true,
+  morecomment=[l]{//},
+  morestring=[b]",
+}
+\lstset{
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue!60!black}\bfseries,
+  commentstyle=\color{green!40!black}\itshape,
+  stringstyle=\color{orange!70!black},
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  tabsize=2,
+  showstringspaces=false,
+  captionpos=b,
+}
+
+% --- Trang bìa không đánh số ---
+\newcommand{\sv}[2]{#1 -- #2\\}
+
+\begin{document}
+
+% ================= TRANG BÌA =================
+\begin{titlepage}
+\begin{center}
+\textbf{BỘ GIÁO DỤC VÀ ĐÀO TẠO}\\
+\textbf{TRƯỜNG ĐẠI HỌC SƯ PHẠM TPHCM}\\
+\textbf{KHOA CÔNG NGHỆ THÔNG TIN}\\[0cm]
+--- o0o ---
+
+\vspace{2cm}
+\begin{center}%
+\IfFileExists{logo.png}{\includegraphics[width=6cm]{logo.png}}{}
+\end{center}
+
+\vspace{2cm}
+{\LARGE \textbf{BÁO CÁO ĐỒ ÁN MÔN HỌC}}\\[0.5cm]
+{\large LẬP TRÌNH WINDOWS}\\[1cm]
+{\Large \textbf{ĐỀ TÀI: XÂY DỰNG PHẦN MỀM QUẢN LÝ KHÁCH SẠN}}\\[2cm]
+
+\begin{flushleft}
+\hspace{4cm}\textbf{Giảng viên hướng dẫn:} ThS. Lê Thanh Thoại\\[0.3cm]
+\hspace{4cm}\textbf{Sinh viên thực hiện:}\\
+\hspace{4cm}1. \sv{MSSV: 51.01.104.125 }{Nguyễn Tuấn Khải}
+\hspace{4cm}2. \sv{MSSV: 51.01.104.041 }{Lê Minh Khang}
+\hspace{4cm}3. \sv{MSSV: 51.01.104.076 }{Tạ Hồng Phúc}
+\end{flushleft}
+
+\vfill
+{TP.HCM - Tháng 11 - 2026}
+\end{center}
+\end{titlepage}
+
+\pagenumbering{roman}
+
+% ================= LỜI CẢM ƠN =================
+\chapter*{LỜI CẢM ƠN}
+\addcontentsline{toc}{chapter}{LỜI CẢM ƠN}
+Trước hết, nhóm em xin gửi lời cảm ơn chân thành và sâu sắc đến Thầy Lê Thanh Thoại vì đã tận tình giảng dạy, hướng dẫn và truyền đạt những kiến thức mới trong suốt quá trình học tập và thực hiện bài tập này.
+
+Những kiến thức chuyên môn, kinh nghiệm thực tiễn cùng những góp ý và chỉ dẫn của Thầy đã giúp nhóm em có cơ hội củng cố kiến thức, rèn luyện tư duy và nâng cao khả năng vận dụng lý thuyết lập trình Windows vào thiết kế phần mềm. Qua quá trình thực hiện, nhóm cũng nhận thức rõ hơn về những kiến thức mình đã tiếp thu cũng như những điểm còn hạn chế cần tiếp tục hoàn thiện.
+
+Mặc dù đã cố gắng hoàn thành bài đồ án làm một cách tốt nhất có thể, nhưng kiến thức và kinh nghiệm thực tế còn hạn chế, bài làm khó tránh khỏi những thiếu sót. Nhóm rất mong nhận được sự thông cảm và những ý kiến đóng góp từ Thầy để có thể rút kinh nghiệm và hoàn thiện bản thân hơn.
+
+Cuối cùng, cả nhóm xin kính chúc Thầy luôn mạnh khỏe, hạnh phúc và thành công trong sự nghiệp giảng dạy. Nhóm xin chân thành cảm ơn Thầy!
+
+% ================= NHẬN XÉT GVHD =================
+\chapter*{NHẬN XÉT CỦA GIẢNG VIÊN HƯỚNG DẪN}
+\addcontentsline{toc}{chapter}{NHẬN XÉT CỦA GIẢNG VIÊN HƯỚNG DẪN}
+\noindent\rule{\textwidth}{0.4pt}\\[0.3cm]
+\noindent\rule{\textwidth}{0.4pt}\\[0.3cm]
+\noindent\rule{\textwidth}{0.4pt}\\[0.3cm]
+\noindent\rule{\textwidth}{0.4pt}\\[0.3cm]
+\noindent\rule{\textwidth}{0.4pt}\\[0.3cm]
+\noindent\rule{\textwidth}{0.4pt}\\[0.3cm]
+\noindent\rule{\textwidth}{0.4pt}
+
+% ================= MỤC LỤC =================
+\tableofcontents
+
+% ================= DANH MỤC HÌNH =================
+\listoffigures
+\addcontentsline{toc}{chapter}{DANH MỤC HÌNH ẢNH}
+
+% ================= DANH MỤC BẢNG =================
+\listoftables
+\addcontentsline{toc}{chapter}{DANH MỤC BẢNG}
+
+% ================= DANH MỤC TỪ VIẾT TẮT =================
+\chapter*{DANH MỤC TỪ VIẾT TẮT}
+\addcontentsline{toc}{chapter}{DANH MỤC TỪ VIẾT TẮT}
+\begin{longtable}{p{3cm}p{10cm}}
+\toprule
+\textbf{Từ viết tắt} & \textbf{Giải thích} \\
+\midrule
+\endhead
+CSDL & Cơ sở dữ liệu \\
+GUI & Graphical User Interface -- Giao diện người dùng \\
+BLL & Business Logic Layer -- Tầng xử lý nghiệp vụ \\
+DAL & Data Access Layer -- Tầng truy xuất dữ liệu \\
+DTO & Data Transfer Object -- Đối tượng truyền dữ liệu \\
+ERD & Entity Relationship Diagram -- Sơ đồ thực thể quan hệ \\
+UC & Use Case -- Ca sử dụng \\
+QT & Quy tắc (nghiệp vụ) \\
+SP & Stored Procedure -- Thủ tục lưu trữ \\
+PBKDF2 & Password-Based Key Derivation Function 2 \\
+\bottomrule
+\end{longtable}
+
+\clearpage
+\pagenumbering{arabic}
+
+% ================= MỞ ĐẦU =================
+\chapter*{MỞ ĐẦU}
+\addcontentsline{toc}{chapter}{MỞ ĐẦU}
+% ===== begin chuong/mo_dau.tex =====
+\section*{1. Lý do chọn đề tài}
+\addcontentsline{toc}{section}{1. Lý do chọn đề tài}
+
+Quản lý khách sạn là một bài toán nghiệp vụ điển hình, bao gồm đầy đủ các đặc trưng cần có của một đồ án môn Lập trình Windows: dữ liệu quan hệ nhiều bảng với ràng buộc chặt (không trùng lịch, không trùng số phòng, không trùng giấy tờ khách hàng), quy tắc tính toán nghiệp vụ (phụ thu trả muộn theo mốc giờ, giới hạn giảm giá theo vai trò, tiền cọc giới hạn theo số đêm), và yêu cầu toàn vẹn giao dịch khi nhiều bước ghi dữ liệu liên quan phải cùng thành công hoặc cùng thất bại. Ngoài ra, đây là bài toán giúp nhóm dễ hình dung đúng - sai của từng quy tắc nghiệp vụ thay vì chỉ lập trình theo đặc tả trừu tượng.
+
+\section*{2. Mục tiêu đồ án}
+\addcontentsline{toc}{section}{2. Mục tiêu đồ án}
+
+Đồ án hướng tới xây dựng một ứng dụng desktop hoàn chỉnh theo kiến trúc ba lớp (GUI -- BLL -- DAL), áp dụng đúng các nguyên lý lập trình hướng đối tượng và truy xuất dữ liệu an toàn (tham số hóa truy vấn, giao dịch, băm mật khẩu), đồng thời rèn luyện kỹ năng làm việc nhóm: phân chia công việc, thống nhất giao diện lập trình giữa các tầng, kiểm thử chéo và tổng hợp tài liệu.
+
+\section*{3. Đối tượng và phạm vi nghiên cứu}
+\addcontentsline{toc}{section}{3. Đối tượng và phạm vi nghiên cứu}
+
+Đối tượng nghiên cứu là quy trình nghiệp vụ của bộ phận lễ tân khách sạn quy mô vừa và nhỏ: đặt phòng, nhận phòng, dịch vụ phát sinh, trả phòng, lập hóa đơn và báo cáo doanh thu. Phạm vi đồ án giới hạn ở ứng dụng desktop một máy trạm kết nối một CSDL tập trung, không bao gồm website đặt phòng trực tuyến, ứng dụng di động hay tích hợp thanh toán bên thứ ba (chi tiết tại Mục~1.5).
+
+\section*{4. Phương pháp thực hiện}
+\addcontentsline{toc}{section}{4. Phương pháp thực hiện}
+
+Nhóm thực hiện theo quy trình gồm: khảo sát và đặc tả yêu cầu (liệt kê chức năng, use case); thiết kế dữ liệu (ERD, ràng buộc, stored procedure); thiết kế quy tắc nghiệp vụ (các quy tắc QT01--QT64); xây dựng theo kiến trúc ba lớp; kiểm thử (tự động cho logic tính tiền, thủ công cho giao diện và CSDL); và hoàn thiện dựa trên các lỗi phát hiện được. Quy trình này được lặp lại thành nhiều vòng nhỏ giữa các giai đoạn thay vì thực hiện tuần tự một lần duy nhất, đặc biệt ở giai đoạn xây dựng và kiểm thử.
+
+\section*{5. Công nghệ sử dụng}
+\addcontentsline{toc}{section}{5. Công nghệ sử dụng}
+
+\begin{itemize}
+  \item Ngôn ngữ lập trình C\#, nền tảng .NET (target \texttt{net10.0-windows}).
+  \item Giao diện: Windows Forms.
+  \item Cơ sở dữ liệu: Microsoft SQL Server, truy xuất qua ADO.NET với truy vấn tham số hóa và stored procedure.
+  \item Kiểm thử: project kiểm thử tự động độc lập (\texttt{QuanLyKhachSan.Tests}) cho các quy tắc nghiệp vụ không phụ thuộc CSDL.
+\end{itemize}
+
+\section*{6. Bố cục báo cáo}
+\addcontentsline{toc}{section}{6. Bố cục báo cáo}
+
+Báo cáo gồm 8 chương: Chương~1 giới thiệu tổng quan hệ thống và đặc tả chức năng; Chương~2 trình bày kế hoạch thực hiện dự án; Chương~3 khảo sát và đặc tả yêu cầu bằng use case; Chương~4 thiết kế cơ sở dữ liệu; Chương~5 mô hình hóa quy trình và quy tắc nghiệp vụ; Chương~6 thiết kế kiến trúc và xử lý hệ thống; Chương~7 thiết kế giao diện người dùng; Chương~8 trình bày quá trình cài đặt, kiểm thử và đánh giá kết quả. Báo cáo khép lại với phần kết luận, hướng phát triển, tài liệu tham khảo và phụ lục mã nguồn.
+
+% ===== end chuong/mo_dau.tex =====
+
+
+% ================= CÁC CHƯƠNG =================
+% ===== begin chuong/chuong1.tex =====
+\chapter{Tổng quan và phân tích hệ thống}
+
+\section{Giới thiệu sơ lược về hệ thống}
+
+Quản lý khách sạn là bài toán nghiệp vụ quen thuộc nhưng có nhiều ràng buộc đan xen: một phòng không được cho hai khách thuê trùng ngày, tiền phòng phải cộng đúng với dịch vụ phát sinh và phụ thu trả muộn, hóa đơn một khi đã lập thì không được sửa tùy tiện. Ở quy mô khách sạn vừa và nhỏ, các ràng buộc này thường được xử lý bằng sổ sách hoặc bảng tính, dễ dẫn đến nhầm lẫn khi số lượng phòng và giao dịch tăng lên.
+
+Đồ án xây dựng một ứng dụng \emph{desktop} theo mô hình Windows Forms, dữ liệu lưu trữ tập trung trên SQL Server, nhằm số hóa trọn vẹn quy trình nghiệp vụ của bộ phận lễ tân: từ nhận đặt phòng, nhận phòng, ghi nhận dịch vụ phát sinh trong thời gian khách lưu trú, đến trả phòng, lập hóa đơn và tổng hợp báo cáo doanh thu cho cấp quản lý. Phần mềm được thiết kế theo kiến trúc ba lớp (GUI -- BLL -- DAL) cộng tầng DTO trung gian, giúp tách bạch giao diện, quy tắc nghiệp vụ và truy xuất dữ liệu, thuận lợi cho việc bảo trì và mở rộng về sau.
+
+Quy mô dữ liệu mẫu dùng xuyên suốt báo cáo: khách sạn có nhiều tầng, mỗi tầng một số phòng được phân theo ba loại phòng (Tiêu chuẩn, Cao cấp, Gia đình) với mức giá và sức chứa khác nhau; danh mục dịch vụ gồm các dịch vụ phổ biến như giặt ủi, nước uống, gọi điện thoại.
+
+\section{Hiện trạng và sự cần thiết của hệ thống}
+
+Trong mô hình vận hành thủ công, lễ tân thường ghi nhận đặt phòng trên giấy hoặc bảng tính rời rạc, dẫn đến một số vấn đề phổ biến:
+
+\begin{itemize}
+  \item \textbf{Trùng lịch đặt phòng}: không có cơ chế tự động kiểm tra giao nhau giữa các khoảng ngày đã đặt, dễ xảy ra việc một phòng được xác nhận cho hai khách khác nhau trong cùng một khoảng thời gian.
+  \item \textbf{Sai sót khi tính tiền}: số đêm lưu trú, phụ thu trả phòng muộn, giảm giá và tiền cọc phải cộng trừ thủ công, dễ nhầm lẫn, đặc biệt với khách trả phòng không đúng giờ chuẩn.
+  \item \textbf{Khó kiểm soát dịch vụ phát sinh}: mỗi khách có thể sử dụng nhiều dịch vụ trong suốt thời gian lưu trú; nếu không ghi nhận tức thời và tập trung, dễ bỏ sót khi lập hóa đơn.
+  \item \textbf{Báo cáo doanh thu chậm và thiếu trực quan}: tổng hợp doanh thu theo ngày/tháng/loại phòng bằng tay tốn thời gian, khó phát hiện xu hướng kinh doanh kịp thời.
+\end{itemize}
+
+Những vấn đề trên là động lực trực tiếp để nhóm xây dựng một hệ thống quản lý khách sạn tập trung, nơi mọi quy tắc tính tiền và kiểm tra ràng buộc được mã hóa thành logic chương trình, chạy nhất quán bất kể ai thao tác.
+
+\section{Đặc tả chức năng hệ thống}
+
+\subsection{Tổng quan chức năng theo nhóm nghiệp vụ}
+
+Chức năng của hệ thống được chia thành bốn nhóm, trình bày trong Bảng~\ref{tab:nhom-chuc-nang}.
+
+\begin{table}[H]
+\centering
+\caption{Các nhóm chức năng chính của hệ thống}
+\label{tab:nhom-chuc-nang}
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\textbf{Nhóm} & \textbf{Nội dung} \\\hline
+Hệ thống & Đăng nhập, đăng xuất, đổi mật khẩu, quản lý tài khoản nhân viên (chỉ Quản lý) \\\hline
+Danh mục & Loại phòng, Phòng, Khách hàng, Dịch vụ -- thêm, sửa, tìm kiếm, ngừng sử dụng \\\hline
+Nghiệp vụ & Đặt phòng, hủy/đánh dấu không đến, nhận phòng, ghi/xóa dịch vụ, trả phòng và lập hóa đơn, sơ đồ trạng thái phòng theo tầng \\\hline
+Tra cứu / Báo cáo & Tra cứu hóa đơn, danh sách khách đang lưu trú, báo cáo doanh thu và công suất phòng kèm biểu đồ, in và xuất CSV \\\hline
+\end{tabularx}
+\end{table}
+
+Danh sách chi tiết từng chức năng, mã hóa theo quy ước \texttt{HTxx} (Hệ thống), \texttt{DMxx} (Danh mục), \texttt{NVxx} (Nghiệp vụ) và \texttt{TCxx}/\texttt{BCxx} (Tra cứu/Báo cáo) được trình bày trong Bảng~\ref{tab:chuc-nang-chi-tiet}; cột \textit{Loại} phân biệt chức năng \textbf{BB} (bắt buộc) và \textbf{NC} (nâng cao), cột \textit{Quyền} ghi rõ vai trò được phép sử dụng.
+
+\begin{longtable}{|l|p{6.8cm}|c|c|}
+\caption{Danh sách chức năng hệ thống}\label{tab:chuc-nang-chi-tiet}\\
+\hline
+\textbf{Mã} & \textbf{Chức năng} & \textbf{Loại} & \textbf{Quyền}\\\hline
+\endfirsthead
+\hline \textbf{Mã} & \textbf{Chức năng} & \textbf{Loại} & \textbf{Quyền}\\\hline
+\endhead
+HT01 & Đăng nhập & BB & LT, QL \\\hline
+HT02 & Đổi mật khẩu & BB & LT, QL \\\hline
+HT03 & Phân quyền hiển thị menu và chức năng theo vai trò & BB & LT, QL \\\hline
+HT04 & Quản lý tài khoản (thêm, sửa, khóa, đặt lại mật khẩu) & BB & QL \\\hline
+DM01 & Loại phòng: thêm, sửa, tìm kiếm, ngừng sử dụng & BB & QL \\\hline
+DM02 & Phòng: thêm, sửa, tìm kiếm, lọc theo tầng/loại/trạng thái & BB & QL (xem: LT) \\\hline
+DM03 & Cấu hình giá phòng theo loại phòng & BB & QL \\\hline
+DM04 & Khách hàng: thêm, sửa, tìm kiếm, kiểm tra trùng giấy tờ & BB & LT, QL \\\hline
+DM05 & Dịch vụ: thêm, sửa, tìm kiếm, cấu hình đơn giá & BB & QL (xem: LT) \\\hline
+NV01 & Đặt phòng theo khoảng ngày, kiểm tra giao nhau & BB & LT, QL \\\hline
+NV02 & Hủy hoặc đánh dấu khách không đến & BB & LT, QL \\\hline
+NV03 & Hiển thị trạng thái phòng bằng màu theo tầng & BB & LT, QL \\\hline
+NV04 & Nhận phòng (từ đặt phòng hoặc khách vãng lai) & BB & LT, QL \\\hline
+NV05 & Ghi nhận và xóa dịch vụ phát sinh & BB & LT, QL \\\hline
+NV06 & Trả phòng bằng Transaction, tính tiền, lập hóa đơn & BB & LT, QL \\\hline
+NV07 & In hóa đơn lưu trú (xem trước và in) & BB & LT, QL \\\hline
+TC01 & Tra cứu phòng, đặt phòng, phiếu thuê, hóa đơn & BB & LT, QL \\\hline
+BC01 & Báo cáo doanh thu theo ngày/tháng/loại phòng & BB & QL \\\hline
+BC02 & Biểu đồ GDI+ cho doanh thu và công suất & BB & QL \\\hline
+BC03 & Xem trước và in báo cáo & BB & QL \\\hline
+BC04 & Thống kê công suất phòng & NC & QL \\\hline
+BC05 & Sơ đồ phòng theo tầng & NC & LT, QL \\\hline
+BC06 & Xuất danh sách khách đang lưu trú (CSV) & NC & LT, QL \\\hline
+\end{longtable}
+
+Trong 23 chức năng ở trên, 19 chức năng thuộc nhóm bắt buộc và 4 chức năng thuộc nhóm nâng cao (NV08 đổi phòng -- chưa triển khai, BC04, BC05, BC06).
+
+\subsection{Đối tượng tương tác với hệ thống}
+
+Hệ thống phục vụ hai nhóm người dùng, phân quyền theo nguyên tắc kế thừa: \textbf{Quản lý} có toàn bộ quyền của \textbf{Lễ tân} cộng thêm các quyền quản trị.
+
+\begin{itemize}
+  \item \textbf{Lễ tân}: thực hiện các nghiệp vụ hằng ngày -- tra cứu phòng trống, lập đặt phòng, nhận phòng, ghi dịch vụ, trả phòng, in hóa đơn, quản lý khách hàng. Chỉ được \emph{xem} ba danh mục cấu hình (loại phòng, phòng, dịch vụ), không được thêm/sửa/xóa, và không có quyền truy cập màn hình báo cáo hay quản lý tài khoản.
+  \item \textbf{Quản lý}: có mọi quyền của Lễ tân, cộng thêm quyền cấu hình danh mục (loại phòng, phòng, dịch vụ, giá), quản lý tài khoản nhân viên, xem báo cáo doanh thu/công suất, phê duyệt mức giảm giá vượt ngưỡng cho phép của Lễ tân, và đưa phòng vào/ra trạng thái bảo trì.
+\end{itemize}
+
+\section{Mục tiêu của hệ thống}
+
+Hệ thống hướng tới bốn mục tiêu cụ thể:
+
+\begin{enumerate}
+  \item \textbf{Tự động hóa quy trình cốt lõi}: đặt phòng, nhận phòng, ghi dịch vụ, trả phòng, lập hóa đơn được thực hiện qua giao diện trực quan, giảm thao tác thủ công và giấy tờ.
+  \item \textbf{Đảm bảo tính đúng đắn của quy tắc tính tiền}: số đêm lưu trú, phụ thu trả muộn, giới hạn giảm giá, tiền cọc được tính theo công thức thống nhất, không phụ thuộc vào người thao tác (chi tiết ở Chương~5).
+  \item \textbf{Đảm bảo toàn vẹn dữ liệu}: các thao tác có nhiều bước ghi dữ liệu liên quan (ví dụ trả phòng: tạo hóa đơn, đóng phiếu thuê, đổi trạng thái phòng) được bọc trong giao dịch (transaction) ở tầng cơ sở dữ liệu, đảm bảo tất cả cùng thành công hoặc cùng được hoàn tác.
+  \item \textbf{Phân quyền rõ ràng theo vai trò và cung cấp báo cáo hỗ trợ ra quyết định}: menu, chức năng và dữ liệu hiển thị được giới hạn đúng theo vai trò đăng nhập; báo cáo doanh thu, công suất phòng kèm biểu đồ giúp cấp quản lý nắm bắt tình hình kinh doanh nhanh chóng.
+\end{enumerate}
+
+\section{Phạm vi và giới hạn của đề tài}
+
+\subsection{Trong phạm vi}
+Ứng dụng desktop Windows Forms, lưu dữ liệu trên SQL Server, phục vụ hai vai trò Lễ tân và Quản lý; bao phủ toàn bộ quy trình quản lý phòng, khách hàng, đặt phòng, nhận/trả phòng, dịch vụ phát sinh, hóa đơn và báo cáo doanh thu/công suất.
+
+\subsection{Ngoài phạm vi}
+Theo yêu cầu đề bài, các nội dung sau không thuộc phạm vi đồ án: website hoặc Web API cho khách tự đặt phòng, ứng dụng di động, hệ thống phân tán nhiều chi nhánh, tích hợp cổng thanh toán trực tuyến hoặc kênh đặt phòng OTA (Booking.com, Agoda...), quản lý nhân sự/lương/kho/kế toán.
+
+\subsection{Đối chiếu với sản phẩm thực tế}
+
+Bảng~\ref{tab:doichieu-c1} đối chiếu phạm vi yêu cầu với tình trạng triển khai thực tế trong mã nguồn, được cập nhật ở lần hoàn thiện gần nhất của đồ án.
+
+\begin{table}[H]
+\centering
+\caption{Đối chiếu phạm vi yêu cầu với source hiện tại}
+\label{tab:doichieu-c1}
+\begin{tabularx}{\textwidth}{|l|X|X|}
+\hline
+\textbf{Nhóm} & \textbf{Đã có trong source} & \textbf{Chưa có hoặc chưa hoàn tất} \\\hline
+Hệ thống & Đăng nhập (khóa 30 giây sau 5 lần sai), đăng xuất, đổi mật khẩu; Quản lý tạo/khóa/đặt lại mật khẩu; luôn còn ít nhất một tài khoản Quản lý hoạt động & Chưa có sửa thông tin tài khoản, xóa tài khoản \\\hline
+Danh mục & Khách hàng, loại phòng, phòng, dịch vụ: thêm, sửa, tìm kiếm, ngừng sử dụng; Lễ tân chỉ xem ba danh mục sau & Chưa có bộ lọc riêng theo tầng/loại trong màn hình Phòng (đã có ở sơ đồ phòng) \\\hline
+Nghiệp vụ & Tạo/hủy đặt phòng, đánh dấu khách không đến, cọc tối đa 1 đêm × số đêm; nhận phòng từ đặt trước hoặc vãng lai; ghi và xóa dịch vụ; trả phòng có transaction và hóa đơn; sơ đồ phòng theo tầng; bảo trì/dọn dẹp & Chưa có sửa đặt phòng và đổi phòng (NV08) \\\hline
+Tra cứu/Báo cáo & Tra cứu hóa đơn, khách đang ở; doanh thu theo ngày/tháng/loại phòng; công suất phòng; biểu đồ; xem trước/in; xuất CSV & Chưa có xuất Excel (.xlsx) \\\hline
+\end{tabularx}
+\end{table}
+
+% ===== end chuong/chuong1.tex =====
+
+% ===== begin chuong/chuong2.tex =====
+\chapter{Khởi tạo và lập kế hoạch dự án}
+
+\section{Thành lập nhóm và phân chia vai trò}
+
+Đồ án được thực hiện bởi nhóm \textbf{3 thành viên}. Do quy mô nhóm nhỏ hơn mô hình 5 người thường gặp ở các dự án tham khảo, nhóm không chia theo kiểu "mỗi người một chương tài liệu" mà chia theo \textbf{trục kỹ thuật dọc}, để mỗi thành viên nắm trọn một phần của hệ thống từ cơ sở dữ liệu đến giao diện, giảm phụ thuộc chờ nhau giữa các lớp kiến trúc. Vai trò cụ thể như sau:
+
+\begin{itemize}
+  \item \textbf{Thành viên 1 -- Phụ trách Dữ liệu và Nghiệp vụ lõi}: thiết kế CSDL, viết script `Database.sql` (bảng, ràng buộc, stored procedure), xây tầng DAL và BLL cho các nghiệp vụ lõi (Đặt phòng, Nhận phòng, Trả phòng, Quy tắc tính tiền).
+  \item \textbf{Thành viên 2 -- Phụ trách Danh mục, Tài khoản và Báo cáo}: xây DAL/BLL/GUI cho các màn hình danh mục (Loại phòng, Phòng, Khách hàng, Dịch vụ), màn hình quản lý tài khoản, đăng nhập/phân quyền, và toàn bộ phân hệ báo cáo thống kê (doanh thu, công suất, biểu đồ, in ấn, xuất CSV).
+  \item \textbf{Thành viên 3 -- Phụ trách Giao diện tổng thể, Kiểm thử và Tài liệu}: xây dựng khung giao diện chính (`FrmMain`, điều hướng, sơ đồ phòng theo tầng), chuẩn hóa style dùng chung (`GiaoDien`), viết kịch bản kiểm thử thủ công và tự động, tổng hợp tài liệu đặc tả và báo cáo.
+\end{itemize}
+
+Việc phân chia theo chiều dọc không có nghĩa là mỗi người làm việc độc lập hoàn toàn: các API giữa BLL và GUI, cũng như cấu trúc DTO dùng chung, được cả ba người thống nhất trước khi triển khai (xem thêm Mục~\ref{sec:phancong}), và các bước tích hợp, review chéo code được thực hiện định kỳ cuối mỗi giai đoạn.
+
+\section{Kế hoạch thực hiện theo giai đoạn}
+
+Dự án được chia thành 8 giai đoạn (GĐ1--GĐ8), tương ứng với vòng đời phát triển phần mềm thu nhỏ: khảo sát, thiết kế, xây dựng, kiểm thử và hoàn thiện. Bảng~\ref{tab:kehoach} tổng hợp công việc theo từng giai đoạn, thời lượng ước tính (theo ngày làm việc) và người phụ trách chính, được chuyển thể từ bảng kế hoạch Excel của nhóm.
+
+\begin{longtable}{|c|p{3.5cm}|c|c|c|}
+\caption{Kế hoạch thực hiện dự án theo giai đoạn}\label{tab:kehoach}\\
+\hline
+\textbf{GĐ} & \textbf{Công việc} & \textbf{Số ngày} & \textbf{Người phụ trách} & \textbf{Trạng thái}\\\hline
+\endfirsthead
+\hline \textbf{GĐ} & \textbf{Công việc} & \textbf{Số ngày} & \textbf{Người phụ trách} & \textbf{Trạng thái}\\\hline
+\endhead
+1 & Khảo sát yêu cầu, xác định phạm vi, liệt kê chức năng (BB/NC) & 3 & Cả nhóm & Hoàn thành \\\hline
+2 & Lập kế hoạch dự án, phân công, đánh giá khả thi & 2 & TV3 & Hoàn thành \\\hline
+3 & Khảo sát và đặc tả use case, ma trận chức năng--vai trò & 3 & TV2 & Hoàn thành \\\hline
+4 & Thiết kế CSDL (ERD, ràng buộc), viết script tạo bảng & 4 & TV1 & Hoàn thành \\\hline
+5 & Xây dựng tầng DAL/BLL: nghiệp vụ lõi (đặt/nhận/trả phòng, tính tiền) & 6 & TV1 & Hoàn thành \\\hline
+5 & Xây dựng tầng DAL/BLL: danh mục, tài khoản, báo cáo & 6 & TV2 & Hoàn thành \\\hline
+6 & Xây dựng GUI: khung chính, sơ đồ phòng, các form nghiệp vụ & 7 & TV3 (chủ trì), TV1 hỗ trợ form nghiệp vụ & Hoàn thành \\\hline
+6 & Xây dựng GUI: danh mục, tài khoản, báo cáo, biểu đồ & 5 & TV2 & Hoàn thành \\\hline
+7 & Kiểm thử logic tự động, kiểm thử SQL, kiểm thử giao diện thủ công & 4 & TV3 (chủ trì), cả nhóm hỗ trợ & Một phần (xem Chương~8) \\\hline
+8 & Sửa lỗi phát hiện khi kiểm thử, tối ưu giao diện tránh chồng chéo & 3 & Cả nhóm & Hoàn thành \\\hline
+8 & Viết tài liệu đặc tả, hướng dẫn demo, báo cáo tổng kết & 3 & TV3 (chủ trì), cả nhóm rà soát & Hoàn thành \\\hline
+\end{longtable}
+
+
+\section{Sơ đồ Gantt}
+
+Hình~\ref{fig:gantt} minh họa tiến độ các giai đoạn theo thời gian cho nhóm 3 người. So với một nhóm 5 người -- nơi các công việc danh mục, báo cáo và giao diện có thể tách cho 2--3 người làm song song độc lập -- nhóm 3 người của đồ án này rút ngắn số luồng song song xuống còn 3, khiến giai đoạn xây dựng GUI (GĐ6) phải kéo dài hơn và một phần công việc của Thành viên 1 được bố trí hỗ trợ chéo sang GUI nghiệp vụ ở cuối GĐ6 để kịp tiến độ kiểm thử.
+\begin{figure}[H]
+\centering
+\begin{ganttchart}[
+    vgrid, hgrid,
+    x unit=0.4cm,
+    y unit chart=0.72cm,
+    bar/.append style={rounded corners=0.5pt},
+    bar height=0.45,
+    group right shift=0,
+    group top shift=0.5,
+    group height=0.3,
+    title height=0.8,
+    title label font=\small\bfseries,
+    bar label font=\footnotesize,
+    group label font=\footnotesize\bfseries
+]{1}{28}
+    \gantttitle{Sơ đồ Gantt kế hoạch thực hiện dự án}{28} \\
+    \gantttitlelist{1,...,28}{1} \\
+
+    \ganttbar[bar/.append style={fill=nhom}]{GĐ1: Khảo sát yêu cầu (Cả nhóm)}{1}{3} \\
+
+    \ganttbar[bar/.append style={fill=tv3}]{GĐ2: Lập kế hoạch dự án (TV3)}{4}{5} \\
+    \ganttbar[bar/.append style={fill=tv2}]{GĐ3: Khảo sát use case (TV2)}{4}{6} \\
+
+    \ganttbar[bar/.append style={fill=tv1}]{GĐ4: Thiết kế CSDL (TV1)}{7}{10} \\
+
+    \ganttbar[bar/.append style={fill=tv1}]{GĐ5: DAL/BLL nghiệp vụ lõi (TV1)}{11}{16} \\
+    \ganttbar[bar/.append style={fill=tv2}]{GĐ5: DAL/BLL danh mục, báo cáo (TV2)}{11}{16} \\
+
+    \ganttbar[bar/.append style={fill=tv3}]{GĐ6: GUI chính, sơ đồ phòng (TV3 + TV1 hỗ trợ)}{17}{23} \\
+    \ganttbar[bar/.append style={fill=tv2}]{GĐ6: GUI danh mục, báo cáo (TV2)}{17}{21} \\
+
+    \ganttbar[bar/.append style={fill=nhom}]{GĐ7: Kiểm thử (TV3 chủ trì, cả nhóm)}{22}{25} \\
+
+    \ganttbar[bar/.append style={fill=nhom}]{GĐ8: Sửa lỗi, tối ưu giao diện (Cả nhóm)}{26}{28} \\
+    \ganttbar[bar/.append style={fill=tv3}]{GĐ8: Viết tài liệu, báo cáo (TV3 chủ trì)}{26}{28}
+
+    \ganttlink{elem0}{elem1}
+    \ganttlink{elem0}{elem2}
+    \ganttlink{elem2}{elem3}
+    \ganttlink{elem1}{elem3}
+    \ganttlink{elem3}{elem4}
+    \ganttlink{elem4}{elem5}
+    \ganttlink{elem3}{elem5}
+    \ganttlink{elem4}{elem6}
+    \ganttlink{elem5}{elem6}
+    \ganttlink{elem6}{elem7}
+    \ganttlink{elem7}{elem8}
+    \ganttlink{elem7}{elem9}
+\end{ganttchart}
+\caption{Sơ đồ Gantt kế hoạch thực hiện dự án}
+\label{fig:gantt}
+\end{figure}
+
+\section{Đánh giá tính khả thi}
+
+\subsection{Khả thi kinh tế}
+
+\paragraph{Chi phí.} Vì đây là đồ án học phần, chi phí phát sinh chủ yếu là chi phí cơ hội (thời gian của các thành viên) và chi phí hạ tầng phát triển gần như bằng 0: Visual Studio Community, SQL Server Express/Developer Edition và .NET SDK đều là phiên bản miễn phí cho mục đích học tập. Không phát sinh chi phí license phần mềm hay hạ tầng máy chủ, do ứng dụng chạy desktop và CSDL cài đặt tại chỗ (on-premise).
+
+\paragraph{Lợi ích hữu hình.} Nếu triển khai cho một khách sạn thực tế quy mô vừa và nhỏ, hệ thống giúp giảm thời gian lập hóa đơn thủ công, giảm sai sót tính tiền (phụ thu trả muộn, cọc, giảm giá), và rút ngắn thời gian tổng hợp báo cáo doanh thu cuối ngày/cuối tháng từ hàng giờ xuống còn vài giây.
+
+\paragraph{Lợi ích vô hình.} Giảm rủi ro tranh chấp với khách hàng do sai sót tính tiền; cung cấp dữ liệu doanh thu tức thời giúp quản lý ra quyết định kịp thời (ví dụ điều chỉnh giá theo công suất phòng); chuẩn hóa quy trình làm việc giữa các ca trực lễ tân khác nhau.
+
+\subsection{Khả thi kỹ thuật}
+
+Nhóm đánh giá khả thi kỹ thuật theo các tiêu chí rủi ro thường dùng, trình bày trong Bảng~\ref{tab:khathi-kythuat}.
+
+\begin{table}[H]
+\centering
+\caption{Đánh giá khả thi kỹ thuật}
+\label{tab:khathi-kythuat}
+\begin{tabularx}{\textwidth}{|l|X|c|}
+\hline
+\textbf{Tiêu chí} & \textbf{Nhận định} & \textbf{Mức rủi ro} \\\hline
+Quy mô dự án & Vừa phải: 9 bảng CSDL, khoảng 23 chức năng, phù hợp năng lực nhóm 3 người trong thời gian một học kỳ & Thấp \\\hline
+Độ quen thuộc công nghệ & Nhóm đã học C\#, WinForms và SQL Server trong chương trình học, có thực hành trước đó & Thấp \\\hline
+Độ phức tạp nghiệp vụ & Có một số ràng buộc đồng thời (kiểm tra trùng lịch, giao dịch nhiều bước) đòi hỏi hiểu đúng về transaction và mức cô lập & Trung bình \\\hline
+Phụ thuộc bên thứ ba & Không tích hợp cổng thanh toán, API bên ngoài; giảm rủi ro tích hợp & Thấp \\\hline
+Yêu cầu hiệu năng & Không có yêu cầu tải cao (một khách sạn, số lượng phiên làm việc nhỏ) & Thấp \\\hline
+Khả năng kiểm thử & Có bộ kiểm thử logic tự động độc lập CSDL, nhưng kiểm thử giao diện và tích hợp CSDL còn phụ thuộc môi trường thật & Trung bình \\\hline
+Tài liệu và bảo trì & Tài liệu đặc tả (docs/01--10) được duy trì song song với code, thuận lợi cho bảo trì về sau & Thấp \\\hline
+Rủi ro nhân sự & Nhóm chỉ 3 người nên một thành viên vắng mặt ảnh hưởng tiến độ nhiều hơn nhóm lớn; giảm thiểu bằng cách chia vai trò rõ và review chéo thường xuyên & Trung bình \\\hline
+\end{tabularx}
+\end{table}
+
+\subsection{Khả thi vận hành}
+
+Giao diện được thiết kế theo thao tác quen thuộc với nghiệp vụ lễ tân (phím tắt F2--F7 cho các nghiệp vụ chính, sơ đồ phòng trực quan theo màu trạng thái), giúp rút ngắn thời gian đào tạo nhân viên khi triển khai thực tế. Phân quyền rõ ràng giữa Lễ tân và Quản lý giúp hạn chế thao tác sai phạm vi trách nhiệm.
+
+\section{Phân công công việc chi tiết trong nhóm}
+\label{sec:phancong}
+
+Ngoài phân chia theo giai đoạn ở Bảng~\ref{tab:kehoach}, Bảng~\ref{tab:phancong-chucnang} đối chiếu phân công theo từng cụm chức năng cụ thể, giúp truy vết trách nhiệm rõ ràng khi kiểm thử hoặc sửa lỗi.
+
+
+\begin{table}[H]
+\centering
+\caption{Phân công theo cụm chức năng}
+\label{tab:phancong-chucnang}
+
+\renewcommand{\arraystretch}{1.25}
+\setlength{\tabcolsep}{5pt}
+
+\begin{tabularx}{\textwidth}{
+    |>{\raggedright\arraybackslash}X
+    |>{\centering\arraybackslash}p{2.2cm}
+    |>{\raggedright\arraybackslash}X|
+}
+\hline
+\textbf{Cụm chức năng} &
+\textbf{Nội dung} &
+\textbf{Phụ trách} \\
+\hline
+
+Đăng nhập, phân quyền, tài khoản
+& HT01--HT04
+& TV2 \\
+\hline
+
+Danh mục (Loại phòng, Phòng, Khách hàng, Dịch vụ)
+& DM01--DM05
+& TV2 \\
+\hline
+
+Đặt phòng, nhận phòng, dịch vụ, trả phòng
+& NV01--NV07
+& TV1 (BLL/DAL) + TV3 (GUI) \\
+\hline
+
+Sơ đồ phòng theo tầng
+& NV03
+& TV3 \\
+\hline
+
+Tra cứu
+& TC01
+& TV1 \\
+\hline
+
+Báo cáo, biểu đồ, in ấn, xuất CSV
+& BC01--BC06
+& TV2 \\
+\hline
+
+Thiết kế CSDL và stored procedure
+& --
+& TV1 \\
+\hline
+
+Khung giao diện chính, chuẩn hóa style
+& --
+& TV3 \\
+\hline
+
+Kiểm thử tự động (QuanLyKhachSan.Tests)
+& --
+& TV3 (viết), cả nhóm bổ sung ca theo module \\
+\hline
+
+Tài liệu đặc tả và báo cáo
+& --
+& TV3 (chủ trì), cả nhóm đóng góp theo phần phụ trách \\
+\hline
+
+\end{tabularx}
+\end{table}
+
+
+
+% ===== end chuong/chuong2.tex =====
+
+% ===== begin chuong/chuong3.tex =====
+\chapter{Khảo sát và đặc tả yêu cầu}
+
+\section{Phương pháp khảo sát}
+
+Yêu cầu hệ thống được tổng hợp từ ba nguồn: (1) đề bài môn học về quản lý khách sạn, (2) quan sát quy trình nghiệp vụ lễ tân thực tế thông qua tài liệu tham khảo và kinh nghiệm cá nhân các thành viên, (3) các vòng rà soát nội bộ của nhóm để đối chiếu đặc tả với mã nguồn đã triển khai (xem Bảng~\ref{tab:doichieu-c1}). Kết quả khảo sát được cụ thể hóa thành 19 use case, trình bày trong Mục~\ref{sec:uc-list}, cùng ma trận chức năng--vai trò trong Mục~\ref{sec:ma-tran}.
+
+\section{Sơ đồ use case}
+
+Hình~\ref{fig:uc-diagram} trình bày sơ đồ use case tổng quát của hệ thống với hai tác nhân Lễ tân và Quản lý. Quan hệ kế thừa (Quản lý $\to$ Lễ tân) thể hiện việc Quản lý có đầy đủ quyền của Lễ tân cộng thêm các use case quản trị.
+
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\footnotesize,
+  actor/.style={align=center, font=\footnotesize\bfseries},
+  uc/.style={ellipse, draw, fill=blue!6, align=center, minimum width=3.1cm, minimum height=0.75cm, font=\scriptsize, inner sep=1pt},
+  clus/.style={draw, dashed, rounded corners, inner sep=9pt},
+  clustitle/.style={font=\scriptsize\bfseries, align=center},
+  conn/.style={-},
+  genArrow/.style={-{Triangle[open,length=3mm,width=2.5mm]}}
+]
+
+\node[uc] (uc01) at (4.4,9.6) {UC01\\Đăng nhập};
+\node[uc] (uc02) at (4.4,8.65) {UC02\\Đổi mật khẩu};
+\node[uc] (uc03) at (4.4,7.7) {UC03\\Quản lý tài khoản};
+\node[clus, fit=(uc01)(uc02)(uc03), label={[clustitle]above:Nhóm Hệ thống}] (cHT) {};
+
+\node[uc] (uc04) at (8.2,9.75) {UC04\\Quản lý loại phòng};
+\node[uc] (uc05) at (8.2,8.9) {UC05\\Quản lý phòng};
+\node[uc] (uc06) at (8.2,8.05) {UC06\\Cấu hình giá phòng};
+\node[uc] (uc07) at (8.2,7.2) {UC07\\Quản lý khách hàng};
+\node[uc] (uc19) at (8.2,6.35) {UC19\\Quản lý dịch vụ};
+\node[clus, fit=(uc04)(uc05)(uc06)(uc07)(uc19), label={[clustitle]above:Nhóm Danh mục}] (cDM) {};
+
+\node[uc] (uc08) at (12.3,9.95) {UC08\\Đặt phòng};
+\node[uc] (uc09) at (12.3,9.1) {UC09\\Hủy / không đến};
+\node[uc] (uc10) at (12.3,8.25)  {UC10\\Sơ đồ phòng};
+\node[uc] (uc11) at (12.3,7.4) {UC11\\Nhận phòng};
+\node[uc] (uc12) at (12.3,6.55)  {UC12\\Ghi dịch vụ};
+\node[uc] (uc13) at (12.3,5.7) {UC13\\Trả phòng, lập hóa đơn};
+\node[uc] (uc14) at (12.3,4.85)  {UC14\\In hóa đơn};
+\node[clus, fit=(uc08)(uc09)(uc10)(uc11)(uc12)(uc13)(uc14), label={[clustitle]above:Nhóm Nghiệp vụ}] (cNV) {};
+
+\node[uc] (uc15) at (8.2,4.3) {UC15\\Tra cứu};
+\node[uc] (uc16) at (8.2,3.35) {UC16\\Báo cáo doanh thu};
+\node[uc] (uc17) at (8.2,2.4) {UC17\\Thống kê công suất};
+\node[uc] (uc18) at (8.2,1.45) {UC18\\Xuất CSV};
+\node[clus, fit=(uc15)(uc16)(uc17)(uc18), label={[clustitle]below:Nhóm Tra cứu / Báo cáo}] (cTC) {};
+
+\node[draw, very thick, rounded corners, inner sep=22pt,
+      fit=(cHT)(cDM)(cNV)(cTC)] (sys) {};
+\node[font=\bfseries\small, above=3pt of sys.north] {HỆ THỐNG QUẢN LÝ KHÁCH SẠN};
+
+\node[actor, left=1.4cm of cHT.west, yshift=1.6cm] (ql) {%
+  \begin{tikzpicture}[scale=0.45]
+    \draw[thick] (0,2) circle (0.4);
+    \draw[thick] (0,1.6) -- (0,0.3);
+    \draw[thick] (-0.6,1.1) -- (0.6,1.1);
+    \draw[thick] (0,0.3) -- (-0.5,-0.6);
+    \draw[thick] (0,0.3) -- (0.5,-0.6);
+  \end{tikzpicture}\\[-2pt] Quản lý};
+
+\node[actor, below=2.6cm of ql] (lt) {%
+  \begin{tikzpicture}[scale=0.45]
+    \draw[thick] (0,2) circle (0.4);
+    \draw[thick] (0,1.6) -- (0,0.3);
+    \draw[thick] (-0.6,1.1) -- (0.6,1.1);
+    \draw[thick] (0,0.3) -- (-0.5,-0.6);
+    \draw[thick] (0,0.3) -- (0.5,-0.6);
+  \end{tikzpicture}\\[-2pt] Lễ tân};
+
+\draw[genArrow] (ql) .. controls ($(ql)+(-1.4,-1.5)$) and ($(lt)+(-1.4,1.5)$) .. (lt);
+
+\draw[conn] (lt) -- (cHT.west) node[midway, below, font=\scriptsize]{UC01, UC02};
+\draw[conn] (lt) -- (cNV.west);
+\draw[conn] (lt) -- (cTC.west) node[midway, below, font=\scriptsize]{UC15, UC18};
+\draw[conn, dashed] (lt) -- (cDM.south west) node[midway, below, font=\scriptsize]{chỉ xem};
+
+\draw[conn] (ql) -- (cHT.north west);
+\draw[conn] (ql) -- (cDM.north west);
+\draw[conn] (ql) -- (cTC.north west);
+
+\end{tikzpicture}
+\caption{Sơ đồ use case tổng quát}
+\label{fig:uc-diagram}
+\end{figure}
+
+\section{Danh sách use case}
+\label{sec:uc-list}
+
+Bảng~\ref{tab:uc-list} liệt kê toàn bộ 19 use case, mã hóa theo \texttt{UCxx}, kèm tác nhân thực hiện, mã chức năng tương ứng (đối chiếu Bảng~\ref{tab:chuc-nang-chi-tiet}) và phân loại bắt buộc/nâng cao.
+
+\begin{longtable}{|c|p{4.3cm}|c|l|c|}
+\caption{Danh sách use case của hệ thống}\label{tab:uc-list}\\
+\hline
+\textbf{Mã} & \textbf{Use case} & \textbf{Tác nhân} & \textbf{Mã CN} & \textbf{Loại}\\\hline
+\endfirsthead
+\hline \textbf{Mã} & \textbf{Use case} & \textbf{Tác nhân} & \textbf{Mã CN} & \textbf{Loại}\\\hline
+\endhead
+UC01 & Đăng nhập & LT, QL & HT01 & BB \\\hline
+UC02 & Đổi mật khẩu & LT, QL & HT02 & BB \\\hline
+UC03 & Quản lý tài khoản nhân viên & QL & HT04 & BB \\\hline
+UC04 & Quản lý loại phòng & QL & DM01 & BB \\\hline
+UC05 & Quản lý phòng & QL & DM02 & BB \\\hline
+UC06 & Cấu hình giá phòng & QL & DM03 & BB \\\hline
+UC07 & Quản lý khách hàng & LT, QL & DM04 & BB \\\hline
+UC08 & Đặt phòng & LT, QL & NV01 & BB \\\hline
+UC09 & Hủy / đánh dấu không đến & LT, QL & NV02 & BB \\\hline
+UC10 & Xem sơ đồ phòng theo tầng & LT, QL & NV03 & BB \\\hline
+UC11 & Nhận phòng & LT, QL & NV04 & BB \\\hline
+UC12 & Ghi nhận dịch vụ & LT, QL & NV05 & BB \\\hline
+UC13 & Trả phòng và lập hóa đơn & LT, QL & NV06 & BB \\\hline
+UC14 & In hóa đơn & LT, QL & NV07 & BB \\\hline
+UC15 & Tra cứu (phòng/đặt phòng/phiếu thuê/hóa đơn) & LT, QL & TC01 & BB \\\hline
+UC16 & Báo cáo doanh thu & QL & BC01, BC02, BC03 & BB \\\hline
+UC17 & Thống kê công suất phòng & QL & BC04 & NC \\\hline
+UC18 & Xuất danh sách khách đang lưu trú & LT, QL & BC06 & NC \\\hline
+UC19 & Quản lý dịch vụ & QL & DM05 & BB \\\hline
+\end{longtable}
+
+\section{Đặc tả chi tiết các use case trọng tâm}
+
+Do giới hạn dung lượng báo cáo, mục này trình bày đặc tả đầy đủ cho các use case phức tạp nhất -- những use case có nhiều điều kiện tiên quyết, luồng ngoại lệ hoặc liên quan trực tiếp tới tính toàn vẹn dữ liệu. Các use case còn lại có cấu trúc đặc tả tương tự, được tóm lược trong Bảng~\ref{tab:uc-list} ở trên.
+
+\subsection{UC01 -- Đăng nhập}
+\begin{description}
+  \item[Tác nhân:] Lễ tân, Quản lý.
+  \item[Điều kiện tiên quyết:] Ứng dụng đã kết nối được tới CSDL.
+  \item[Luồng chính:] 
+  \begin{enumerate}
+    \item Người dùng nhập tên đăng nhập và mật khẩu, bấm Đăng nhập.
+    \item Hệ thống kiểm tra tài khoản tồn tại, chưa bị khóa và mật khẩu khớp (so sánh hash PBKDF2).
+    \item Hệ thống mở màn hình chính với menu hiển thị theo vai trò của tài khoản.
+  \end{enumerate}
+  \item[Luồng ngoại lệ:]
+  \begin{itemize}
+    \item Sai tên đăng nhập hoặc mật khẩu: tăng bộ đếm đăng nhập sai; nếu đạt 5 lần liên tiếp, khóa tài khoản tạm thời 30 giây.
+    \item Tài khoản đang bị khóa: từ chối đăng nhập kèm thông báo thời gian còn lại.
+  \end{itemize}
+  \item[Hậu điều kiện:] Phiên làm việc được khởi tạo với thông tin vai trò người dùng.
+\end{description}
+
+\subsection{UC08 -- Đặt phòng}
+\begin{description}
+  \item[Tác nhân:] Lễ tân, Quản lý.
+  \item[Điều kiện tiên quyết:] Đã đăng nhập; tồn tại ít nhất một phòng ở trạng thái hoạt động.
+  \item[Luồng chính:]
+  \begin{enumerate}
+    \item Người dùng chọn khách hàng có sẵn hoặc tạo khách hàng mới.
+    \item Người dùng chọn ngày nhận, ngày trả dự kiến và phòng cần đặt (chỉ hiển thị phòng không trùng lịch và không ở trạng thái ngừng hoạt động/bảo trì).
+    \item Người dùng nhập số tiền cọc (nếu có).
+    \item Hệ thống kiểm tra lại ràng buộc trùng lịch trong giao dịch Serializable (QT11), kiểm tra cọc không vượt quá một đêm theo giá phòng tại thời điểm đặt (QT15).
+    \item Hệ thống lưu đặt phòng, gán trạng thái "Đã đặt".
+  \end{enumerate}
+  \item[Luồng ngoại lệ:]
+  \begin{itemize}
+    \item Ngày nhận $\ge$ ngày trả dự kiến: từ chối, yêu cầu nhập lại.
+    \item Phòng bị đặt trùng bởi một giao dịch khác ngay trong lúc xác nhận (race condition): giao dịch Serializable phát hiện giao nhau và hệ thống báo lỗi, không lưu.
+    \item Cọc vượt quá giới hạn QT15: từ chối lưu, yêu cầu điều chỉnh.
+  \end{itemize}
+  \item[Hậu điều kiện:] Một bản ghi \texttt{DatPhong} mới được tạo; phòng tương ứng hiển thị trạng thái "Đã đặt" trên sơ đồ phòng trong khoảng ngày đã đặt.
+\end{description}
+
+\subsection{UC11 -- Nhận phòng}
+\begin{description}
+  \item[Tác nhân:] Lễ tân, Quản lý.
+  \item[Điều kiện tiên quyết:] Đã đăng nhập; có đặt phòng hợp lệ hoặc phòng trống cho khách vãng lai.
+  \item[Luồng chính:]
+  \begin{enumerate}
+    \item Người dùng chọn nhận phòng từ một đặt phòng có sẵn, hoặc chọn "khách vãng lai" và nhập thông tin trực tiếp.
+    \item Hệ thống chốt giá phòng tại thời điểm nhận phòng làm snapshot (QT41) để không bị ảnh hưởng nếu giá phòng thay đổi sau này.
+    \item Hệ thống tạo phiếu thuê (\texttt{PhieuThue}) với trạng thái "Đang ở", chuyển trạng thái phòng và đặt phòng liên quan (nếu có) sang "Đang sử dụng"/"Đã nhận phòng".
+  \end{enumerate}
+  \item[Luồng ngoại lệ:]
+  \begin{itemize}
+    \item Phòng đang ở trạng thái "Dọn dẹp" hoặc "Bảo trì": từ chối nhận phòng cho đến khi phòng được xác nhận sẵn sàng.
+  \end{itemize}
+  \item[Hậu điều kiện:] Một phiếu thuê "Đang ở" được tạo, gắn với đúng một phòng và một khách hàng.
+\end{description}
+
+\subsection{UC12 -- Ghi nhận dịch vụ}
+\begin{description}
+  \item[Tác nhân:] Lễ tân, Quản lý.
+  \item[Điều kiện tiên quyết:] Phiếu thuê đang ở trạng thái "Đang ở".
+  \item[Luồng chính:] Người dùng chọn dịch vụ, nhập số lượng; hệ thống lưu đơn giá dịch vụ tại thời điểm ghi nhận (snapshot) vào \texttt{ChiTietDichVu}, gắn với phiếu thuê hiện tại.
+  \item[Chức năng bổ sung:] Cho phép xóa một dòng dịch vụ đã ghi nhầm, chỉ khi phiếu thuê còn đang ở trạng thái "Đang ở" (không cho sửa sau khi đã trả phòng, đảm bảo tính toàn vẹn của hóa đơn đã lập).
+  \item[Hậu điều kiện:] Danh sách dịch vụ của phiếu thuê được cập nhật, phản ánh đúng vào bước tính tiền khi trả phòng.
+\end{description}
+
+\subsection{UC13 -- Trả phòng và lập hóa đơn}
+\begin{description}
+  \item[Tác nhân:] Lễ tân, Quản lý.
+  \item[Điều kiện tiên quyết:] Phiếu thuê đang ở trạng thái "Đang ở".
+  \item[Luồng chính:]
+  \begin{enumerate}
+    \item Hệ thống tính số đêm lưu trú, tiền phòng, tổng tiền dịch vụ, phụ thu trả muộn (nếu có), trừ tiền cọc, áp giảm giá (nếu được phép) và hiển thị bảng chi tiết cho người dùng xác nhận.
+    \item Người dùng xác nhận trả phòng.
+    \item Toàn bộ thao tác (đóng phiếu thuê, tạo hóa đơn, cập nhật trạng thái phòng sang "Dọn dẹp") được thực hiện trong một giao dịch duy nhất.
+  \end{enumerate}
+  \item[Luồng ngoại lệ:]
+  \begin{itemize}
+    \item Mức giảm giá vượt ngưỡng cho phép của Lễ tân ($>10\%$): hệ thống từ chối, yêu cầu quyền Quản lý.
+    \item Phiếu thuê đã được trả phòng trước đó (thao tác lặp): hệ thống từ chối tạo hóa đơn thứ hai cho cùng phiếu thuê.
+  \end{itemize}
+  \item[Hậu điều kiện:] Một hóa đơn duy nhất được tạo cho phiếu thuê; phòng chuyển sang trạng thái "Dọn dẹp", không thể nhận khách mới cho đến khi được xác nhận dọn xong.
+\end{description}
+
+\subsection{UC16 -- Báo cáo doanh thu}
+\begin{description}
+  \item[Tác nhân:] Quản lý.
+  \item[Luồng chính:] Người dùng chọn khoảng thời gian và tiêu chí gom nhóm (theo ngày, theo tháng, hoặc theo loại phòng); hệ thống gọi \texttt{sp\_ThongKeDoanhThu}, trả về bảng số liệu kèm biểu đồ; người dùng có thể xem trước và in báo cáo, hoặc xuất ra CSV.
+  \item[Đặc điểm kỹ thuật:] Kết quả gom nhóm bao gồm cả các ngày không phát sinh doanh thu (hiển thị 0), giúp biểu đồ phản ánh đúng xu hướng liên tục theo thời gian thay vì bỏ trống các mốc không có giao dịch.
+\end{description}
+
+\section{Ma trận chức năng -- vai trò}
+\label{sec:ma-tran}
+
+Bảng~\ref{tab:ma-tran-menu} tổng hợp các mục menu chính và quyền truy cập tương ứng của hai vai trò, dùng làm cơ sở cho việc ẩn/khóa menu động trong giao diện (Chương~6, Chương~7).
+
+\begin{table}[H]
+\centering
+\caption{Ma trận chức năng -- vai trò (menu chính)}
+\label{tab:ma-tran-menu}
+\begin{tabularx}{\textwidth}{|X|c|c|}
+\hline
+\textbf{Mục menu} & \textbf{Lễ tân} & \textbf{Quản lý} \\\hline
+Đặt phòng / Nhận phòng / Dịch vụ / Trả phòng & Đầy đủ & Đầy đủ \\\hline
+Sơ đồ phòng & Đầy đủ & Đầy đủ \\\hline
+Khách hàng & Đầy đủ & Đầy đủ \\\hline
+Loại phòng / Phòng / Dịch vụ (danh mục) & Chỉ xem & Đầy đủ \\\hline
+Quản lý tài khoản & Không hiển thị & Đầy đủ \\\hline
+Báo cáo doanh thu / công suất & Không hiển thị & Đầy đủ \\\hline
+Đổi mật khẩu & Đầy đủ & Đầy đủ \\\hline
+\end{tabularx}
+\end{table}
+
+Việc kiểm tra quyền được thực hiện ở hai lớp: giao diện ẩn/khóa các điều khiển không phù hợp vai trò để tránh gây nhầm lẫn, và tầng BLL kiểm tra lại quyền trước khi thực thi (ví dụ: kiểm tra vai trò Quản lý trước khi cho phép giảm giá vượt ngưỡng hoặc trước khi chuyển phòng sang trạng thái bảo trì), đảm bảo không thể bỏ qua kiểm soát truy cập chỉ bằng cách can thiệp giao diện.
+
+% ===== end chuong/chuong3.tex =====
+
+% ===== begin chuong/chuong4.tex =====
+\chapter{Phân tích và thiết kế cơ sở dữ liệu}
+
+\section{Mô hình thực thể -- kết hợp (ERD)}
+
+Cơ sở dữ liệu gồm 9 bảng, phản ánh đúng các thực thể nghiệp vụ: người dùng hệ thống, loại phòng, phòng, khách hàng, dịch vụ, đặt phòng, phiếu thuê, chi tiết dịch vụ và hóa đơn. Hình~\ref{fig:erd} trình bày sơ đồ ERD tổng quát.
+\subsection{Các thực thể}
+
+Cơ sở dữ liệu gồm \textbf{9 thực thể} sau:
+
+\begin{enumerate}
+  \item \textbf{LoaiPhong}: lưu các loại phòng (tên loại, mô tả, giá mỗi đêm, sức chứa, trạng thái hoạt động).
+  \item \textbf{Phong}: lưu thông tin từng phòng cụ thể (số phòng, tầng, loại phòng, trạng thái, ghi chú).
+  \item \textbf{KhachHang}: lưu thông tin khách (họ tên, số giấy tờ, số điện thoại, email, địa chỉ, ngày tạo).
+  \item \textbf{NguoiDung}: lưu tài khoản nhân viên sử dụng hệ thống (tên đăng nhập, mật khẩu băm kèm salt và số vòng lặp, họ tên, vai trò).
+  \item \textbf{DichVu}: lưu danh mục dịch vụ của khách sạn (tên dịch vụ, đơn giá, đơn vị tính).
+  \item \textbf{DatPhong}: lưu phiếu đặt phòng trước (khách, phòng, nhân viên lập, ngày đến, ngày đi, tiền cọc, trạng thái).
+  \item \textbf{PhieuThue}: lưu lượt thuê phòng thực tế (ngày nhận, ngày đi dự kiến, ngày đi thực tế, giá phòng mỗi đêm tại thời điểm thuê, trạng thái).
+  \item \textbf{ChiTietDichVu}: lưu từng lần sử dụng dịch vụ trong một lượt thuê (số lượng, đơn giá, thời điểm sử dụng).
+  \item \textbf{HoaDon}: lưu hoá đơn thanh toán (số đêm, tiền phòng, tiền dịch vụ, phụ thu, giảm giá, tiền cọc, tổng thanh toán, hình thức thanh toán).
+\end{enumerate}
+
+\subsection{Các mối liên kết}
+
+Giữa các thực thể có \textbf{12 mối liên kết} sau:
+
+\begin{enumerate}
+  \item \textbf{LoaiPhong -- Phong} (1--N): một loại phòng có nhiều phòng; mỗi phòng thuộc đúng một loại phòng.
+  \item \textbf{KhachHang -- DatPhong} (1--N): một khách có thể đặt phòng nhiều lần; mỗi phiếu đặt thuộc về một khách.
+  \item \textbf{Phong -- DatPhong} (1--N): một phòng có thể được đặt nhiều lần (vào các khoảng thời gian khác nhau); mỗi phiếu đặt chỉ đặt một phòng.
+  \item \textbf{NguoiDung -- DatPhong} (1--N): một nhân viên có thể lập nhiều phiếu đặt phòng; mỗi phiếu đặt do một nhân viên lập.
+  \item \textbf{DatPhong -- PhieuThue} (0..1--0..1): một phiếu đặt phòng có thể được chuyển thành tối đa một phiếu thuê; một phiếu thuê có thể phát sinh từ một phiếu đặt hoặc không (khách đến trực tiếp, không đặt trước).
+  \item \textbf{KhachHang -- PhieuThue} (1--N): một khách có thể lưu trú nhiều lần; mỗi phiếu thuê thuộc về một khách.
+  \item \textbf{Phong -- PhieuThue} (1--N): một phòng có thể được thuê nhiều lần; mỗi phiếu thuê ứng với một phòng.
+  \item \textbf{NguoiDung -- PhieuThue} (1--N): một nhân viên có thể tiếp nhận nhiều lượt thuê; mỗi phiếu thuê do một nhân viên tiếp nhận.
+  \item \textbf{PhieuThue -- ChiTietDichVu} (1--N): một lượt thuê có thể phát sinh nhiều lần sử dụng dịch vụ; mỗi dòng chi tiết thuộc một phiếu thuê.
+  \item \textbf{DichVu -- ChiTietDichVu} (1--N): một dịch vụ có thể xuất hiện trong nhiều dòng chi tiết; mỗi dòng chi tiết ứng với một dịch vụ.
+  \item \textbf{PhieuThue -- HoaDon} (1--0..1): một phiếu thuê được thanh toán bằng tối đa một hoá đơn (chưa trả phòng thì chưa có hoá đơn); mỗi hoá đơn thuộc đúng một phiếu thuê.
+  \item \textbf{NguoiDung -- HoaDon} (1--N): một nhân viên có thể lập nhiều hoá đơn; mỗi hoá đơn do một nhân viên lập.
+\end{enumerate}
+
+Ngoài ra, \textbf{ChiTietDichVu} đóng vai trò bảng trung gian, giải quyết quan hệ nhiều--nhiều giữa \textbf{PhieuThue} và \textbf{DichVu}.
+
+% ===== Ký hiệu chân chim =====
+\newcommand{\tOne}{Bar[width=9pt,sep=2pt]Bar[width=9pt]}                       % 1 và chỉ 1
+\newcommand{\tZeroOne}{Bar[width=9pt,sep=2pt]Circle[length=5pt,open]}          % 0..1
+\newcommand{\tMany}{Straight Barb[reversed,length=8pt,width=10pt,sep=2pt]Circle[length=5pt,open]} % 0..N
+
+\tikzset{
+  ent/.style={draw, rectangle, inner sep=0pt, font=\scriptsize, fill=white},
+  lbl/.style={midway, fill=white, inner sep=1.5pt, font=\scriptsize\itshape}
+}
+
+% \entity{id}{x,y}{Tên bảng}{các dòng thuộc tính}
+\newcommand{\entity}[4]{%
+  \node[ent] (#1) at (#2) {%
+    \renewcommand{\arraystretch}{1.15}%
+    \begin{tabular}{@{\hspace{3pt}}p{0.7cm}p{3cm}p{1.6cm}@{\hspace{3pt}}}
+      \multicolumn{3}{c}{\cellcolor{blue!15}\textbf{#3}}\\ \hline
+      #4
+    \end{tabular}};}
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[>=Stealth]
+
+% ===== Các thực thể =====
+\entity{LoaiPhong}{0,0}{LoaiPhong}{
+  PK & MaLoaiPhong & int \\
+  UK & TenLoaiPhong & nvarchar \\
+     & MoTa & nvarchar \\
+     & GiaMoiDem & decimal \\
+     & SucChua & int \\
+     & HoatDong & bit \\}
+
+\entity{Phong}{8,0}{Phong}{
+  PK & MaPhong & int \\
+  UK & SoPhong & nvarchar \\
+     & Tang & int \\
+  FK & MaLoaiPhong & int \\
+     & TrangThai & nvarchar \\
+     & GhiChu & nvarchar \\
+     & HoatDong & bit \\}
+
+\entity{KhachHang}{0,-8}{KhachHang}{
+  PK & MaKhachHang & int \\
+     & HoTen & nvarchar \\
+  UK & SoGiayTo & varchar \\
+  UK & SoDienThoai & varchar \\
+     & Email & nvarchar \\
+     & DiaChi & nvarchar \\
+     & NgayTao & datetime2 \\}
+
+\entity{DatPhong}{8,-8}{DatPhong}{
+  PK & MaDatPhong & int \\
+  FK & MaKhachHang & int \\
+  FK & MaPhong & int \\
+  FK & MaNguoiDung & int \\
+     & NgayDen & date \\
+     & NgayDi & date \\
+     & TienCoc & decimal \\
+     & TrangThai & nvarchar \\
+     & NgayTao & datetime2 \\}
+
+\entity{NguoiDung}{16,-8}{NguoiDung}{
+  PK & MaNguoiDung & int \\
+  UK & TenDangNhap & nvarchar \\
+     & MatKhauHash & varchar \\
+     & MatKhauSalt & varchar \\
+     & SoVongLap & int \\
+     & HoTen & nvarchar \\
+     & VaiTro & varchar \\
+     & HoatDong & bit \\
+     & NgayTao & datetime2 \\}
+
+\entity{PhieuThue}{8,-17}{PhieuThue}{
+  PK & MaPhieuThue & int \\
+  FK,UK & MaDatPhong & int \\
+  FK & MaKhachHang & int \\
+  FK & MaPhong & int \\
+  FK & MaNguoiDung & int \\
+     & NgayNhan & datetime2 \\
+     & NgayDiDuKien & date \\
+     & NgayDiThucTe & datetime2 \\
+     & GiaPhongMoiDem & decimal \\
+     & TrangThai & nvarchar \\}
+
+\entity{HoaDon}{16,-17}{HoaDon}{
+  PK & MaHoaDon & int \\
+  FK,UK & MaPhieuThue & int \\
+  FK & MaNguoiDung & int \\
+     & NgayLap & datetime2 \\
+     & SoDem & int \\
+     & TienPhong & decimal \\
+     & TienDichVu & decimal \\
+     & PhuThu & decimal \\
+     & GiamGia & decimal \\
+     & TienCoc & decimal \\
+     & TongThanhToan & decimal \\
+     & HinhThucThanhToan & nvarchar \\}
+
+\entity{ChiTietDichVu}{8,-25}{ChiTietDichVu}{
+  PK & MaChiTietDichVu & int \\
+  FK & MaPhieuThue & int \\
+  FK & MaDichVu & int \\
+     & SoLuong & decimal \\
+     & DonGia & decimal \\
+     & ThoiDiemSuDung & datetime2 \\}
+
+\entity{DichVu}{0,-25}{DichVu}{
+  PK & MaDichVu & int \\
+  UK & TenDichVu & nvarchar \\
+     & DonGia & decimal \\
+     & DonViTinh & nvarchar \\
+     & HoatDong & bit \\}
+
+% ===== Các quan hệ =====
+\draw[{\tOne}-{\tMany}] (LoaiPhong.east) -- node[lbl]{phân loại} (Phong.west);
+\draw[{\tOne}-{\tMany}] (KhachHang.east) -- node[lbl]{đặt} (DatPhong.west);
+\draw[{\tOne}-{\tMany}] (Phong.south) -- node[lbl]{được đặt} (DatPhong.north);
+\draw[{\tOne}-{\tMany}] (NguoiDung.west) -- node[lbl]{lập} (DatPhong.east);
+
+\draw[{\tZeroOne}-{\tZeroOne}] (DatPhong.south) -- node[lbl]{chuyển thành} (PhieuThue.north);
+
+\draw[{\tOne}-{\tMany}] (KhachHang.south) |- node[lbl, pos=0.75]{lưu trú}
+  ($(PhieuThue.north west)+(0,-0.7)$);
+\draw[{\tOne}-{\tMany}] ($(Phong.south west)+(0,0.5)$) -- ++(-1.5,0) |- node[lbl, pos=0.75]{được thuê}
+  ($(PhieuThue.south west)+(0,0.7)$);
+\draw[{\tOne}-{\tMany}] ($(NguoiDung.south west)+(0,0.5)$) -- ++(-1.5,0) |- node[lbl, pos=0.75]{tiếp nhận}
+  ($(PhieuThue.north east)+(0,-0.7)$);
+
+\draw[{\tOne}-{\tMany}] (PhieuThue.south) -- node[lbl]{phát sinh} (ChiTietDichVu.north);
+\draw[{\tOne}-{\tMany}] (DichVu.east) -- node[lbl]{sử dụng} (ChiTietDichVu.west);
+
+\draw[{\tOne}-{\tZeroOne}] (PhieuThue.east) -- node[lbl]{thanh toán} (HoaDon.west);
+\draw[{\tOne}-{\tMany}] (NguoiDung.south) -- node[lbl]{lập} (HoaDon.north);
+
+\end{tikzpicture}}
+\caption{Sơ đồ quan hệ thực thể (ERD) của hệ thống quản lý khách sạn}
+\label{fig:erd}
+\end{figure}
+
+\subsection{Các quyết định thiết kế quan trọng}
+
+\begin{itemize}
+  \item \textbf{Tách \texttt{DatPhong} khỏi lưu trú thực tế}: một đặt phòng (giữ chỗ trước) và một lượt lưu trú thực tế (\texttt{PhieuThue}) là hai thực thể khác nhau, liên kết lỏng (một đặt phòng \emph{có thể} dẫn tới một phiếu thuê, nhưng phiếu thuê cũng có thể được tạo trực tiếp cho khách vãng lai không qua đặt trước).
+  \item \textbf{Ràng buộc theo khoảng nửa mở \texttt{[NgayNhan, NgayTra)}}: khi kiểm tra trùng lịch, khoảng ngày được coi là nửa mở -- ngày trả của một đặt phòng được phép trùng với ngày nhận của một đặt phòng khác cho cùng phòng đó, phản ánh đúng thực tế vận hành (khách trả phòng buổi sáng, khách mới nhận phòng buổi chiều cùng ngày).
+  \item \textbf{Snapshot giá tại thời điểm giao dịch}: giá phòng và đơn giá dịch vụ được sao chép (snapshot) vào \texttt{PhieuThue} và \texttt{ChiTietDichVu} tại thời điểm nhận phòng/ghi dịch vụ, thay vì luôn tham chiếu tới bảng giá hiện hành -- đảm bảo hóa đơn không bị thay đổi hồi tố nếu quản lý điều chỉnh giá sau đó.
+  \item \textbf{Ràng buộc UNIQUE trên \texttt{MaPhieuThue} của \texttt{HoaDon}}: đảm bảo mỗi phiếu thuê chỉ có tối đa một hóa đơn, ngăn tạo hóa đơn trùng khi thao tác trả phòng bị gọi lặp lại.
+  \item \textbf{Băm mật khẩu PBKDF2}: bảng \texttt{NguoiDung} không lưu mật khẩu dạng rõ; lưu giá trị băm PBKDF2 cùng salt riêng cho từng tài khoản và số vòng lặp, cho phép nâng cấp độ khó băm trong tương lai mà không phá vỡ dữ liệu cũ.
+  \item \textbf{Giao dịch mức cô lập Serializable cho các thao tác nhạy cảm}: kiểm tra trùng lịch đặt phòng và đảm bảo luôn còn ít nhất một tài khoản Quản lý hoạt động là hai thao tác được bọc trong transaction mức Serializable, mức cô lập cao nhất của SQL Server, nhằm ngăn chặn tình huống đua tranh (race condition) khi nhiều lễ tân thao tác đồng thời.
+\end{itemize}
+
+\section{Thiết kế chi tiết các bảng}
+
+\subsection{Bảng NguoiDung}
+Lưu tài khoản đăng nhập hệ thống. Các cột chính: \texttt{MaNguoiDung} (khóa chính), \texttt{TenDangNhap} (UNIQUE), \texttt{MatKhauBam}, \texttt{Salt}, \texttt{SoVongLap}, \texttt{VaiTro} (CHECK trong tập \{LeTan, QuanLy\}), \texttt{TrangThai} (hoạt động/khóa), \texttt{SoLanSaiLienTiep}, \texttt{ThoiDiemKhoaDen}.
+
+\subsection{Bảng LoaiPhong}
+Danh mục loại phòng: \texttt{MaLoaiPhong} (khóa chính), \texttt{TenLoaiPhong} (UNIQUE), \texttt{GiaMoiDem} (CHECK $>0$), \texttt{SucChua}, \texttt{MoTa}, \texttt{TrangThai}.
+
+\subsection{Bảng Phong}
+\texttt{MaPhong} (khóa chính), \texttt{SoPhong} (UNIQUE), \texttt{Tang}, \texttt{MaLoaiPhong} (khóa ngoại tới \texttt{LoaiPhong}), \texttt{TrangThai} (CHECK trong tập \{Trống, Đã đặt, Đang sử dụng, Dọn dẹp, Bảo trì, Ngừng hoạt động\}).
+
+\subsection{Bảng KhachHang}
+\texttt{MaKhachHang} (khóa chính), \texttt{HoTen}, \texttt{SoGiayTo} (UNIQUE, kiểm tra định dạng CMND/CCCD/Hộ chiếu ở tầng BLL trước khi ghi), \texttt{SoDienThoai}, \texttt{DiaChi}.
+
+\subsection{Bảng DichVu}
+\texttt{MaDichVu} (khóa chính), \texttt{TenDichVu} (UNIQUE), \texttt{DonGia} (CHECK $>0$), \texttt{DonViTinh}, \texttt{TrangThai}.
+
+\subsection{Bảng DatPhong}
+\texttt{MaDatPhong} (khóa chính), \texttt{MaPhong}, \texttt{MaKhachHang} (khóa ngoại), \texttt{NgayNhanDuKien}, \texttt{NgayTraDuKien} (CHECK ngày trả $>$ ngày nhận), \texttt{TienCoc} (CHECK $\ge 0$ và $\le$ giá 1 đêm $\times$ số đêm, kiểm tra ở BLL), \texttt{TrangThai} (CHECK trong tập \{Đã đặt, Đã nhận phòng, Đã hủy, Không đến\}).
+
+\subsection{Bảng PhieuThue}
+\texttt{MaPhieuThue} (khóa chính), \texttt{MaDatPhong} (khóa ngoại, NULL nếu khách vãng lai), \texttt{MaPhong}, \texttt{MaKhachHang}, \texttt{ThoiDiemNhanPhong}, \texttt{NgayTraDuKien}, \texttt{GiaApDung} (snapshot giá tại thời điểm nhận phòng), \texttt{TrangThai} (CHECK trong tập \{Đang ở, Đã trả phòng\}).
+
+\subsection{Bảng ChiTietDichVu}
+\texttt{MaChiTiet} (khóa chính), \texttt{MaPhieuThue} (khóa ngoại), \texttt{MaDichVu} (khóa ngoại), \texttt{SoLuong} (CHECK $>0$), \texttt{DonGiaApDung} (snapshot), \texttt{ThoiDiemGhiNhan}.
+
+\subsection{Bảng HoaDon}
+\texttt{MaHoaDon} (khóa chính), \texttt{MaPhieuThue} (khóa ngoại, \textbf{UNIQUE} -- đảm bảo 1 phiếu thuê chỉ có 1 hóa đơn), \texttt{TienPhong}, \texttt{TienDichVu}, \texttt{PhuThuTraMuon}, \texttt{TienCoc}, \texttt{GiamGia}, \texttt{TongThanhToan} (CHECK $\ge 0$, QT45), \texttt{ThoiDiemLap}, \texttt{NguoiLap} (khóa ngoại tới \texttt{NguoiDung}).
+
+\section{Chỉ mục và ràng buộc bổ sung}
+
+Ngoài các khóa chính và khóa ngoại, script tạo thêm chỉ mục lọc (filtered index) và chỉ mục tra cứu trên các cột thường dùng để tìm kiếm và gom nhóm: \texttt{Phong.TrangThai}, \texttt{DatPhong(MaPhong, NgayNhanDuKien, NgayTraDuKien)} phục vụ truy vấn kiểm tra trùng lịch, \texttt{PhieuThue.TrangThai}, \texttt{HoaDon.ThoiDiemLap} phục vụ truy vấn báo cáo doanh thu theo khoảng thời gian.
+
+\section{Các thủ tục lưu trữ (Stored Procedure)}
+
+Năm thủ tục lưu trữ chính hiện thực các nghiệp vụ đòi hỏi tính nguyên tử và hiệu năng tốt khi truy vấn tổng hợp:
+
+\begin{description}
+  \item[\texttt{sp\_KiemTraTrungLich}] Nhận tham số mã phòng, ngày nhận và ngày trả dự kiến; trả về 1 nếu tồn tại đặt phòng hoặc phiếu thuê đang hiệu lực giao nhau với khoảng ngày truyền vào (theo quy tắc khoảng nửa mở), ngược lại trả về 0. Được gọi trong giao dịch Serializable khi tạo đặt phòng hoặc nhận phòng trực tiếp, nhằm loại bỏ khoảng hở giữa lúc kiểm tra và lúc ghi (ngăn race condition).
+  \item[\texttt{sp\_NhanPhong}] Thực hiện trong một transaction: tạo bản ghi \texttt{PhieuThue} mới với giá snapshot, cập nhật trạng thái \texttt{DatPhong} liên quan (nếu có) sang "Đã nhận phòng", cập nhật trạng thái \texttt{Phong} sang "Đang sử dụng".
+  \item[\texttt{sp\_TraPhong}] Thực hiện trong một transaction: tính tổng tiền phòng theo số đêm và giá snapshot, cộng tổng tiền dịch vụ từ \texttt{ChiTietDichVu}, tính phụ thu trả muộn theo mốc giờ, trừ tiền cọc, áp giảm giá, tạo bản ghi \texttt{HoaDon}, đóng \texttt{PhieuThue} (chuyển "Đã trả phòng"), cập nhật \texttt{Phong} sang "Dọn dẹp". Toàn bộ các bước trên cùng thành công hoặc cùng bị rollback nếu có lỗi ở bất kỳ bước nào.
+  \item[\texttt{sp\_ThongKeDoanhThu}] Nhận tham số khoảng thời gian và tiêu chí gom nhóm (ngày/tháng/loại phòng); trả về tập kết quả tổng doanh thu theo từng nhóm, bao gồm cả các mốc thời gian không phát sinh doanh thu (giá trị 0), phục vụ vẽ biểu đồ liên tục.
+  \item[\texttt{sp\_ThongKeCongSuat}] Tính tỷ lệ phần trăm số phòng được sử dụng trên tổng số phòng khả dụng theo từng ngày trong khoảng thời gian truyền vào, hỗ trợ báo cáo công suất phòng (BC04).
+\end{description}
+
+Đoạn mã minh họa cấu trúc của \texttt{sp\_KiemTraTrungLich}, thể hiện cách kiểm tra giao nhau giữa hai khoảng ngày theo nguyên tắc nửa mở:
+
+\begin{lstlisting}[language=SQL, caption={Kiểm tra trùng lịch theo khoảng nửa mở (rút gọn)}]
+CREATE OR ALTER PROCEDURE sp_KiemTraTrungLich
+    @MaPhong INT, @NgayNhan DATE, @NgayTra DATE,
+    @MaPhieuThueLoaiTru INT = NULL
+AS
+BEGIN
+    SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+    IF EXISTS (
+        SELECT 1 FROM DatPhong
+        WHERE MaPhong = @MaPhong
+          AND TrangThai IN (N'Da dat', N'Da nhan phong')
+          AND NgayNhanDuKien < @NgayTra
+          AND NgayTraDuKien  > @NgayNhan
+    ) OR EXISTS (
+        SELECT 1 FROM PhieuThue
+        WHERE MaPhong = @MaPhong AND TrangThai = N'Dang o'
+          AND (@MaPhieuThueLoaiTru IS NULL OR MaPhieuThue <> @MaPhieuThueLoaiTru)
+          AND CAST(ThoiDiemNhanPhong AS DATE) < @NgayTra
+          AND NgayTraDuKien > @NgayNhan
+    )
+        SELECT CAST(1 AS BIT) AS TrungLich;
+    ELSE
+        SELECT CAST(0 AS BIT) AS TrungLich;
+END
+\end{lstlisting}
+
+Việc đặt toàn bộ logic kiểm tra và ghi dữ liệu nhạy cảm vào stored procedure, thay vì thực hiện kiểm tra ở tầng ứng dụng rồi ghi riêng, giúp đảm bảo tính nguyên tử ngay cả khi có nhiều phiên làm việc (nhiều máy lễ tân) truy cập CSDL đồng thời -- đây là lớp bảo vệ cuối cùng, bổ sung cho các kiểm tra đã thực hiện ở tầng BLL.
+
+% ===== end chuong/chuong4.tex =====
+
+% ===== begin chuong/chuong5.tex =====
+\chapter{Mô hình hóa quy trình và quy tắc nghiệp vụ}
+
+\section{Quy trình nghiệp vụ tổng quát}
+
+Quy trình phục vụ một lượt khách tại khách sạn trải qua 8 bước chính, tóm tắt trong Bảng~\ref{tab:quytrinh}.
+
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.18}
+\begin{longtable}{|>{\centering\arraybackslash}m{0.8cm}|>{\raggedright\arraybackslash}m{3.0cm}|>{\raggedright\arraybackslash}m{2.9cm}|>{\raggedright\arraybackslash}m{3.1cm}|>{\raggedright\arraybackslash}m{3.0cm}|}
+\caption{Các bước trong quy trình nghiệp vụ tổng quát}\label{tab:quytrinh}\\
+\hline
+\textbf{Bước} & \textbf{Hoạt động} & \textbf{Người thực hiện} & \textbf{Dữ liệu vào} & \textbf{Dữ liệu ra}\\\hline
+\endfirsthead
+\hline \textbf{Bước} & \textbf{Hoạt động} & \textbf{Người thực hiện} & \textbf{Dữ liệu vào} & \textbf{Dữ liệu ra}\\\hline
+\endhead
+1 & Tiếp nhận yêu cầu đặt phòng & Lễ tân & Thông tin khách, ngày ở, loại phòng mong muốn & Bản ghi \texttt{DatPhong} \\\hline
+2 & Xác nhận và thu cọc & Lễ tân & Đặt phòng vừa tạo & Trạng thái "Đã đặt" \\\hline
+3 & Nhận phòng khi khách đến & Lễ tân & Đặt phòng hoặc thông tin khách vãng lai & Bản ghi \texttt{PhieuThue} \\\hline
+4 & Ghi nhận dịch vụ phát sinh & Lễ tân & Danh mục dịch vụ, số lượng sử dụng & Bản ghi \texttt{ChiTietDichVu} \\\hline
+5 & Tính tiền khi khách trả phòng & Hệ thống (tự động) & Phiếu thuê, dịch vụ, thời điểm trả & Bảng chi tiết tính tiền \\\hline
+6 & Xác nhận trả phòng, lập hóa đơn & Lễ tân & Bảng chi tiết tính tiền & Bản ghi \texttt{HoaDon} \\\hline
+7 & Dọn dẹp phòng & Bộ phận buồng phòng & Phòng ở trạng thái "Dọn dẹp" & Phòng chuyển "Trống" \\\hline
+8 & Tổng hợp báo cáo doanh thu & Quản lý & Toàn bộ hóa đơn trong kỳ & Báo cáo doanh thu/công suất \\\hline
+\end{longtable}
+\normalsize
+
+\subsection{Các nhánh ngoại lệ}
+
+Bảng~\ref{tab:ngoaile} liệt kê các tình huống ngoại lệ phổ biến và cách hệ thống xử lý.
+
+\begin{table}[H]
+\centering
+\caption{Các nhánh ngoại lệ trong quy trình nghiệp vụ}
+\label{tab:ngoaile}
+\begin{tabularx}{\textwidth}{|X|X|}
+\hline
+\textbf{Tình huống} & \textbf{Xử lý} \\\hline
+Khách hủy đặt phòng trước ngày nhận & Đánh dấu \texttt{DatPhong} sang "Đã hủy", giải phóng phòng khỏi lịch \\\hline
+Khách không đến đúng hẹn & Đánh dấu "Không đến" sau thời điểm quy định, giải phóng phòng \\\hline
+Khách trả phòng muộn so với giờ chuẩn & Tính phụ thu theo mốc 1/3/6 giờ trễ (QT44) \\\hline
+Lễ tân ghi nhầm dịch vụ & Cho phép xóa dòng dịch vụ khi phiếu thuê còn "Đang ở" \\\hline
+Yêu cầu giảm giá vượt thẩm quyền Lễ tân & Hệ thống từ chối, yêu cầu tài khoản Quản lý xác nhận \\\hline
+Phòng cần bảo trì đột xuất & Quản lý chuyển trạng thái phòng sang "Bảo trì", phòng bị loại khỏi danh sách phòng khả dụng \\\hline
+\end{tabularx}
+\end{table}
+
+\section{Vòng đời trạng thái}
+
+\subsection{Trạng thái Phòng}
+
+Trạng thái phòng chuyển đổi theo chu trình: \textbf{Trống} $\to$ \textbf{Đã đặt} (khi có đặt phòng trong tương lai gần) $\to$ \textbf{Đang sử dụng} (khi nhận phòng) $\to$ \textbf{Dọn dẹp} (khi trả phòng) $\to$ \textbf{Trống} (sau khi xác nhận dọn xong, hoặc chuyển thẳng sang \textbf{Đã đặt} nếu đã có lịch đặt kế tiếp). Trạng thái \textbf{Bảo trì}/\textbf{Ngừng hoạt động} có thể được Quản lý thiết lập độc lập với chu trình trên, loại phòng ra khỏi danh sách khả dụng cho đến khi được chuyển về "Trống".
+
+\subsection{Trạng thái Đặt phòng}
+
+\textbf{Đã đặt} $\to$ \textbf{Đã nhận phòng} (khi khách đến đúng hẹn) hoặc $\to$ \textbf{Đã hủy} / \textbf{Không đến} (các nhánh kết thúc không dẫn tới lưu trú).
+
+\subsection{Trạng thái Phiếu thuê}
+
+\textbf{Đang ở} $\to$ \textbf{Đã trả phòng}. Đây là trạng thái một chiều, không có đường quay lui, đảm bảo một khi đã lập hóa đơn thì phiếu thuê không thể bị "mở lại" để chỉnh sửa, giữ tính toàn vẹn dữ liệu lịch sử giao dịch.
+
+\section{Quy tắc nghiệp vụ}
+
+Các quy tắc nghiệp vụ được mã hóa theo nhóm, ký hiệu \texttt{QTxx}, là cơ sở trực tiếp để hiện thực các phương thức trong tầng BLL (Chương~6).
+
+\subsection{Nhóm Phòng và giá (QT01--QT10)}
+
+\begin{longtable}{|c|p{12cm}|}
+\caption{Quy tắc nhóm Phòng và giá}\\\hline
+\textbf{Mã} & \textbf{Nội dung}\\\hline
+\endfirsthead
+\hline \textbf{Mã} & \textbf{Nội dung}\\\hline
+\endhead
+QT01 & Số phòng là duy nhất trong toàn hệ thống. \\\hline
+QT02 & Mỗi phòng thuộc đúng một loại phòng; giá áp dụng theo loại phòng tại thời điểm giao dịch. \\\hline
+QT03 & Giá mỗi đêm của loại phòng phải lớn hơn 0. \\\hline
+QT04 & Phòng ở trạng thái Bảo trì hoặc Ngừng hoạt động không được chọn để đặt phòng hoặc nhận phòng. \\\hline
+QT05 & Chỉ Quản lý được thay đổi giá loại phòng; thay đổi không ảnh hưởng ngược tới các phiếu thuê đã chốt giá (snapshot). \\\hline
+\end{longtable}
+
+\subsection{Nhóm Đặt phòng (QT11--QT20)}
+
+\begin{longtable}{|c|p{12cm}|}
+\caption{Quy tắc nhóm Đặt phòng}\\\hline
+\textbf{Mã} & \textbf{Nội dung}\\\hline
+\endfirsthead
+\hline \textbf{Mã} & \textbf{Nội dung}\\\hline
+\endhead
+QT11 & Hai đặt phòng/phiếu thuê cho cùng một phòng không được có khoảng ngày giao nhau (kiểm tra theo khoảng nửa mở, trong giao dịch Serializable). \\\hline
+QT12 & Ngày trả dự kiến phải lớn hơn ngày nhận dự kiến. \\\hline
+QT13 & Số đêm lưu trú tối thiểu là 1 (QT40, áp dụng chung cho đặt phòng và tính tiền). \\\hline
+QT14 & Đặt phòng chỉ được tạo cho phòng đang ở trạng thái hoạt động (không Bảo trì/Ngừng hoạt động). \\\hline
+QT15 & Tiền cọc không được vượt quá giá một đêm nhân với tổng số đêm dự kiến. \\\hline
+\end{longtable}
+
+\subsection{Nhóm Nhận phòng (QT21--QT30)}
+
+\begin{longtable}{|c|p{12cm}|}
+\caption{Quy tắc nhóm Nhận phòng}\\\hline
+\textbf{Mã} & \textbf{Nội dung}\\\hline
+\endfirsthead
+\hline \textbf{Mã} & \textbf{Nội dung}\\\hline
+\endhead
+QT21 & Nhận phòng có thể thực hiện từ một đặt phòng có sẵn hoặc trực tiếp cho khách vãng lai. \\\hline
+QT22 & Khi nhận phòng, giá phòng hiện hành được chốt (snapshot) vào phiếu thuê, không thay đổi dù giá niêm yết sau đó biến động. \\\hline
+QT23 & Phòng chỉ được nhận khi đang ở trạng thái Trống hoặc Đã đặt (không nhận được khi Dọn dẹp/Bảo trì). \\\hline
+\end{longtable}
+
+\subsection{Nhóm Dịch vụ (QT31--QT35)}
+
+\begin{longtable}{|c|p{12cm}|}
+\caption{Quy tắc nhóm Dịch vụ}\\\hline
+\textbf{Mã} & \textbf{Nội dung}\\\hline
+\endfirsthead
+\hline \textbf{Mã} & \textbf{Nội dung}\\\hline
+\endhead
+QT31 & Dịch vụ chỉ được ghi nhận cho phiếu thuê đang ở trạng thái "Đang ở". \\\hline
+QT32 & Đơn giá dịch vụ được chốt (snapshot) tại thời điểm ghi nhận. \\\hline
+QT33 & Số lượng dịch vụ phải lớn hơn 0. \\\hline
+QT34 & Chỉ được xóa dòng dịch vụ khi phiếu thuê chưa trả phòng. \\\hline
+\end{longtable}
+
+\subsection{Nhóm Tính tiền (QT40--QT49)}
+
+\begin{longtable}{|c|p{12cm}|}
+\caption{Quy tắc nhóm Tính tiền}\\\hline
+\textbf{Mã} & \textbf{Nội dung}\\\hline
+\endfirsthead
+\hline \textbf{Mã} & \textbf{Nội dung}\\\hline
+\endhead
+QT40 & Số đêm lưu trú tối thiểu khi tính tiền là 1, kể cả khi khách ở dưới 24 giờ. \\\hline
+QT41 & Tiền phòng = giá snapshot $\times$ số đêm. \\\hline
+QT42 & Tiền dịch vụ = tổng (đơn giá snapshot $\times$ số lượng) trên toàn bộ dòng dịch vụ của phiếu thuê. \\\hline
+QT43 & Mức giảm giá do Lễ tân áp dụng không được vượt quá 10\%; vượt ngưỡng cần xác nhận của Quản lý. \\\hline
+QT44 & Phụ thu trả muộn tính theo mốc so với 12:00 ngày trả thực tế: trễ đến 1 giờ không phụ thu, trễ 1--3 giờ phụ thu một mức, trễ 3--6 giờ phụ thu mức cao hơn, trễ trên 6 giờ tính thêm một đêm. \\\hline
+QT45 & Tổng thanh toán không được âm (nếu cọc lớn hơn tổng tiền phòng + dịch vụ + phụ thu, phần dư được hoàn lại, tổng thanh toán trên hóa đơn ghi nhận 0). \\\hline
+\end{longtable}
+
+\paragraph{Công thức tính tiền.} Gọi $G$ là giá phòng snapshot/đêm, $n$ là số đêm, $D$ là tổng tiền dịch vụ, $P$ là phụ thu trả muộn, $C$ là tiền cọc, $r$ là tỷ lệ giảm giá ($0 \le r \le 1$). Tổng thanh toán được tính:
+\begin{align*}
+T_{truoc} &= G \times n + D + P \\
+T_{sau\,giam} &= T_{truoc} \times (1 - r) \\
+TongThanhToan &= \max(0,\; T_{sau\,giam} - C)
+\end{align*}
+
+\paragraph{Ví dụ minh họa.} Phòng giá 400.000đ/đêm, khách ở 3 đêm, sử dụng dịch vụ tổng 80.000đ, trả phòng trễ dẫn tới phụ thu 120.000đ, tiền cọc đã thu 200.000đ, không áp dụng giảm giá:
+\begin{align*}
+T_{truoc} &= 400.000 \times 3 + 80.000 + 120.000 = 1.400.000 \\
+TongThanhToan &= 1.400.000 - 200.000 = 1.200.000 \text{ (đồng)}
+\end{align*}
+
+\subsection{Nhóm Trả phòng và hóa đơn (QT50--QT55)}
+
+\begin{longtable}{|c|p{12cm}|}
+\caption{Quy tắc nhóm Trả phòng và hóa đơn}\\\hline
+\textbf{Mã} & \textbf{Nội dung}\\\hline
+\endfirsthead
+\hline \textbf{Mã} & \textbf{Nội dung}\\\hline
+\endhead
+QT50 & Một phiếu thuê chỉ được trả phòng đúng một lần; thao tác trả phòng lần hai trên cùng phiếu thuê bị từ chối. \\\hline
+QT51 & Toàn bộ thao tác trả phòng (tính tiền, lập hóa đơn, đóng phiếu thuê, đổi trạng thái phòng) nằm trong một giao dịch duy nhất. \\\hline
+QT52 & Sau khi hóa đơn được lập, dữ liệu hóa đơn không được chỉnh sửa trực tiếp. \\\hline
+QT53 & Phòng sau khi trả chuyển sang trạng thái "Dọn dẹp", chỉ nhận khách mới sau khi được xác nhận dọn xong. \\\hline
+\end{longtable}
+
+\subsection{Nhóm Khách hàng và tài khoản (QT56--QT60)}
+
+\begin{longtable}{|c|p{12cm}|}
+\caption{Quy tắc nhóm Khách hàng và tài khoản}\\\hline
+\textbf{Mã} & \textbf{Nội dung}\\\hline
+\endfirsthead
+\hline \textbf{Mã} & \textbf{Nội dung}\\\hline
+\endhead
+QT56 & Số giấy tờ tùy thân của khách hàng là duy nhất trong hệ thống. \\\hline
+QT57 & Mật khẩu tài khoản phải có tối thiểu 8 ký tự, bao gồm chữ hoa, chữ thường và số. \\\hline
+QT58 & Đăng nhập sai 5 lần liên tiếp sẽ khóa tài khoản tạm thời 30 giây. \\\hline
+QT59 & Hệ thống luôn phải còn ít nhất một tài khoản Quản lý ở trạng thái hoạt động; thao tác khóa/xóa tài khoản Quản lý cuối cùng bị từ chối. \\\hline
+\end{longtable}
+
+\subsection{Nhóm Phân quyền (QT61--QT64)}
+
+\begin{longtable}{|c|p{12cm}|}
+\caption{Quy tắc nhóm Phân quyền}\\\hline
+\textbf{Mã} & \textbf{Nội dung}\\\hline
+\endfirsthead
+\hline \textbf{Mã} & \textbf{Nội dung}\\\hline
+\endhead
+QT61 & Lễ tân chỉ được xem (không sửa) các danh mục Loại phòng, Phòng, Dịch vụ. \\\hline
+QT62 & Chỉ Quản lý truy cập được màn hình Báo cáo và Quản lý tài khoản. \\\hline
+QT63 & Chỉ Quản lý được xác nhận mức giảm giá vượt ngưỡng 10\%. \\\hline
+QT64 & Mọi kiểm tra quyền ở giao diện đều được kiểm tra lại ở tầng BLL trước khi ghi dữ liệu. \\\hline
+\end{longtable}
+
+% ===== end chuong/chuong5.tex =====
+
+% ===== begin chuong/chuong6.tex =====
+\chapter{Thiết kế kiến trúc và xử lý hệ thống}
+
+\section{Kiến trúc tổng quan}
+
+Hệ thống được tổ chức theo kiến trúc ba lớp cộng tầng truyền tải dữ liệu trung gian, tổng cộng bốn thành phần:
+
+\begin{center}
+\textbf{GUI (WinForms)} $\longrightarrow$ \textbf{BLL (Business Logic Layer)} $\longrightarrow$ \textbf{DAL (Data Access Layer)} $\longleftrightarrow$ \textbf{SQL Server}
+\end{center}
+
+với \textbf{DTO (Data Transfer Object)} là các lớp dữ liệu thuần (plain object) dùng để truyền dữ liệu qua lại giữa ba tầng trên, không chứa logic nghiệp vụ.
+
+\begin{itemize}
+  \item \textbf{GUI}: các form WinForms, chỉ chịu trách nhiệm hiển thị, thu thập dữ liệu nhập và gọi phương thức của BLL tương ứng; không chứa quy tắc nghiệp vụ, không thao tác trực tiếp với CSDL.
+  \item \textbf{BLL}: hiện thực toàn bộ quy tắc nghiệp vụ QT01--QT64 (Chương~5): kiểm tra ràng buộc dữ liệu đầu vào, tính toán nghiệp vụ (số đêm, phụ thu, tổng tiền), kiểm tra quyền truy cập theo vai trò, rồi gọi DAL để đọc/ghi dữ liệu.
+  \item \textbf{DAL}: chịu trách nhiệm duy nhất giao tiếp với SQL Server -- mở kết nối, thực thi câu lệnh SQL/stored procedure tham số hóa, ánh xạ kết quả trả về thành đối tượng DTO. DAL không chứa quy tắc nghiệp vụ và không được gọi ngược lên BLL (nguyên tắc một chiều của kiến trúc phân lớp).
+  \item \textbf{DTO}: ví dụ \texttt{PhongDTO}, \texttt{DatPhongDTO}, \texttt{PhieuThueDTO}, \texttt{HoaDonDTO} -- là các lớp thuộc tính tương ứng 1--1 với cột trong bảng CSDL liên quan, giúp dữ liệu di chuyển giữa các tầng có kiểu rõ ràng, tránh dùng \texttt{DataTable} rời rạc xuyên suốt ứng dụng.
+\end{itemize}
+
+Nguyên tắc phân lớp một chiều (GUI chỉ gọi BLL, BLL chỉ gọi DAL, không có chiều ngược lại) được áp dụng nghiêm ngặt sau khi phát hiện và sửa lỗi kiến trúc ở giai đoạn kiểm thử (xem mục lỗi \#5 trong Bảng~\ref{tab:loi-da-sua}, Chương~8), nơi một đoạn kiểm tra cọc ban đầu bị đặt nhầm ở tầng DAL và được chuyển về đúng tầng BLL.
+
+\section{Luồng xử lý nghiệp vụ trọng tâm: Trả phòng}
+
+Luồng trả phòng là luồng phức tạp nhất vì liên quan tới nhiều bảng và phải đảm bảo tính nguyên tử. Trình tự xử lý như sau:
+
+\begin{enumerate}
+  \item \textbf{GUI} (\texttt{FrmTraPhong}): người dùng chọn phiếu thuê, hệ thống hiển thị bảng chi tiết tính tiền tạm tính (gọi \texttt{PhieuThueBLL.TinhTienTamTinh} để xem trước, chưa ghi CSDL).
+  \item Người dùng xác nhận trả phòng $\to$ GUI gọi \texttt{PhieuThueBLL.TraPhong(maPhieuThue, giamGia, nguoiLap)}.
+  \item \textbf{BLL}: gọi lớp tiện ích \texttt{QuyTacTinhTien} để tính tiền phòng, tiền dịch vụ, phụ thu trả muộn (QT44) theo công thức ở Mục~5.3.6; kiểm tra quyền giảm giá nếu $giamGia > 10\%$ (QT43); nếu hợp lệ, gọi \texttt{PhieuThueDAL.TraPhong} truyền các giá trị đã tính.
+  \item \textbf{DAL}: gọi \texttt{sp\_TraPhong} trong một \texttt{SqlTransaction}; nếu thủ tục lưu trữ phát hiện phiếu thuê đã trả phòng trước đó (QT50), ném ngoại lệ nghiệp vụ, DAL rollback transaction và ném lại ngoại lệ lên BLL.
+  \item \textbf{BLL} bắt ngoại lệ nghiệp vụ (nếu có), chuyển thành thông báo dễ hiểu; nếu thành công, trả về \texttt{HoaDonDTO} vừa tạo.
+  \item \textbf{GUI} hiển thị bảng xem trước hóa đơn, cho phép in (gọi lớp \texttt{InAn}).
+\end{enumerate}
+
+Đoạn mã dưới đây trích từ lớp \texttt{QuyTacTinhTien} minh họa việc hiện thực công thức tính phụ thu trả muộn (QT44) bằng C\#:
+
+\begin{lstlisting}[language=csharp, caption={Tính phụ thu trả muộn theo mốc giờ (QuyTacTinhTien.cs, rút gọn)}]
+public static decimal TinhPhuThuTraMuon(DateTime ngayTraDuKien, DateTime thoiDiemTraThucTe, decimal giaMotDem)
+{
+    DateTime mocChuan = ngayTraDuKien.Date.AddHours(12);
+    if (thoiDiemTraThucTe <= mocChuan)
+        return 0m;
+
+    double soGioTre = (thoiDiemTraThucTe - mocChuan).TotalHours;
+
+    if (soGioTre <= 1) return 0m;
+    if (soGioTre <= 3) return giaMotDem * 0.25m;
+    if (soGioTre <= 6) return giaMotDem * 0.5m;
+    return giaMotDem; // tính thêm 1 đêm
+}
+\end{lstlisting}
+
+Việc tách lớp \texttt{QuyTacTinhTien} thành một lớp tiện ích tĩnh, độc lập với DAL/CSDL, cho phép nhóm viết bộ kiểm thử tự động (\texttt{QuanLyKhachSan.Tests}) kiểm tra logic tính tiền mà không cần kết nối SQL Server thật (xem Chương~8).
+
+\section{Luồng xử lý nghiệp vụ: Đặt phòng và kiểm tra trùng lịch}
+
+Để tránh race condition khi hai lễ tân cùng đặt một phòng cho khoảng ngày giao nhau tại cùng một thời điểm, việc kiểm tra trùng lịch không dừng lại ở một truy vấn SELECT đơn thuần trước khi INSERT (vốn có khoảng hở giữa kiểm tra và ghi), mà được gộp vào cùng một giao dịch mức cô lập \textbf{Serializable}:
+
+\begin{enumerate}
+  \item \textbf{BLL} (\texttt{DatPhongBLL.Them}) kiểm tra ràng buộc dữ liệu đầu vào (ngày hợp lệ, cọc không vượt ngưỡng QT15) trước khi gọi DAL, nhằm tránh mở transaction không cần thiết với dữ liệu chắc chắn sai.
+  \item \textbf{DAL} (\texttt{DatPhongDAL.KiemTraPhong}) mở một \texttt{SqlTransaction} với \texttt{IsolationLevel.Serializable}, trong đó gọi \texttt{sp\_KiemTraTrungLich}; nếu trả về trùng lịch, rollback và ném ngoại lệ; nếu không, tiếp tục INSERT bản ghi \texttt{DatPhong} mới trong cùng transaction, rồi commit.
+\end{enumerate}
+
+Mức cô lập Serializable đảm bảo không có giao dịch đặt phòng song song nào khác có thể chen vào giữa bước kiểm tra và bước ghi của giao dịch hiện tại cho cùng một phòng, loại bỏ hoàn toàn khả năng hai đặt phòng trùng lịch lọt qua kiểm tra do thực thi đồng thời.
+
+\section{Bảo mật và kiểm soát truy cập}
+
+\subsection{Băm mật khẩu}
+
+Mật khẩu không được lưu dạng rõ. Khi tạo tài khoản hoặc đổi mật khẩu, hệ thống sinh một salt ngẫu nhiên riêng cho từng tài khoản, băm mật khẩu bằng thuật toán PBKDF2 với số vòng lặp được lưu kèm (cho phép tăng độ khó trong tương lai mà không làm hỏng dữ liệu cũ), và chỉ lưu giá trị băm cùng salt vào CSDL. Khi đăng nhập, hệ thống băm lại mật khẩu nhập vào với cùng salt và số vòng lặp đã lưu, so sánh hai giá trị băm thay vì so sánh chuỗi mật khẩu gốc.
+
+\subsection{Chống SQL Injection}
+
+Toàn bộ truy vấn động (đặc biệt là các ô tìm kiếm theo từ khóa) sử dụng \texttt{SqlParameter} tham số hóa thay vì nối chuỗi trực tiếp từ dữ liệu người dùng nhập vào câu lệnh SQL. Với bộ lọc phía client (\texttt{DataView.RowFilter} trong màn hình danh sách khách đang lưu trú), ký tự đặc biệt trong từ khóa tìm kiếm được thoát (escape) trước khi đưa vào biểu thức lọc, tránh lỗi cú pháp hoặc hành vi lọc không mong muốn.
+
+\subsection{Giới hạn đăng nhập sai}
+
+Sau 5 lần đăng nhập sai liên tiếp cho cùng một tài khoản, hệ thống khóa tạm thời tài khoản đó trong 30 giây, hạn chế tấn công dò mật khẩu kiểu brute-force ở mức cơ bản.
+
+\subsection{Xuất CSV an toàn}
+
+Khi xuất báo cáo ra CSV, các ô dữ liệu bắt đầu bằng ký tự \texttt{=}, \texttt{+}, \texttt{-}, \texttt{@} được thêm tiền tố an toàn trước khi ghi, nhằm ngăn chặn kiểu tấn công CSV Injection (chèn công thức) khi tệp CSV được mở lại bằng Excel.
+
+\subsection{Thông báo lỗi}
+
+Lỗi hiển thị cho người dùng cuối chỉ chứa nội dung lỗi nghiệp vụ dễ hiểu (ví dụ: "Phòng đã được đặt trong khoảng ngày này"); không hiển thị chi tiết kỹ thuật như chuỗi kết nối CSDL hay stack trace, tránh lộ thông tin hạ tầng.
+
+\section{Chuẩn hóa giao diện dùng chung}
+
+Để tránh lặp lại style rải rác trong từng form (nguyên nhân chính của lỗi giao diện chồng chéo ghi nhận ở Bảng~\ref{tab:loi-da-sua}), nhóm xây dựng lớp tiện ích tĩnh \texttt{GiaoDien} cung cấp các phương thức dựng sẵn: \texttt{GiaoDien.Nhom} (tạo \texttt{GroupBox} với padding chuẩn), \texttt{GiaoDien.ThanhNgang} (thanh công cụ ngang tự giãn theo \texttt{FlowLayoutPanel}), \texttt{GiaoDien.GocTuCo} (bo góc và tự co giãn theo nội dung). Toàn bộ layout chính trong các form nghiệp vụ và danh mục dùng \\~\texttt{TableLayoutPanel}/\texttt{FlowLayoutPanel} thay cho tọa độ cố định, giúp giao diện không bị cắt chữ hoặc chồng lấn khi thay đổi kích thước cửa sổ hoặc cỡ chữ hệ thống.
+
+% ===== end chuong/chuong6.tex =====
+
+% ===== begin chuong/chuong7.tex =====
+\chapter{Thiết kế giao diện người dùng}
+
+\section{Nguyên tắc thiết kế chung}
+
+Giao diện tuân theo bốn nguyên tắc xuyên suốt: (1) \textbf{nhất quán} -- mọi form nghiệp vụ dùng chung bộ màu trạng thái, cùng kiểu nút bấm, cùng cách bố trí thanh công cụ phía trên; (2) \textbf{tự co giãn} -- dùng \texttt{TableLayoutPanel}/\texttt{FlowLayoutPanel} thay vì tọa độ tuyệt đối, tránh cắt chữ hoặc chồng lấn khi đổi kích thước cửa sổ; (3) \textbf{phân quyền trực quan} -- menu và nút bấm không phù hợp vai trò đăng nhập được ẩn hoặc khóa thay vì chỉ ẩn ngầm; (4) \textbf{thao tác nhanh bằng phím tắt} -- các nghiệp vụ dùng nhiều nhất được gán phím F2--F7 (Bảng~\ref{tab:phimtat}).
+
+\begin{table}[H]
+\centering
+\caption{Phím tắt cho các nghiệp vụ chính}
+\label{tab:phimtat}
+\begin{tabular}{|c|l|}
+\hline
+\textbf{Phím} & \textbf{Chức năng} \\\hline
+F2 & Đặt phòng \\\hline
+F3 & Nhận phòng \\\hline
+F4 & Ghi dịch vụ \\\hline
+F5 & Sơ đồ phòng \\\hline
+F6 & Trả phòng \\\hline
+F7 & Hóa đơn \\\hline
+\end{tabular}
+\end{table}
+
+\section{Màn hình đăng nhập}
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{SpamLock.png}{\fbox{\includegraphics[width=0.6\textwidth]{SpamLock.png}}}{\fbox{\parbox{0.6\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: SpamLock.png)}\vspace{3cm}}}}}
+\caption{Màn hình đăng nhập}
+\label{fig:gui-login}
+\end{figure}
+
+Màn hình tối giản, chỉ gồm hai ô nhập và một nút xác nhận; khi tài khoản bị khóa tạm thời do đăng nhập sai nhiều lần, thông báo hiển thị rõ thời gian còn lại thay vì chỉ báo "sai mật khẩu" chung chung, giúp người dùng hiểu đúng nguyên nhân.
+
+\section{Màn hình chính (FrmMain)}
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{FormMainLT.png}{\fbox{\includegraphics[width=1\textwidth]{FormMainLT.png}}}{\fbox{\parbox{1\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: FormMainLT.png)}\vspace{3cm}}}}}
+\caption{Màn hình đăng nhập lễ tân}
+\label{fig:gui-main}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{FormMainQL.png}{\fbox{\includegraphics[width=1\textwidth]{FormMainQL.png}}}{\fbox{\parbox{1\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: FormMainQL.png)}\vspace{3cm}}}}}
+\caption{Màn hình đăng nhập quản lý}
+\label{fig:gui-main-2}
+\end{figure}
+
+Màn hình chính đóng vai trò trung tâm điều hướng, hiển thị ngay các chỉ số vận hành quan trọng nhất (số phòng trống, số khách đang lưu trú, doanh thu trong ngày), giúp lễ tân nắm bắt tình hình tức thời khi vào ca.
+
+\section{Sơ đồ phòng theo tầng}
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{SoDo.png}{\fbox{\includegraphics[width=1\textwidth]{SoDo.png}}}{\fbox{\parbox{1\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: SoDo.png)}\vspace{3cm}}}}}
+\caption{Màn hình sơ đồ phòng trống}
+\label{fig:gui-sodophong}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{SoDoDaDat.png}{\fbox{\includegraphics[width=1\textwidth]{SoDoDaDat.png}}}{\fbox{\parbox{1\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: SoDoDaDat.png)}\vspace{3cm}}}}}
+\caption{Màn hình sơ đồ phòng đã đặt}
+\label{fig:gui-login-2}
+\end{figure}
+
+Sơ đồ phòng là màn hình được truy cập nhiều nhất trong ca trực, nên được thiết kế để một cái nhìn là đủ nắm toàn bộ trạng thái khách sạn; màu sắc trạng thái tuân theo quy ước nhất quán với bảng màu đã định nghĩa trong \texttt{docs/02\_QuyTrinh\_NghiepVu.md} và được dùng lại ở mọi nơi khác hiển thị trạng thái phòng (danh sách phòng, màn hình đặt phòng).
+
+\section{Màn hình Đặt phòng (F2)}
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{OrderRoom.png}{\fbox{\includegraphics[width=1\textwidth]{OrderRoom.png}}}{\fbox{\parbox{1\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: OrderRoom.png)}\vspace{3cm}}}}}
+\caption{Màn hình đặt phòng}
+\label{fig:gui-datphong}
+\end{figure}
+
+Danh sách phòng chỉ hiển thị các phòng thỏa điều kiện khả dụng cho đúng khoảng ngày đang chọn (không bảo trì, không trùng lịch), giúp người dùng không thể chọn nhầm một phòng rồi mới nhận được thông báo lỗi ở bước lưu.
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{ODSuccess.png}{\fbox{\includegraphics[width=1\textwidth]{ODSuccess.png}}}{\fbox{\parbox{1\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: ODSuccess.png)}\vspace{3cm}}}}}
+\caption{Màn hình đặt phòng thành công}
+\label{fig:gui-datphong-2}
+\end{figure}
+
+\section{Màn hình Nhận phòng (F3) và Ghi dịch vụ (F4)}
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{F3.png}{\fbox{\includegraphics[width=1\textwidth]{F3.png}}}{\fbox{\parbox{1\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: F3.png)}\vspace{3cm}}}}}
+\caption{Màn hình nhận phòng}
+\label{fig:gui-nhanphong-dichvu}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{F4.png}{\fbox{\includegraphics[width=1\textwidth]{F4.png}}}{\fbox{\parbox{1\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: F4.png)}\vspace{3cm}}}}}
+\caption{Màn hình ghi dịch vụ}
+\label{fig:gui-nhanphong-dichvu-2}
+\end{figure}
+
+\section{Màn hình Trả phòng (F6) và xem trước hóa đơn}
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{F6.png}{\fbox{\includegraphics[width=1\textwidth]{F6.png}}}{\fbox{\parbox{1\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: F6.png)}\vspace{3cm}}}}}
+\caption{Màn hình trả phòng}
+\label{fig:gui-traphong}
+\end{figure}
+
+Bảng chi tiết tính tiền được tính lại tức thời mỗi khi người dùng thay đổi mức giảm giá, giúp lễ tân thấy ngay ảnh hưởng trước khi xác nhận, giảm thao tác thử sai.
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{Bill.png}{\fbox{\includegraphics[width=1\textwidth]{Bill.png}}}{\fbox{\parbox{1\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: Bill.png)}\vspace{3cm}}}}}
+\caption{Màn hình in hóa đơn}
+\label{fig:gui-traphong-2}
+\end{figure}
+
+\section{Màn hình Báo cáo doanh thu và công suất phòng}
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{Profit.png}{\fbox{\includegraphics[width=1\textwidth]{Profit.png}}}{\fbox{\parbox{1\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: Profit.png)}\vspace{3cm}}}}}
+\caption{Màn hình báo cáo doanh thu}
+\label{fig:gui-baocao}
+\end{figure}
+
+Biểu đồ được vẽ trực tiếp bằng GDI+ (lớp \texttt{ChartPanel} tự xây dựng) thay vì phụ thuộc thư viện biểu đồ ngoài, giữ ứng dụng nhẹ và không phát sinh phụ thuộc bên ngoài. Dữ liệu gom nhóm bao gồm cả các mốc thời gian không phát sinh doanh thu, giúp biểu đồ phản ánh đúng xu hướng liên tục.
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{OR.png}{\fbox{\includegraphics[width=1\textwidth]{OR.png}}}{\fbox{\parbox{1\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: OR.png)}\vspace{3cm}}}}}
+\caption{Màn hình công suất phòng}
+\label{fig:gui-baocao-2}
+\end{figure}
+
+\section{Các màn hình danh mục}
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{Phong.png}{\fbox{\includegraphics[width=0.9\textwidth]{Phong.png}}}{\fbox{\parbox{0.9\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: Phong.png)}\vspace{3cm}}}}}
+\caption{Danh mục phòng}
+\label{fig:gui-danhmuc}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{KH.png}{\fbox{\includegraphics[width=0.9\textwidth]{KH.png}}}{\fbox{\parbox{0.9\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: KH.png)}\vspace{3cm}}}}}
+\caption{Danh mục khách hàng}
+\label{fig:gui-danhmuc-2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{DichVu.png}{\fbox{\includegraphics[width=0.9\textwidth]{DichVu.png}}}{\fbox{\parbox{0.9\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: DichVu.png)}\vspace{3cm}}}}}
+\caption{Danh mục dịch vụ}
+\label{fig:gui-danhmuc-3}
+\end{figure}
+
+\section{Màn hình Quản lý tài khoản (chỉ Quản lý)}
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{QLTK.png}{\fbox{\includegraphics[width=0.9\textwidth]{QLTK.png}}}{\fbox{\parbox{0.9\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: QLTK.png)}\vspace{3cm}}}}}
+\caption{Màn hình quản lý tài khoản}
+\label{fig:gui-danhmuc-4}
+\end{figure}
+
+Việc trình bày các hình minh họa giao diện trong chương này dưới dạng khung mô tả bố cục (thay vì ảnh chụp màn hình thật) nhằm giữ cho báo cáo mô tả đúng thiết kế đã thống nhất của nhóm; ảnh chụp màn hình thực tế từ ứng dụng đang chạy có thể được bổ sung ở bản in cuối cùng khi chạy trên môi trường có SQL Server cấu hình đầy đủ.
+
+% ===== end chuong/chuong7.tex =====
+
+% ===== begin chuong/chuong8.tex =====
+\chapter{Cài đặt, kiểm thử và đánh giá kết quả}
+
+\section{Môi trường triển khai}
+
+\begin{table}[H]
+\centering
+\caption{Môi trường phát triển và chạy ứng dụng}
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\textbf{Thành phần} & \textbf{Phiên bản / Ghi chú} \\\hline
+Ngôn ngữ & C\#, target \texttt{net10.0-windows} \\\hline
+Giao diện & Windows Forms \\\hline
+IDE & Visual Studio 2022 trở lên \\\hline
+Cơ sở dữ liệu & Microsoft SQL Server (Express/Developer Edition) \\\hline
+Cấu hình kết nối & \texttt{appsettings.json} (chỉ chứa cấu hình máy phát triển, không commit mật khẩu thật) \\\hline
+Kiểm thử tự động & Project \texttt{QuanLyKhachSan.Tests}, chạy bằng \texttt{dotnet run} \\\hline
+\end{tabularx}
+\end{table}
+
+\subsection{Các bước triển khai}
+
+\begin{enumerate}
+  \item Chạy \texttt{QuanLyKhachSan/Scripts/Database.sql} trên SQL Server (khuyến nghị dùng \texttt{sqlcmd -f 65001 -i Database.sql} để giữ đúng mã hóa tiếng Việt UTF-8).
+  \item Kiểm tra \texttt{appsettings.json} trỏ đúng tới instance SQL Server đang chạy.
+  \item Mở \texttt{QuanLyKhachSan.sln} bằng Visual Studio, build và chạy project \texttt{QuanLyKhachSan}.
+  \item Đăng nhập bằng tài khoản mẫu đã seed sẵn trong script (một tài khoản Quản lý, một tài khoản Lễ tân).
+\end{enumerate}
+
+\section{Kịch bản và kết quả kiểm thử}
+
+\subsection{Kiểm thử logic tự động (độc lập CSDL)}
+
+Project \texttt{QuanLyKhachSan.Tests} kiểm tra trực tiếp các quy tắc nghiệp vụ không phụ thuộc kết nối CSDL: số đêm lưu trú tối thiểu (QT40), phụ thu trả muộn theo ba mốc 1/3/6 giờ (QT44), tổng thanh toán không âm (QT45), giới hạn tiền cọc theo số đêm (QT15), gom doanh thu theo ngày/tháng/loại phòng kể cả các ngày không phát sinh giao dịch, tính tỷ lệ công suất trung bình, và xuất CSV (thoát dấu phẩy, dấu nháy kép, chặn chèn công thức). Kết quả ghi nhận trong đợt hoàn thiện: \textbf{26/26 ca kiểm thử đạt} khi biên dịch và chạy bằng Mono; việc chạy lại bằng bộ công cụ \texttt{dotnet} chính thức chưa thực hiện được do môi trường phát triển tại thời điểm đó không có sẵn .NET SDK -- đây là hạn chế được ghi nhận trung thực thay vì bỏ qua.
+
+\subsection{Kiểm thử SQL và build}
+
+Bảng~\ref{tab:db-test} tóm tắt các kịch bản kiểm thử ở tầng CSDL; các thao tác tạo dữ liệu thử nghiệm được bọc trong transaction và rollback sau khi assert, không giữ lại bản ghi thử trong CSDL thật.
+
+\begin{table}[H]
+\centering
+\caption{Kịch bản kiểm thử SQL và build}
+\label{tab:db-test}
+\begin{tabularx}{\textwidth}{|c|X|X|}
+\hline
+\textbf{ID} & \textbf{Kịch bản} & \textbf{Kết quả ghi nhận} \\\hline
+DB-01 & Chạy script trên database thử nghiệm chưa tồn tại & Tạo database, 9 bảng, 5 stored procedure và dữ liệu mẫu \\\hline
+DB-02 & Chạy lại script trên cùng database & Không tạo trùng object hay dữ liệu seed \\\hline
+DB-03 & Kiểm tra lịch của phiếu thuê đang ở & \texttt{sp\_KiemTraTrungLich} phát hiện đúng trường hợp giao nhau \\\hline
+DB-04 & Thêm dịch vụ và trả phòng trong transaction thử nghiệm & Hóa đơn 400.000đ tiền phòng + 30.000đ dịch vụ = 430.000đ \\\hline
+DB-05 & Đặt phòng có khoảng ngày giao với đặt phòng đang hiệu lực & Bị từ chối do trùng lịch \\\hline
+DB-06 & Chạy lại script và kiểm tra chỉ mục & Script chạy ổn định hai lần, index lọc và index tra cứu được tạo đúng \\\hline
+BUILD-01 & \texttt{dotnet build} toàn bộ solution & 0 cảnh báo, 0 lỗi (ghi nhận trên môi trường có .NET SDK đầy đủ) \\\hline
+\end{tabularx}
+\end{table}
+
+Các kết quả DB-01 đến BUILD-01 là ghi nhận trong tài liệu kiểm thử trước lần hoàn thiện gần nhất; để đảm bảo tính trung thực của báo cáo, nhóm không khẳng định các kết quả này đã được chạy lại độc lập trong lần cập nhật hiện tại mà giữ nguyên trạng ghi nhận trước đó, kèm khuyến nghị chạy lại khi triển khai trên môi trường có SQL Server đầy đủ.
+
+\subsection{Kiểm thử giao diện thủ công}
+
+Bảng~\ref{tab:ui-test} liệt kê các kịch bản kiểm thử giao diện cần thực hiện thủ công trên máy có SQL Server cấu hình đúng.
+
+\begin{longtable}{|c|p{5.5cm}|p{5.3cm}|}
+\caption{Kịch bản kiểm thử giao diện}\label{tab:ui-test}\\
+\hline
+\textbf{ID} & \textbf{Kịch bản} & \textbf{Kết quả mong đợi}\\\hline
+\endfirsthead
+\hline \textbf{ID} & \textbf{Kịch bản} & \textbf{Kết quả mong đợi}\\\hline
+\endhead
+UI-01 & Đăng nhập sai / tài khoản bị khóa & Từ chối đăng nhập, không mở màn hình chính \\\hline
+UI-02 & Đăng nhập admin và lễ tân & Menu quản trị/báo cáo chỉ hiện với Quản lý \\\hline
+UI-03 & Đổi mật khẩu sai hoặc xác nhận không khớp & Không cập nhật mật khẩu \\\hline
+UI-04 & Tạo đặt phòng ngày đến $\ge$ ngày đi hoặc trùng lịch & Báo lỗi, không lưu \\\hline
+UI-05 & Nhận phòng, ghi dịch vụ, trả phòng & Tạo phiếu, snapshot đơn giá, một hóa đơn duy nhất, phòng sang Dọn dẹp \\\hline
+UI-06 & Trả phòng lần nữa cùng phiếu & Từ chối, không tạo hóa đơn thứ hai \\\hline
+UI-07 & Tìm và xem trước/in hóa đơn & Nội dung in khớp hóa đơn được chọn \\\hline
+UI-08 & Tạo khách với giấy tờ/điện thoại sai định dạng & BLL báo lỗi trước khi gọi DAL \\\hline
+UI-09 & Trả phòng rồi xác nhận dọn xong trên sơ đồ & Phòng chuyển Dọn dẹp $\to$ Trống hoặc Đã đặt nếu có lịch kế tiếp \\\hline
+UI-10 & Đặt phòng tương lai cho phòng đang có khách/đang dọn & Chỉ chọn được phòng không giao lịch \\\hline
+UI-11 & Đánh dấu Không đến / hủy rồi đặt lại cùng phòng, ngày & Phòng được giải phóng, đặt lại được \\\hline
+UI-12 & Lễ tân mở danh mục; Quản lý mở báo cáo công suất & Lễ tân chỉ xem; Quản lý thấy biểu đồ, in, xuất CSV \\\hline
+\end{longtable}
+
+Các kịch bản UI là bước kiểm thử thủ công, thực hiện trên dữ liệu giả để kiểm tra bố cục (không bị chồng chéo, không bị cắt chữ) và đúng luồng nghiệp vụ; đây chưa phải kiểm thử tự động và kết quả UI không được suy diễn chỉ từ việc script SQL hay build thành công.
+
+\section{Các lỗi đã phát hiện và khắc phục}
+
+Trong quá trình hoàn thiện, nhóm phát hiện và sửa 10 lỗi, tổng hợp trong Bảng~\ref{tab:loi-da-sua}.
+
+\begin{longtable}{|c|c|p{4cm}|p{5.7cm}|}
+\caption{Lỗi đã phát hiện và khắc phục}\label{tab:loi-da-sua}\\
+\hline
+\textbf{\#} & \textbf{Mức} & \textbf{Lỗi} & \textbf{Cách sửa}\\\hline
+\endfirsthead
+\hline \textbf{\#} & \textbf{Mức} & \textbf{Lỗi} & \textbf{Cách sửa}\\\hline
+\endhead
+1 & Cao & Phụ thu trả muộn bị tính hai lần khi khách ở quá ngày đi dự kiến & \texttt{QuyTacTinhTien.TinhPhuThuTraMuon} đo đúng so với mốc 12:00 ngày trả thực tế \\\hline
+2 & Cao & Cọc không bị giới hạn theo số đêm (QT15) & \texttt{DatPhongBLL.Them} kiểm tra cọc $\le$ giá 1 đêm $\times$ số đêm \\\hline
+3 & Cao & Đặt phòng cho phòng không tồn tại, ngừng hoạt động hoặc đang bảo trì & \texttt{DatPhongDAL.KiemTraPhong} kiểm tra trong transaction Serializable \\\hline
+4 & Cao & Phòng bị kẹt vĩnh viễn ở trạng thái "Dọn dẹp" & Thêm \texttt{PhongBLL.HoanTatDonDep} và thao tác xác nhận trên sơ đồ phòng \\\hline
+5 & Trung bình & DAL tham chiếu ngược lên BLL (vi phạm nguyên tắc phân lớp) & Chuyển kiểm tra cọc về đúng tầng BLL \\\hline
+6 & Trung bình & Không đánh dấu được "Khách không đến", không xóa được dòng dịch vụ & Thêm \texttt{DanhDauKhongDen}, \texttt{XoaDichVu} (chỉ khi phiếu còn "Đang ở") \\\hline
+7 & Trung bình & Có thể khóa được tài khoản Quản lý cuối cùng & Kiểm tra trong transaction Serializable ở \texttt{NguoiDungDAL} \\\hline
+8 & Giao diện & Số liệu thẻ thống kê và chữ "Làm mới" bị cắt; kích thước hàng/cột cố định & Viết lại bố cục bằng \texttt{TableLayoutPanel}/\texttt{FlowLayoutPanel} tự co, \texttt{MinimumSize}, cỡ thẻ phòng tính theo cỡ chữ \\\hline
+9 & Giao diện & Tô màu nút theo nội dung chữ hiển thị (dễ sai khi đổi ngôn ngữ/nhãn) & Nút hành động chính đánh dấu bằng thuộc tính \texttt{Tag = "chinh"} thay vì so khớp chuỗi \\\hline
+10 & Giao diện & Chưa có biểu đồ, in báo cáo, xuất CSV & Bổ sung \texttt{ChartPanel}, \texttt{InAn}, \texttt{CsvExporter} \\\hline
+\end{longtable}
+
+Việc ghi nhận đầy đủ cả các lỗi \emph{đã sửa} thay vì chỉ trình bày sản phẩm cuối cùng giúp báo cáo phản ánh đúng quá trình lặp đi lặp lại giữa thiết kế, cài đặt và kiểm thử -- đặc biệt các lỗi mức Cao (\#1--\#4) đều liên quan trực tiếp tới các quy tắc nghiệp vụ QT15, QT44 và ràng buộc trạng thái phòng, cho thấy tầm quan trọng của việc kiểm thử kỹ các quy tắc tính tiền và quản lý trạng thái.
+
+\section{Checklist bảo mật}
+
+Bảng~\ref{tab:bmbd} tổng hợp 9 hạng mục bảo mật cơ bản đã rà soát.
+
+\begin{table}[H]
+\centering
+\caption{Checklist bảo mật cơ bản}
+\label{tab:bmbd}
+\begin{tabularx}{\textwidth}{|X|c|X|}
+\hline
+\textbf{Hạng mục} & \textbf{Tình trạng} & \textbf{Ghi chú} \\\hline
+Truy vấn có tham số & Đạt & Dùng \texttt{SqlParameter}; \texttt{RowFilter} đã thoát ký tự đặc biệt \\\hline
+Băm mật khẩu & Đạt & PBKDF2 kèm salt riêng, số vòng lặp lưu trong CSDL \\\hline
+Mật khẩu mạnh & Đạt & $\ge 8$ ký tự, chữ hoa/thường và số \\\hline
+Giới hạn đăng nhập sai & Đạt (phía ứng dụng) & Khóa 30 giây sau 5 lần sai \\\hline
+Phân quyền & Đạt & Menu ẩn/khóa theo vai trò, BLL kiểm tra lại \\\hline
+Luôn còn Quản lý hoạt động & Đạt & Transaction Serializable \\\hline
+Chuỗi kết nối & Cần lưu ý & Không commit mật khẩu thật; dùng tài khoản SQL quyền tối thiểu khi triển khai thật \\\hline
+Xuất CSV & Đạt & Chặn ký tự mở đầu công thức (\texttt{= + - @}) \\\hline
+Thông báo lỗi & Đạt & Chỉ hiển thị lỗi nghiệp vụ, không lộ chuỗi kết nối \\\hline
+\end{tabularx}
+\end{table}
+
+\section{Đánh giá kết quả đạt được}
+
+Đối chiếu với danh sách 23 chức năng đã đặc tả ở Chương~1 (19 bắt buộc, 4 nâng cao) và các kịch bản kiểm thử ở trên, nhóm đánh giá: toàn bộ 19 chức năng bắt buộc đã được cài đặt và kiểm thử thủ công theo kịch bản UI-01 đến UI-12; 3/4 chức năng nâng cao (thống kê công suất, sơ đồ phòng theo tầng, xuất CSV) đã hoàn thành, 1 chức năng nâng cao (đổi phòng trong lúc lưu trú, NV08) chưa được triển khai. Bộ kiểm thử logic tự động đạt 26/26 ca khi chạy bằng Mono, nhưng chưa được xác nhận lại trên .NET SDK chính thức -- đây là hạng mục cần ưu tiên thực hiện trước khi đưa vào sử dụng thực tế, được nêu lại ở phần Kết luận và hướng phát triển.
+
+% ===== end chuong/chuong8.tex =====
+
+
+% ================= KẾT LUẬN =================
+\chapter*{KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN}
+\addcontentsline{toc}{chapter}{KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN}
+% ===== begin chuong/ket_luan.tex =====
+\section*{1. Kết quả đạt được}
+\addcontentsline{toc}{section}{1. Kết quả đạt được}
+
+Qua quá trình thực hiện, nhóm đã xây dựng hoàn chỉnh một ứng dụng quản lý khách sạn theo kiến trúc ba lớp GUI -- BLL -- DAL với tầng DTO trung gian, bao phủ 19/19 chức năng bắt buộc và 3/4 chức năng nâng cao đã đặc tả ở Chương~1. Hệ thống hiện thực đầy đủ chu trình nghiệp vụ từ đặt phòng, nhận phòng, ghi nhận dịch vụ, trả phòng, lập hóa đơn đến báo cáo doanh thu và công suất phòng, với các ràng buộc toàn vẹn dữ liệu quan trọng (kiểm tra trùng lịch bằng giao dịch Serializable, snapshot giá, UNIQUE trên hóa đơn theo phiếu thuê) được đảm bảo ở tầng cơ sở dữ liệu chứ không chỉ ở tầng ứng dụng. Về bảo mật, hệ thống áp dụng băm mật khẩu PBKDF2, truy vấn tham số hóa, giới hạn đăng nhập sai và phân quyền hai lớp (giao diện và BLL). Bộ kiểm thử logic tự động đạt 26/26 ca kiểm tra các quy tắc tính tiền cốt lõi. Mười lỗi phát hiện trong quá trình hoàn thiện (4 lỗi mức cao liên quan trực tiếp tới các quy tắc nghiệp vụ QT15, QT44 và ràng buộc trạng thái phòng) đã được khắc phục và ghi nhận đầy đủ trong Chương~8.
+
+Về mặt tổ chức,  đã áp dụng cách phân chia công việc theo trục kỹ thuật dọc (mỗi người phụ trách trọn một nhóm chức năng từ CSDL đến giao diện) thay vì phân chia ngang theo lớp kiến trúc, giúp giảm phụ thuộc chờ đợi lẫn nhau và phù hợp với quy mô nhóm nhỏ.
+
+\section*{2. Hạn chế}
+\addcontentsline{toc}{section}{2. Hạn chế}
+
+\begin{itemize}
+  \item Chức năng đổi phòng trong lúc khách đang lưu trú (NV08) chưa được triển khai.
+  \item Bộ kiểm thử logic tự động mới chỉ được xác nhận chạy đạt trên môi trường dùng Mono; chưa chạy lại bằng bộ công cụ \texttt{dotnet} chính thức trên môi trường có .NET SDK đầy đủ.
+  \item Các kịch bản kiểm thử giao diện (UI-01 đến UI-12) là kiểm thử thủ công, chưa được tự động hóa bằng công cụ kiểm thử giao diện chuyên dụng.
+  \item Ứng dụng hiện chỉ hỗ trợ một máy trạm kết nối trực tiếp tới một CSDL tập trung, chưa tính tới kịch bản nhiều chi nhánh hoặc truy cập đồng thời ở quy mô lớn.
+  \item Chưa có chức năng xuất báo cáo ra định dạng Excel (.xlsx), hiện chỉ hỗ trợ xuất CSV.
+\end{itemize}
+
+\section*{3. Hướng phát triển}
+\addcontentsline{toc}{section}{3. Hướng phát triển}
+
+\begin{enumerate}
+  \item Hoàn thiện chức năng đổi phòng (NV08), bao gồm xử lý chuyển tiếp dữ liệu dịch vụ đã ghi nhận và tính toán lại tiền phòng nếu đổi sang loại phòng khác giá.
+  \item Chạy lại và mở rộng bộ kiểm thử tự động trên môi trường .NET SDK chính thức, bổ sung kiểm thử tích hợp có kết nối CSDL thử nghiệm.
+  \item Bổ sung xuất báo cáo ra Excel, hỗ trợ định dạng và công thức tính sẵn cho người dùng tùy biến thêm.
+  \item Nghiên cứu khả năng mở rộng thành mô hình nhiều chi nhánh, đồng bộ dữ liệu qua một CSDL trung tâm hoặc kiến trúc client-server mở rộng.
+  \item Xây dựng thêm lớp dịch vụ (Web API) trên nền tảng BLL hiện có, mở đường cho một ứng dụng web hoặc di động cho khách tự đặt phòng trong tương lai mà không cần viết lại toàn bộ logic nghiệp vụ.
+\end{enumerate}
+
+% ===== end chuong/ket_luan.tex =====
+
+
+% ================= TÀI LIỆU THAM KHẢO =================
+\chapter*{TÀI LIỆU THAM KHẢO}
+\addcontentsline{toc}{chapter}{TÀI LIỆU THAM KHẢO}
+% ===== begin chuong/tai_lieu_tham_khao.tex =====
+\begin{enumerate}[label={[\arabic*]}]
+  \item Microsoft, \textit{Windows Forms documentation}, \url{https://learn.microsoft.com/dotnet/desktop/winforms/}.
+  \item Microsoft, \textit{Microsoft.Data.SqlClient documentation}, \url{https://learn.microsoft.com/sql/connect/ado-net/microsoft-data-sqlclient}.
+  \item Microsoft, \textit{Transact-SQL (T-SQL) reference}, \url{https://learn.microsoft.com/sql/t-sql/}.
+  \item Gantt Chart, \url{https://www.sciencedirect.com/topics/computer-science/gantt-chart}
+  \item Tài liệu môn học Phân tích thiết kế hệ thống thông tin \href{https://ctgt.uit.edu.vn/sach/phan-tich-thiet-ke-he-thong-thong-tin}{(UIT - ĐHQGHCM)}
+  \item Tài liệu nội bộ dự án
+  \item Tài liệu môn học Lập trình Windows - \href{https://thoailt.com}{ThS. Lê Thanh Thoại}
+\end{enumerate}
+
+% ===== end chuong/tai_lieu_tham_khao.tex =====
+
+
+% ================= PHỤ LỤC =================
+\appendix
+% ===== begin chuong/phu_luc.tex =====
+\chapter{Danh sách tài liệu đặc tả nội bộ}
+
+Trong quá trình thực hiện, nhóm duy trì song song 10 tài liệu đặc tả nội bộ (thư mục \texttt{docs/}), dùng làm nguồn tham chiếu trực tiếp cho các chương của báo cáo này. Bảng~\ref{tab:docs-list} liệt kê đầy đủ.
+
+\begin{table}[H]
+\centering
+\caption{Danh sách tài liệu đặc tả nội bộ}
+\label{tab:docs-list}
+\begin{tabularx}{\textwidth}{|l|X|l|}
+\hline
+\textbf{Tệp} & \textbf{Nội dung} & \textbf{Chương tham chiếu} \\\hline
+01\_PhamVi\_ChucNang.md & Phạm vi, danh sách 23 chức năng, đối chiếu source & Chương 1 \\\hline
+02\_QuyTrinh\_NghiepVu.md & Quy trình tổng quát, vòng đời trạng thái & Chương 5 \\\hline
+03\_QuyTac\_NghiepVu.md & Quy tắc nghiệp vụ QT01--QT64 & Chương 5 \\\hline
+04\_UseCase.md & 19 use case, ma trận chức năng--vai trò & Chương 3 \\\hline
+06\_ERD\_Review.md & Sơ đồ ERD, quyết định thiết kế & Chương 4 \\\hline
+07\_KichBanKiemThu.md & Kịch bản kiểm thử SQL/build/giao diện & Chương 8 \\\hline
+08\_Loi\_Da\_Sua.md & Nhật ký 10 lỗi đã phát hiện và sửa & Chương 8 \\\hline
+09\_HuongDan\_Demo.md & Hướng dẫn cài đặt và kịch bản demo & Chương 8 \\\hline
+10\_Checklist\_BaoMat.md & Checklist bảo mật cơ bản & Chương 8 \\\hline
+\end{tabularx}
+\end{table}
+
+\chapter{Trích đoạn mã nguồn tiêu biểu}
+
+\section{Lớp quy tắc tính tiền (QuyTacTinhTien.cs)}
+
+\begin{lstlisting}[language=csharp, caption={Tính tổng thanh toán theo công thức QT41--QT45 (rút gọn)}]
+public static class QuyTacTinhTien
+{
+    public static decimal TinhTongThanhToan(
+        decimal giaApDung, int soDem, decimal tongTienDichVu,
+        decimal phuThuTraMuon, decimal tienCoc, decimal tyLeGiamGia)
+    {
+        decimal tienPhong = giaApDung * Math.Max(1, soDem);
+        decimal truocGiam = tienPhong + tongTienDichVu + phuThuTraMuon;
+        decimal sauGiam = truocGiam * (1 - tyLeGiamGia);
+        return Math.Max(0m, sauGiam - tienCoc);
+    }
+
+    public static decimal TinhPhuThuTraMuon(
+        DateTime ngayTraDuKien, DateTime thoiDiemTraThucTe, decimal giaMotDem)
+    {
+        DateTime mocChuan = ngayTraDuKien.Date.AddHours(12);
+        if (thoiDiemTraThucTe <= mocChuan) return 0m;
+
+        double soGioTre = (thoiDiemTraThucTe - mocChuan).TotalHours;
+        if (soGioTre <= 1) return 0m;
+        if (soGioTre <= 3) return giaMotDem * 0.25m;
+        if (soGioTre <= 6) return giaMotDem * 0.5m;
+        return giaMotDem;
+    }
+}
+\end{lstlisting}
+
+\section{Kiểm tra trùng lịch đặt phòng (sp\_KiemTraTrungLich)}
+
+\begin{lstlisting}[language=SQL, caption={Thủ tục kiểm tra trùng lịch theo khoảng nửa mở (rút gọn)}]
+CREATE OR ALTER PROCEDURE sp_KiemTraTrungLich
+    @MaPhong INT, @NgayNhan DATE, @NgayTra DATE
+AS
+BEGIN
+    SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+    IF EXISTS (
+        SELECT 1 FROM DatPhong
+        WHERE MaPhong = @MaPhong
+          AND TrangThai IN (N'Da dat', N'Da nhan phong')
+          AND NgayNhanDuKien < @NgayTra AND NgayTraDuKien > @NgayNhan
+    )
+        SELECT CAST(1 AS BIT) AS TrungLich;
+    ELSE
+        SELECT CAST(0 AS BIT) AS TrungLich;
+END
+\end{lstlisting}
+
+\section{Ví dụ cấu trúc bảng (CREATE TABLE Phong)}
+
+\begin{lstlisting}[language=SQL, caption={Cấu trúc bảng Phong (rút gọn)}]
+CREATE TABLE Phong (
+    MaPhong INT IDENTITY PRIMARY KEY,
+    SoPhong NVARCHAR(10) NOT NULL UNIQUE,
+    Tang INT NOT NULL,
+    MaLoaiPhong INT NOT NULL
+        FOREIGN KEY REFERENCES LoaiPhong(MaLoaiPhong),
+    TrangThai NVARCHAR(20) NOT NULL
+        CHECK (TrangThai IN (N'Trong', N'Da dat', N'Dang su dung',
+                              N'Don dep', N'Bao tri', N'Ngung hoat dong'))
+);
+\end{lstlisting}
+
+\chapter{Danh sách tài khoản mẫu}
+
+Script khởi tạo CSDL tạo sẵn hai tài khoản mẫu để phục vụ demo và kiểm thử: một tài khoản vai trò Quản lý (\texttt{admin}) và một tài khoản vai trò Lễ tân (\texttt{letan}), mật khẩu tương ứng được thiết lập trong \texttt{Database.sql} và nên được đổi lại trước khi triển khai môi trường thật, theo đúng khuyến nghị bảo mật tại Mục~8.4.
+Bảng~\ref{tab:taikhoan-mau} liệt kê hai tài khoản được script \texttt{Database.sql} tự động khởi tạo (chỉ chèn nếu tên đăng nhập chưa tồn tại), dùng để đăng nhập lần đầu khi demo hoặc kiểm thử hệ thống.
+
+\begin{table}[H]
+\centering
+\caption{Danh sách tài khoản mẫu}
+\label{tab:taikhoan-mau}
+\begin{tabularx}{\textwidth}{|l|l|l|X|}
+\hline
+\textbf{Tên đăng nhập} & \textbf{Mật khẩu} & \textbf{Vai trò} & \textbf{Ghi chú} \\\hline
+admin & Admin@123 & Quản lý & Họ tên mẫu: "Quản lý đa năng"; đầy đủ quyền quản trị \\\hline
+letan & Admin@123 & Lễ tân & Họ tên mẫu: "Lễ tân 0 lương"; chỉ quyền nghiệp vụ hằng ngày \\\hline
+\end{tabularx}
+\end{table}
+
+Mật khẩu của cả hai tài khoản được băm bằng PBKDF2-SHA256 với 100.000 vòng lặp (\texttt{SoVongLap}) và salt riêng cho từng tài khoản, lưu trong cột \texttt{MatKhauHash}/\texttt{MatKhauSalt} của bảng \texttt{NguoiDung}; giá trị \texttt{Admin@123} trong Bảng~\ref{tab:taikhoan-mau} là mật khẩu gốc dùng để đăng nhập, không phải giá trị lưu trong CSDL. Mật khẩu này thỏa quy tắc QT57 (tối thiểu 8 ký tự, có chữ hoa, chữ thường và số) nhưng chỉ nên dùng cho mục đích demo/kiểm thử; cần đổi mật khẩu (chức năng HT02) hoặc tạo tài khoản mới trước khi triển khai trên môi trường thật, theo đúng khuyến nghị bảo mật tại Mục~8.4.
+
+% ===== end chuong/phu_luc.tex =====
+
+
+\end{document}

@@ -1,0 +1,81 @@
+# Build output
+bin/
+obj/
+Debug/
+Release/
+x64/
+x86/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# .NET generated files
+*.dll
+*.exe
+*.pdb
+*.cache
+*.tmp
+*.log
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+
+# Test results
+TestResults/
+*.trx
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.bak
+*.swp
+*.swo
+*~
+temp/
+tmp/
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# User-specific files
+*.userprefs
+
+# Publish output
+publish/
+artifacts/
+
+# Crash / diagnostic files
+*.dmp
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+# Công cụ kiểm tra biên dịch cục bộ
+build-check/
