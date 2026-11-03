@@ -186,7 +186,7 @@ Quản lý khách sạn là một bài toán nghiệp vụ điển hình, bao g�
 \section*{4. Phương pháp thực hiện}
 \addcontentsline{toc}{section}{4. Phương pháp thực hiện}
 
-Nhóm thực hiện theo quy trình gồm: khảo sát và đặc tả yêu cầu (liệt kê chức năng, use case); thiết kế dữ liệu (ERD, ràng buộc, stored procedure); thiết kế quy tắc nghiệp vụ (các quy tắc QT01--QT64); xây dựng theo kiến trúc ba lớp; kiểm thử (tự động cho logic tính tiền, thủ công cho giao diện và CSDL); và hoàn thiện dựa trên các lỗi phát hiện được. Quy trình này được lặp lại thành nhiều vòng nhỏ giữa các giai đoạn thay vì thực hiện tuần tự một lần duy nhất, đặc biệt ở giai đoạn xây dựng và kiểm thử.
+Nhóm thực hiện theo quy trình gồm: khảo sát và đặc tả yêu cầu (liệt kê chức năng, use case); thiết kế dữ liệu (ERD, ràng buộc, stored procedure); thiết kế quy tắc nghiệp vụ (các quy tắc QT01--QT70); xây dựng theo kiến trúc ba lớp; kiểm thử (tự động cho logic tính tiền, thủ công cho giao diện và CSDL); và hoàn thiện dựa trên các lỗi phát hiện được. Quy trình này được lặp lại thành nhiều vòng nhỏ giữa các giai đoạn thay vì thực hiện tuần tự một lần duy nhất, đặc biệt ở giai đoạn xây dựng và kiểm thử.
 
 \section*{5. Công nghệ sử dụng}
 \addcontentsline{toc}{section}{5. Công nghệ sử dụng}
@@ -714,7 +714,7 @@ Do giới hạn dung lượng báo cáo, mục này trình bày đặc tả đ�
     \item Người dùng chọn khách hàng có sẵn hoặc tạo khách hàng mới.
     \item Người dùng chọn ngày nhận, ngày trả dự kiến và phòng cần đặt (chỉ hiển thị phòng không trùng lịch và không ở trạng thái ngừng hoạt động/bảo trì).
     \item Người dùng nhập số tiền cọc (nếu có).
-    \item Hệ thống kiểm tra lại ràng buộc trùng lịch trong giao dịch Serializable (QT11), kiểm tra cọc không vượt quá một đêm theo giá phòng tại thời điểm đặt (QT15).
+    \item Hệ thống kiểm tra lại ràng buộc trùng lịch trong giao dịch Serializable (QT12), kiểm tra cọc không vượt quá một đêm theo giá phòng tại thời điểm đặt (QT15).
     \item Hệ thống lưu đặt phòng, gán trạng thái "Đã đặt".
   \end{enumerate}
   \item[Luồng ngoại lệ:]
@@ -733,7 +733,7 @@ Do giới hạn dung lượng báo cáo, mục này trình bày đặc tả đ�
   \item[Luồng chính:]
   \begin{enumerate}
     \item Người dùng chọn nhận phòng từ một đặt phòng có sẵn, hoặc chọn "khách vãng lai" và nhập thông tin trực tiếp.
-    \item Hệ thống chốt giá phòng tại thời điểm nhận phòng làm snapshot (QT41) để không bị ảnh hưởng nếu giá phòng thay đổi sau này.
+    \item Hệ thống chốt giá phòng tại thời điểm nhận phòng làm snapshot (QT24, QT03) để không bị ảnh hưởng nếu giá phòng thay đổi sau này.
     \item Hệ thống tạo phiếu thuê (\texttt{PhieuThue}) với trạng thái "Đang ở", chuyển trạng thái phòng và đặt phòng liên quan (nếu có) sang "Đang sử dụng"/"Đã nhận phòng".
   \end{enumerate}
   \item[Luồng ngoại lệ:]
@@ -1135,7 +1135,7 @@ Bảng~\ref{tab:ngoaile} liệt kê các tình huống ngoại lệ phổ biến
 \textbf{Tình huống} & \textbf{Xử lý} \\\hline
 Khách hủy đặt phòng trước ngày nhận & Đánh dấu \texttt{DatPhong} sang "Đã hủy", giải phóng phòng khỏi lịch \\\hline
 Khách không đến đúng hẹn & Đánh dấu "Không đến" sau thời điểm quy định, giải phóng phòng \\\hline
-Khách trả phòng muộn so với giờ chuẩn & Tính phụ thu theo mốc 1/3/6 giờ trễ (QT44) \\\hline
+Khách trả phòng muộn so với giờ chuẩn & Tính phụ thu theo mốc 1/3/6 giờ trễ (QT43) \\\hline
 Lễ tân ghi nhầm dịch vụ & Cho phép xóa dòng dịch vụ khi phiếu thuê còn "Đang ở" \\\hline
 Yêu cầu giảm giá vượt thẩm quyền Lễ tân & Hệ thống từ chối, yêu cầu tài khoản Quản lý xác nhận \\\hline
 Phòng cần bảo trì đột xuất & Quản lý chuyển trạng thái phòng sang "Bảo trì", phòng bị loại khỏi danh sách phòng khả dụng \\\hline
@@ -1160,7 +1160,9 @@ Trạng thái phòng chuyển đổi theo chu trình: \textbf{Trống} $\to$ \te
 
 Các quy tắc nghiệp vụ được mã hóa theo nhóm, ký hiệu \texttt{QTxx}, là cơ sở trực tiếp để hiện thực các phương thức trong tầng BLL (Chương~6).
 
-\subsection{Nhóm Phòng và giá (QT01--QT10)}
+Bộ mã quy tắc dưới đây thống nhất với tài liệu \texttt{docs/03\_QuyTac\_NghiepVu.md} và với các chú thích \texttt{QTxx} trong mã nguồn (ví dụ \texttt{QuyTacTinhTien}). Các quy tắc đánh dấu \textit{(giả định)} là mục tiêu hoặc giả định nghiệp vụ cần nhóm xác nhận, chưa được cưỡng chế đầy đủ trong mã nguồn.
+
+\subsection{Nhóm Phòng và giá (QT01--QT05)}
 
 \begin{longtable}{|c|p{12cm}|}
 \caption{Quy tắc nhóm Phòng và giá}\\\hline
@@ -1168,14 +1170,14 @@ Các quy tắc nghiệp vụ được mã hóa theo nhóm, ký hiệu \texttt{QT
 \endfirsthead
 \hline \textbf{Mã} & \textbf{Nội dung}\\\hline
 \endhead
-QT01 & Số phòng là duy nhất trong toàn hệ thống. \\\hline
-QT02 & Mỗi phòng thuộc đúng một loại phòng; giá áp dụng theo loại phòng tại thời điểm giao dịch. \\\hline
-QT03 & Giá mỗi đêm của loại phòng phải lớn hơn 0. \\\hline
-QT04 & Phòng ở trạng thái Bảo trì hoặc Ngừng hoạt động không được chọn để đặt phòng hoặc nhận phòng. \\\hline
-QT05 & Chỉ Quản lý được thay đổi giá loại phòng; thay đổi không ảnh hưởng ngược tới các phiếu thuê đã chốt giá (snapshot). \\\hline
+QT01 & Mỗi phòng thuộc đúng một loại phòng và nằm ở một tầng; số phòng là duy nhất. \\\hline
+QT02 & Giá phòng được cấu hình theo loại phòng, đơn vị VNĐ/đêm, giá lớn hơn 0. \\\hline
+QT03 & Hóa đơn lưu đơn giá tại thời điểm lập phiếu thuê (snapshot); đổi giá sau này không ảnh hưởng hóa đơn cũ. \\\hline
+QT04 & Không xóa phòng hoặc loại phòng đã có đặt phòng/phiếu thuê; chỉ cho đổi trạng thái sang Ngừng sử dụng. \\\hline
+QT05 & Phòng ở trạng thái Bảo trì không được đặt hoặc nhận. \\\hline
 \end{longtable}
 
-\subsection{Nhóm Đặt phòng (QT11--QT20)}
+\subsection{Nhóm Đặt phòng (QT10--QT16)}
 
 \begin{longtable}{|c|p{12cm}|}
 \caption{Quy tắc nhóm Đặt phòng}\\\hline
@@ -1183,14 +1185,16 @@ QT05 & Chỉ Quản lý được thay đổi giá loại phòng; thay đổi kh�
 \endfirsthead
 \hline \textbf{Mã} & \textbf{Nội dung}\\\hline
 \endhead
-QT11 & Hai đặt phòng/phiếu thuê cho cùng một phòng không được có khoảng ngày giao nhau (kiểm tra theo khoảng nửa mở, trong giao dịch Serializable). \\\hline
-QT12 & Ngày trả dự kiến phải lớn hơn ngày nhận dự kiến. \\\hline
-QT13 & Số đêm lưu trú tối thiểu là 1 (QT40, áp dụng chung cho đặt phòng và tính tiền). \\\hline
-QT14 & Đặt phòng chỉ được tạo cho phòng đang ở trạng thái hoạt động (không Bảo trì/Ngừng hoạt động). \\\hline
-QT15 & Tiền cọc không được vượt quá giá một đêm nhân với tổng số đêm dự kiến. \\\hline
+QT10 & Ngày đến phải trước ngày đi; ngày đến không được trước ngày hiện tại. \\\hline
+QT11 & Khoảng ngày đặt là nửa mở [ngày đến, ngày đi): đêm của ngày đi không tính, nên khách trả phòng ngày 5 và khách khác nhận phòng ngày 5 không xung đột. \\\hline
+QT12 & Hai khoảng [a1, a2) và [b1, b2) giao nhau khi $a_1 < b_2$ và $b_1 < a_2$; một phòng không được có hai khoảng giao nhau giữa các đặt phòng (Đã đặt) và phiếu thuê (Đang ở), kiểm tra trong giao dịch Serializable. \\\hline
+QT13 & Khi sửa một đặt phòng, kiểm tra giao nhau và loại trừ chính nó (chưa có chức năng sửa đặt phòng trong mã nguồn hiện tại). \\\hline
+QT14 & Đặt phòng đã hủy hoặc không đến thì không tính vào kiểm tra giao nhau. \\\hline
+QT15 & Tiền cọc là tùy chọn, tối đa bằng giá phòng một đêm nhân số đêm; được trừ vào hóa đơn khi trả phòng. \\\hline
+QT16 & Một đặt phòng gắn một khách đại diện (bắt buộc có thông tin khách). \\\hline
 \end{longtable}
 
-\subsection{Nhóm Nhận phòng (QT21--QT30)}
+\subsection{Nhóm Nhận phòng (QT20--QT24)}
 
 \begin{longtable}{|c|p{12cm}|}
 \caption{Quy tắc nhóm Nhận phòng}\\\hline
@@ -1198,12 +1202,14 @@ QT15 & Tiền cọc không được vượt quá giá một đêm nhân với t�
 \endfirsthead
 \hline \textbf{Mã} & \textbf{Nội dung}\\\hline
 \endhead
-QT21 & Nhận phòng có thể thực hiện từ một đặt phòng có sẵn hoặc trực tiếp cho khách vãng lai. \\\hline
-QT22 & Khi nhận phòng, giá phòng hiện hành được chốt (snapshot) vào phiếu thuê, không thay đổi dù giá niêm yết sau đó biến động. \\\hline
-QT23 & Phòng chỉ được nhận khi đang ở trạng thái Trống hoặc Đã đặt (không nhận được khi Dọn dẹp/Bảo trì). \\\hline
+QT20 & \textit{(Giả định)} Giờ nhận phòng chuẩn 14:00; cho nhận sớm nếu phòng đang Trống và không vướng đặt phòng khác. Mã nguồn hiện chưa kiểm tra mốc giờ nhận. \\\hline
+QT21 & Chỉ nhận phòng ở trạng thái Trống hoặc Đã đặt (đúng đặt phòng của khách đó); không nhận được khi Dọn dẹp hoặc Bảo trì. \\\hline
+QT22 & Khách phải có họ tên, số giấy tờ (CMND/CCCD/hộ chiếu) và số điện thoại. \\\hline
+QT23 & Số giấy tờ của khách là duy nhất; khách cũ được tái sử dụng, không tạo mới. \\\hline
+QT24 & Nhận phòng tạo phiếu thuê (Đang ở), chốt giá phòng hiện hành vào phiếu và chuyển phòng sang Đang ở trong cùng một thao tác. \\\hline
 \end{longtable}
 
-\subsection{Nhóm Dịch vụ (QT31--QT35)}
+\subsection{Nhóm Dịch vụ (QT30--QT33)}
 
 \begin{longtable}{|c|p{12cm}|}
 \caption{Quy tắc nhóm Dịch vụ}\\\hline
@@ -1211,13 +1217,14 @@ QT23 & Phòng chỉ được nhận khi đang ở trạng thái Trống hoặc �
 \endfirsthead
 \hline \textbf{Mã} & \textbf{Nội dung}\\\hline
 \endhead
-QT31 & Dịch vụ chỉ được ghi nhận cho phiếu thuê đang ở trạng thái "Đang ở". \\\hline
-QT32 & Đơn giá dịch vụ được chốt (snapshot) tại thời điểm ghi nhận. \\\hline
-QT33 & Số lượng dịch vụ phải lớn hơn 0. \\\hline
-QT34 & Chỉ được xóa dòng dịch vụ khi phiếu thuê chưa trả phòng. \\\hline
+QT30 & Chỉ ghi dịch vụ vào phiếu thuê đang ở trạng thái Đang ở. \\\hline
+QT31 & Số lượng phải lớn hơn 0; đơn giá tại thời điểm ghi được lưu vào dòng chi tiết. \\\hline
+QT32 & Thành tiền dịch vụ bằng số lượng nhân đơn giá; chỉ được xóa dòng dịch vụ khi phiếu thuê chưa trả phòng. \\\hline
+QT33 & Dịch vụ ngừng cung cấp thì ẩn khỏi danh sách chọn, không xóa dữ liệu cũ. \\\hline
 \end{longtable}
 
-\subsection{Nhóm Tính tiền (QT40--QT49)}
+\subsection{Nhóm Tính tiền (QT40--QT46)}
+\label{sec:tinh-tien}
 
 \begin{longtable}{|c|p{12cm}|}
 \caption{Quy tắc nhóm Tính tiền}\\\hline
@@ -1225,12 +1232,13 @@ QT34 & Chỉ được xóa dòng dịch vụ khi phiếu thuê chưa trả phòn
 \endfirsthead
 \hline \textbf{Mã} & \textbf{Nội dung}\\\hline
 \endhead
-QT40 & Số đêm lưu trú tối thiểu khi tính tiền là 1, kể cả khi khách ở dưới 24 giờ. \\\hline
-QT41 & Tiền phòng = giá snapshot $\times$ số đêm. \\\hline
-QT42 & Tiền dịch vụ = tổng (đơn giá snapshot $\times$ số lượng) trên toàn bộ dòng dịch vụ của phiếu thuê. \\\hline
-QT43 & Mức giảm giá do Lễ tân áp dụng không được vượt quá 10\%; vượt ngưỡng cần xác nhận của Quản lý. \\\hline
-QT44 & Phụ thu trả muộn tính theo mốc so với 12:00 ngày trả thực tế: trễ đến 1 giờ không phụ thu, trễ 1--3 giờ phụ thu một mức, trễ 3--6 giờ phụ thu mức cao hơn, trễ trên 6 giờ tính thêm một đêm. \\\hline
-QT45 & Tổng thanh toán không được âm (nếu cọc lớn hơn tổng tiền phòng + dịch vụ + phụ thu, phần dư được hoàn lại, tổng thanh toán trên hóa đơn ghi nhận 0). \\\hline
+QT40 & Số đêm là số ngày giữa ngày đến và ngày đi (chỉ tính phần ngày), tối thiểu 1 đêm, kể cả khi khách ở dưới 24 giờ. \\\hline
+QT41 & Tiền phòng bằng số đêm nhân giá phòng đã chốt (snapshot). \\\hline
+QT42 & Tiền dịch vụ bằng tổng thành tiền các dòng dịch vụ của phiếu thuê. \\\hline
+QT43 & \textit{(Giả định)} Giờ trả phòng chuẩn 12:00. Phụ thu trả muộn tính theo mốc so với 12:00 của ngày trả thực tế: trễ đến 1 giờ miễn phí; trên 1 đến 3 giờ phụ thu 30\% giá phòng một đêm; trên 3 đến 6 giờ phụ thu 50\%; trên 6 giờ phụ thu 100\%. \\\hline
+QT44 & Giảm giá nhập tay bằng số tiền, không vượt tiền phòng cộng dịch vụ cộng phụ thu; Lễ tân chỉ được giảm tối đa 10\%, mức cao hơn do Quản lý nhập (chưa có luồng yêu cầu/ghi nhận duyệt riêng). \\\hline
+QT45 & Tổng thanh toán bằng tiền phòng cộng tiền dịch vụ cộng phụ thu trừ giảm giá trừ tiền cọc và không được âm (phần cọc dư được hoàn lại, hóa đơn ghi nhận 0). \\\hline
+QT46 & Trả phòng sớm: tính theo số đêm thực tế (ngày đi thực tế), tối thiểu 1 đêm. \\\hline
 \end{longtable}
 
 \paragraph{Công thức tính tiền.} Gọi $G$ là giá phòng snapshot/đêm, $n$ là số đêm, $D$ là tổng tiền dịch vụ, $P$ là phụ thu trả muộn, $C$ là tiền cọc, $r$ là tỷ lệ giảm giá ($0 \le r \le 1$). Tổng thanh toán được tính:
@@ -1246,7 +1254,7 @@ T_{truoc} &= 400.000 \times 3 + 80.000 + 120.000 = 1.400.000 \\
 TongThanhToan &= 1.400.000 - 200.000 = 1.200.000 \text{ (đồng)}
 \end{align*}
 
-\subsection{Nhóm Trả phòng và hóa đơn (QT50--QT55)}
+\subsection{Nhóm Trả phòng và hóa đơn (QT50--QT54)}
 
 \begin{longtable}{|c|p{12cm}|}
 \caption{Quy tắc nhóm Trả phòng và hóa đơn}\\\hline
@@ -1254,13 +1262,14 @@ TongThanhToan &= 1.400.000 - 200.000 = 1.200.000 \text{ (đồng)}
 \endfirsthead
 \hline \textbf{Mã} & \textbf{Nội dung}\\\hline
 \endhead
-QT50 & Một phiếu thuê chỉ được trả phòng đúng một lần; thao tác trả phòng lần hai trên cùng phiếu thuê bị từ chối. \\\hline
-QT51 & Toàn bộ thao tác trả phòng (tính tiền, lập hóa đơn, đóng phiếu thuê, đổi trạng thái phòng) nằm trong một giao dịch duy nhất. \\\hline
-QT52 & Sau khi hóa đơn được lập, dữ liệu hóa đơn không được chỉnh sửa trực tiếp. \\\hline
-QT53 & Phòng sau khi trả chuyển sang trạng thái "Dọn dẹp", chỉ nhận khách mới sau khi được xác nhận dọn xong. \\\hline
+QT50 & Trả phòng chạy trong một giao dịch: tính tiền, tạo hóa đơn, đóng phiếu thuê (Đã trả, ghi ngày đi thực tế), chuyển phòng sang Dọn dẹp, cập nhật đặt phòng liên quan; một bước lỗi thì hoàn tác toàn bộ (rollback). \\\hline
+QT51 & Mỗi phiếu thuê chỉ có một hóa đơn; không trả phòng hai lần. \\\hline
+QT52 & Hóa đơn đã lập không sửa, không xóa; sai sót xử lý bằng hóa đơn điều chỉnh (ngoài phạm vi đồ án). \\\hline
+QT53 & Hóa đơn ghi hình thức thanh toán (Tiền mặt, Chuyển khoản, Thẻ). \\\hline
+QT54 & Có thể in lại hóa đơn nhiều lần. \\\hline
 \end{longtable}
 
-\subsection{Nhóm Khách hàng và tài khoản (QT56--QT60)}
+\subsection{Nhóm Khách hàng và tài khoản (QT60--QT64)}
 
 \begin{longtable}{|c|p{12cm}|}
 \caption{Quy tắc nhóm Khách hàng và tài khoản}\\\hline
@@ -1268,25 +1277,34 @@ QT53 & Phòng sau khi trả chuyển sang trạng thái "Dọn dẹp", chỉ nh�
 \endfirsthead
 \hline \textbf{Mã} & \textbf{Nội dung}\\\hline
 \endhead
-QT56 & Số giấy tờ tùy thân của khách hàng là duy nhất trong hệ thống. \\\hline
-QT57 & Mật khẩu tài khoản phải có tối thiểu 8 ký tự, bao gồm chữ hoa, chữ thường và số. \\\hline
-QT58 & Đăng nhập sai 5 lần liên tiếp sẽ khóa tài khoản tạm thời 30 giây. \\\hline
-QT59 & Hệ thống luôn phải còn ít nhất một tài khoản Quản lý ở trạng thái hoạt động; thao tác khóa/xóa tài khoản Quản lý cuối cùng bị từ chối. \\\hline
+QT60 & CMND/CCCD gồm 9 hoặc 12 chữ số; số điện thoại gồm 10 chữ số bắt đầu bằng 0; email (nếu có) đúng định dạng. \\\hline
+QT61 & Không xóa khách đã có đặt phòng hoặc phiếu thuê. \\\hline
+QT62 & Mật khẩu được băm (không lưu thô), tối thiểu 8 ký tự, có chữ và số (mã nguồn yêu cầu thêm chữ hoa và chữ thường). \\\hline
+QT63 & Tài khoản bị khóa không đăng nhập được; Quản lý không tự khóa hoặc tự xóa chính mình. Đăng nhập sai 5 lần liên tiếp khóa tạm 30 giây. \\\hline
+QT64 & Phải có ít nhất một tài khoản Quản lý đang hoạt động; thao tác khóa Quản lý cuối cùng bị từ chối. \\\hline
 \end{longtable}
 
-\subsection{Nhóm Phân quyền (QT61--QT64)}
+\subsection{Phân quyền}
 
-\begin{longtable}{|c|p{12cm}|}
-\caption{Quy tắc nhóm Phân quyền}\\\hline
-\textbf{Mã} & \textbf{Nội dung}\\\hline
-\endfirsthead
-\hline \textbf{Mã} & \textbf{Nội dung}\\\hline
-\endhead
-QT61 & Lễ tân chỉ được xem (không sửa) các danh mục Loại phòng, Phòng, Dịch vụ. \\\hline
-QT62 & Chỉ Quản lý truy cập được màn hình Báo cáo và Quản lý tài khoản. \\\hline
-QT63 & Chỉ Quản lý được xác nhận mức giảm giá vượt ngưỡng 10\%. \\\hline
-QT64 & Mọi kiểm tra quyền ở giao diện đều được kiểm tra lại ở tầng BLL trước khi ghi dữ liệu. \\\hline
-\end{longtable}
+Phân quyền không đánh mã riêng mà được tổng hợp trong Bảng~\ref{tab:phan-quyen}; mọi kiểm tra quyền ở giao diện đều được kiểm tra lại ở tầng BLL trước khi ghi dữ liệu.
+
+\begin{table}[H]
+\centering
+\caption{Phân quyền theo vai trò}
+\label{tab:phan-quyen}
+\begin{tabularx}{\textwidth}{|X|c|c|}
+\hline
+\textbf{Chức năng} & \textbf{Lễ tân} & \textbf{Quản lý} \\\hline
+Đặt phòng, nhận phòng, ghi dịch vụ, trả phòng, in hóa đơn & Có & Có \\\hline
+Quản lý khách hàng & Có & Có \\\hline
+Xem danh mục phòng, dịch vụ & Chỉ xem & Có \\\hline
+Thêm, sửa, xóa loại phòng, phòng, dịch vụ, cấu hình giá & Không & Có \\\hline
+Quản lý tài khoản & Không & Có \\\hline
+Báo cáo, biểu đồ, thống kê & Không & Có \\\hline
+Giảm giá vượt 10\% & Không & Có \\\hline
+Đổi mật khẩu của chính mình & Có & Có \\\hline
+\end{tabularx}
+\end{table}
 
 \subsection{Nhóm Tra cứu công khai, mã QR và giao diện (QT65--QT70)}
 
@@ -1337,13 +1355,13 @@ Luồng trả phòng là luồng phức tạp nhất vì liên quan tới nhiề
 \begin{enumerate}
   \item \textbf{GUI} (\texttt{FrmTraPhong}): người dùng chọn phiếu thuê, hệ thống hiển thị bảng chi tiết tính tiền tạm tính (gọi \texttt{PhieuThueBLL.TinhTienTamTinh} để xem trước, chưa ghi CSDL).
   \item Người dùng xác nhận trả phòng $\to$ GUI gọi \texttt{PhieuThueBLL.TraPhong(maPhieuThue, giamGia, nguoiLap)}.
-  \item \textbf{BLL}: gọi lớp tiện ích \texttt{QuyTacTinhTien} để tính tiền phòng, tiền dịch vụ, phụ thu trả muộn (QT44) theo công thức ở Mục~5.3.6; kiểm tra quyền giảm giá nếu $giamGia > 10\%$ (QT43); nếu hợp lệ, gọi \texttt{PhieuThueDAL.TraPhong} truyền các giá trị đã tính.
-  \item \textbf{DAL}: gọi \texttt{sp\_TraPhong} trong một \texttt{SqlTransaction}; nếu thủ tục lưu trữ phát hiện phiếu thuê đã trả phòng trước đó (QT50), ném ngoại lệ nghiệp vụ, DAL rollback transaction và ném lại ngoại lệ lên BLL.
+  \item \textbf{BLL}: gọi lớp tiện ích \texttt{QuyTacTinhTien} để tính tiền phòng, tiền dịch vụ, phụ thu trả muộn (QT43) theo công thức ở Mục~\ref{sec:tinh-tien}; kiểm tra quyền giảm giá nếu $giamGia > 10\%$ (QT44); nếu hợp lệ, gọi \texttt{PhieuThueDAL.TraPhong} truyền các giá trị đã tính.
+  \item \textbf{DAL}: gọi \texttt{sp\_TraPhong} trong một \texttt{SqlTransaction}; nếu thủ tục lưu trữ phát hiện phiếu thuê đã trả phòng trước đó (QT51), ném ngoại lệ nghiệp vụ, DAL rollback transaction và ném lại ngoại lệ lên BLL.
   \item \textbf{BLL} bắt ngoại lệ nghiệp vụ (nếu có), chuyển thành thông báo dễ hiểu; nếu thành công, trả về \texttt{HoaDonDTO} vừa tạo.
   \item \textbf{GUI} hiển thị bảng xem trước hóa đơn, cho phép in (gọi lớp \texttt{InAn}).
 \end{enumerate}
 
-Đoạn mã dưới đây trích từ lớp \texttt{QuyTacTinhTien} minh họa việc hiện thực công thức tính phụ thu trả muộn (QT44) bằng C\#:
+Đoạn mã dưới đây trích từ lớp \texttt{QuyTacTinhTien} minh họa việc hiện thực công thức tính phụ thu trả muộn (QT43) bằng C\#:
 
 \begin{lstlisting}[language=csharp, caption={Tính phụ thu trả muộn theo mốc giờ (QuyTacTinhTien.cs, rút gọn)}]
 public static decimal TinhPhuThuTraMuon(DateTime ngayTraDuKien, DateTime thoiDiemTraThucTe, decimal giaMotDem)
@@ -1717,7 +1735,7 @@ Kiểm thử tự động & Project \texttt{QuanLyKhachSan.Tests}, chạy bằng
 
 \subsection{Kiểm thử logic tự động (độc lập CSDL)}
 
-Project \texttt{QuanLyKhachSan.Tests} kiểm tra trực tiếp các quy tắc nghiệp vụ không phụ thuộc kết nối CSDL: số đêm lưu trú tối thiểu (QT40), phụ thu trả muộn theo ba mốc 1/3/6 giờ (QT44), tổng thanh toán không âm (QT45), giới hạn tiền cọc theo số đêm (QT15), gom doanh thu theo ngày/tháng/loại phòng kể cả các ngày không phát sinh giao dịch, tính tỷ lệ công suất trung bình, và xuất CSV (thoát dấu phẩy, dấu nháy kép, chặn chèn công thức). Sau khi bổ sung bộ mã hóa QR và lớp tạo đường dẫn tra cứu (QT65--QT68), bộ kiểm thử có thêm các ca tương ứng và tổng số đạt \textbf{47/47} khi chạy bằng Mono. Kết quả ghi nhận trong đợt hoàn thiện trước đó: \textbf{26/26 ca kiểm thử đạt} khi biên dịch và chạy bằng Mono; việc chạy lại bằng bộ công cụ \texttt{dotnet} chính thức chưa thực hiện được do môi trường phát triển tại thời điểm đó không có sẵn .NET SDK -- đây là hạn chế được ghi nhận trung thực thay vì bỏ qua.
+Project \texttt{QuanLyKhachSan.Tests} kiểm tra trực tiếp các quy tắc nghiệp vụ không phụ thuộc kết nối CSDL: số đêm lưu trú tối thiểu (QT40), phụ thu trả muộn theo ba mốc 1/3/6 giờ (QT43), tổng thanh toán không âm (QT45), giới hạn tiền cọc theo số đêm (QT15), gom doanh thu theo ngày/tháng/loại phòng kể cả các ngày không phát sinh giao dịch, tính tỷ lệ công suất trung bình, và xuất CSV (thoát dấu phẩy, dấu nháy kép, chặn chèn công thức). Sau khi bổ sung bộ mã hóa QR và lớp tạo đường dẫn tra cứu (QT65--QT68), bộ kiểm thử có thêm các ca tương ứng và tổng số đạt \textbf{47/47} khi chạy bằng Mono. Kết quả ghi nhận trong đợt hoàn thiện trước đó: \textbf{26/26 ca kiểm thử đạt} khi biên dịch và chạy bằng Mono; việc chạy lại bằng bộ công cụ \texttt{dotnet} chính thức chưa thực hiện được do môi trường phát triển tại thời điểm đó không có sẵn .NET SDK -- đây là hạn chế được ghi nhận trung thực thay vì bỏ qua.
 
 \subsection{Kiểm thử SQL và build}
 
@@ -1796,7 +1814,7 @@ Trong quá trình hoàn thiện, nhóm phát hiện và sửa 10 lỗi, tổng h
 10 & Giao diện & Chưa có biểu đồ, in báo cáo, xuất CSV & Bổ sung \texttt{ChartPanel}, \texttt{InAn}, \texttt{CsvExporter} \\\hline
 \end{longtable}
 
-Việc ghi nhận đầy đủ cả các lỗi \emph{đã sửa} thay vì chỉ trình bày sản phẩm cuối cùng giúp báo cáo phản ánh đúng quá trình lặp đi lặp lại giữa thiết kế, cài đặt và kiểm thử -- đặc biệt các lỗi mức Cao (\#1--\#4) đều liên quan trực tiếp tới các quy tắc nghiệp vụ QT15, QT44 và ràng buộc trạng thái phòng, cho thấy tầm quan trọng của việc kiểm thử kỹ các quy tắc tính tiền và quản lý trạng thái.
+Việc ghi nhận đầy đủ cả các lỗi \emph{đã sửa} thay vì chỉ trình bày sản phẩm cuối cùng giúp báo cáo phản ánh đúng quá trình lặp đi lặp lại giữa thiết kế, cài đặt và kiểm thử -- đặc biệt các lỗi mức Cao (\#1--\#4) đều liên quan trực tiếp tới các quy tắc nghiệp vụ QT15, QT43 và ràng buộc trạng thái phòng, cho thấy tầm quan trọng của việc kiểm thử kỹ các quy tắc tính tiền và quản lý trạng thái.
 
 \section{Checklist bảo mật}
 
@@ -1835,7 +1853,7 @@ Thông báo lỗi & Đạt & Chỉ hiển thị lỗi nghiệp vụ, không lộ
 \section*{1. Kết quả đạt được}
 \addcontentsline{toc}{section}{1. Kết quả đạt được}
 
-Qua quá trình thực hiện, nhóm đã xây dựng hoàn chỉnh một ứng dụng quản lý khách sạn theo kiến trúc ba lớp GUI -- BLL -- DAL với tầng DTO trung gian, bao phủ 19/19 chức năng bắt buộc và 3/4 chức năng nâng cao đã đặc tả ở Chương~1. Hệ thống hiện thực đầy đủ chu trình nghiệp vụ từ đặt phòng, nhận phòng, ghi nhận dịch vụ, trả phòng, lập hóa đơn đến báo cáo doanh thu và công suất phòng, với các ràng buộc toàn vẹn dữ liệu quan trọng (kiểm tra trùng lịch bằng giao dịch Serializable, snapshot giá, UNIQUE trên hóa đơn theo phiếu thuê) được đảm bảo ở tầng cơ sở dữ liệu chứ không chỉ ở tầng ứng dụng. Về bảo mật, hệ thống áp dụng băm mật khẩu PBKDF2, truy vấn tham số hóa, giới hạn đăng nhập sai và phân quyền hai lớp (giao diện và BLL). Bộ kiểm thử logic tự động đạt 26/26 ca kiểm tra các quy tắc tính tiền cốt lõi. Mười lỗi phát hiện trong quá trình hoàn thiện (4 lỗi mức cao liên quan trực tiếp tới các quy tắc nghiệp vụ QT15, QT44 và ràng buộc trạng thái phòng) đã được khắc phục và ghi nhận đầy đủ trong Chương~8.
+Qua quá trình thực hiện, nhóm đã xây dựng hoàn chỉnh một ứng dụng quản lý khách sạn theo kiến trúc ba lớp GUI -- BLL -- DAL với tầng DTO trung gian, bao phủ 19/19 chức năng bắt buộc và 3/4 chức năng nâng cao đã đặc tả ở Chương~1. Hệ thống hiện thực đầy đủ chu trình nghiệp vụ từ đặt phòng, nhận phòng, ghi nhận dịch vụ, trả phòng, lập hóa đơn đến báo cáo doanh thu và công suất phòng, với các ràng buộc toàn vẹn dữ liệu quan trọng (kiểm tra trùng lịch bằng giao dịch Serializable, snapshot giá, UNIQUE trên hóa đơn theo phiếu thuê) được đảm bảo ở tầng cơ sở dữ liệu chứ không chỉ ở tầng ứng dụng. Về bảo mật, hệ thống áp dụng băm mật khẩu PBKDF2, truy vấn tham số hóa, giới hạn đăng nhập sai và phân quyền hai lớp (giao diện và BLL). Bộ kiểm thử logic tự động đạt 26/26 ca kiểm tra các quy tắc tính tiền cốt lõi. Mười lỗi phát hiện trong quá trình hoàn thiện (4 lỗi mức cao liên quan trực tiếp tới các quy tắc nghiệp vụ QT15, QT43 và ràng buộc trạng thái phòng) đã được khắc phục và ghi nhận đầy đủ trong Chương~8.
 
 Về mặt tổ chức,  đã áp dụng cách phân chia công việc theo trục kỹ thuật dọc (mỗi người phụ trách trọn một nhóm chức năng từ CSDL đến giao diện) thay vì phân chia ngang theo lớp kiến trúc, giúp giảm phụ thuộc chờ đợi lẫn nhau và phù hợp với quy mô nhóm nhỏ.
 
@@ -1901,7 +1919,7 @@ Trong quá trình thực hiện, nhóm duy trì song song 10 tài liệu đặc 
 \textbf{Tệp} & \textbf{Nội dung} & \textbf{Chương tham chiếu} \\\hline
 01\_PhamVi\_ChucNang.md & Phạm vi, danh sách 23 chức năng, đối chiếu source & Chương 1 \\\hline
 02\_QuyTrinh\_NghiepVu.md & Quy trình tổng quát, vòng đời trạng thái & Chương 5 \\\hline
-03\_QuyTac\_NghiepVu.md & Quy tắc nghiệp vụ QT01--QT64 & Chương 5 \\\hline
+03\_QuyTac\_NghiepVu.md & Quy tắc nghiệp vụ QT01--QT70 & Chương 5 \\\hline
 04\_UseCase.md & 19 use case, ma trận chức năng--vai trò & Chương 3 \\\hline
 06\_ERD\_Review.md & Sơ đồ ERD, quyết định thiết kế & Chương 4 \\\hline
 07\_KichBanKiemThu.md & Kịch bản kiểm thử SQL/build/giao diện & Chương 8 \\\hline
@@ -1995,7 +2013,7 @@ letan & Admin@123 & Lễ tân & Họ tên mẫu: "Lễ tân 0 lương"; chỉ qu
 \end{tabularx}
 \end{table}
 
-Mật khẩu của cả hai tài khoản được băm bằng PBKDF2-SHA256 với 100.000 vòng lặp (\texttt{SoVongLap}) và salt riêng cho từng tài khoản, lưu trong cột \texttt{MatKhauHash}/\texttt{MatKhauSalt} của bảng \texttt{NguoiDung}; giá trị \texttt{Admin@123} trong Bảng~\ref{tab:taikhoan-mau} là mật khẩu gốc dùng để đăng nhập, không phải giá trị lưu trong CSDL. Mật khẩu này thỏa quy tắc QT57 (tối thiểu 8 ký tự, có chữ hoa, chữ thường và số) nhưng chỉ nên dùng cho mục đích demo/kiểm thử; cần đổi mật khẩu (chức năng HT02) hoặc tạo tài khoản mới trước khi triển khai trên môi trường thật, theo đúng khuyến nghị bảo mật tại Mục~8.4.
+Mật khẩu của cả hai tài khoản được băm bằng PBKDF2-SHA256 với 100.000 vòng lặp (\texttt{SoVongLap}) và salt riêng cho từng tài khoản, lưu trong cột \texttt{MatKhauHash}/\texttt{MatKhauSalt} của bảng \texttt{NguoiDung}; giá trị \texttt{Admin@123} trong Bảng~\ref{tab:taikhoan-mau} là mật khẩu gốc dùng để đăng nhập, không phải giá trị lưu trong CSDL. Mật khẩu này thỏa quy tắc QT62 (tối thiểu 8 ký tự, có chữ hoa, chữ thường và số) nhưng chỉ nên dùng cho mục đích demo/kiểm thử; cần đổi mật khẩu (chức năng HT02) hoặc tạo tài khoản mới trước khi triển khai trên môi trường thật, theo đúng khuyến nghị bảo mật tại Mục~8.4.
 
 % ===== end chuong/phu_luc.tex =====
 
