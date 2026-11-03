@@ -8,9 +8,10 @@
 - Ứng dụng Desktop Windows Forms, dữ liệu lưu SQL Server.
 - 2 vai trò: **Lễ tân**, **Quản lý**.
 - Quản lý phòng, khách, đặt phòng, nhận/trả phòng, dịch vụ phát sinh, hóa đơn, báo cáo.
+- Mở rộng (ngoài đặc tả bắt buộc): giao diện sáng/tối, mã QR tra cứu phòng và giá, cổng web **chỉ đọc** cho khách tra cứu (xem nhóm E).
 
 **Ngoài phạm vi** (theo đề bài)
-- Website, Web API, ứng dụng di động, hệ thống phân tán.
+- Website hoặc Web API cho khách **tự đặt phòng**, ứng dụng di động, hệ thống phân tán. (Cổng web tra cứu chỉ đọc ở nhóm E không cho đặt phòng, không đăng nhập và không hiển thị thông tin khách nên không thuộc mục này.)
 - Thanh toán online, tích hợp cổng thanh toán, kênh đặt phòng OTA.
 - Quản lý nhân sự, lương, kho, kế toán.
 
@@ -63,6 +64,16 @@ Cột "Quyền": **LT** = Lễ tân, **QL** = Quản lý.
 | BC05 | Sơ đồ phòng theo tầng | NC | LT, QL |
 | BC06 | Xuất danh sách khách đang lưu trú (CSV/Excel) | NC | LT, QL |
 
+### Nhóm E – Mở rộng (ngoài đặc tả bắt buộc)
+
+Cột "Loại": **MR** = mở rộng, bổ sung sau khi hoàn thành đặc tả ban đầu.
+
+| Mã | Chức năng | Loại | Quyền |
+|---|---|---|---|
+| MR01 | Giao diện sáng/tối: chuyển bằng menu hoặc Ctrl+D, ghi nhớ theo máy | MR | LT, QL |
+| MR02 | Tạo mã QR tra cứu phòng và bảng giá: xem, lưu PNG, in, xuất hàng loạt, sao chép liên kết | MR | LT, QL |
+| MR03 | Cổng web tra cứu cho khách: bảng giá, tình trạng phòng, tìm phòng trống theo ngày (chỉ đọc) | MR | Khách (công khai) |
+
 ## 3. Đối chiếu với đề bài
 
 Mọi mục trong "Chức năng chính" và "Chức năng Hệ thống" của đề tài đều có ít nhất một mã chức năng ở trên:
@@ -78,6 +89,7 @@ Mọi mục trong "Chức năng chính" và "Chức năng Hệ thống" của đ
 
 - Bắt buộc: 20 chức năng
 - Nâng cao: 4 chức năng (NV08, BC04, BC05, BC06)
+- Mở rộng: 3 chức năng (MR01–MR03), không tính vào 24 chức năng ở trên
 
 ## 5. Đối chiếu source hiện tại
 
@@ -89,5 +101,6 @@ Bảng chức năng phía trên mô tả phạm vi yêu cầu, không phải xá
 | Danh mục | Khách hàng, loại phòng, phòng, dịch vụ: thêm, sửa, tìm kiếm, ngừng sử dụng; Lễ tân chỉ xem ba danh mục sau | Chưa có lọc theo tầng/loại trong màn hình Phòng (có ở sơ đồ phòng) |
 | Nghiệp vụ | Tạo/hủy đặt phòng, đánh dấu khách không đến, cọc tối đa 1 đêm × số đêm; nhận phòng từ đặt trước hoặc vãng lai; ghi và xóa dịch vụ; trả phòng có transaction và hóa đơn; sơ đồ phòng theo tầng; bảo trì/dọn dẹp | Chưa có sửa đặt phòng và đổi phòng |
 | Tra cứu/báo cáo | Tra cứu hóa đơn, khách đang ở; doanh thu theo ngày/tháng/loại phòng; công suất phòng; biểu đồ; xem trước/in; xuất CSV | Chưa có xuất Excel (.xlsx) |
+| Mở rộng | Giao diện sáng/tối (Ctrl+D, ghi nhớ); mã QR phòng/giá (lưu PNG, in, xuất tất cả); cổng web `QuanLyKhachSan.Web` (tìm phòng trống, bảng giá, chi tiết phòng, API JSON) | Web chưa cho đặt phòng, chưa có xác thực/HTTPS; chưa kiểm chứng trên .NET SDK chính thức |
 
 Phòng ở trạng thái Dọn dẹp có thể được xác nhận hoàn tất trên sơ đồ; đây là thao tác cập nhật trạng thái, không phải chức năng đổi phòng. Ma trận này cần được cập nhật cùng kịch bản kiểm thử khi source thay đổi.

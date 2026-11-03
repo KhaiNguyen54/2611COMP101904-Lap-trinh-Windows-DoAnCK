@@ -79,9 +79,7 @@ stateDiagram-v2
 
 ## 5. Màu hiển thị trạng thái phòng (dùng cho NV03)
 
-| Trạng thái | Màu gợi ý |
-|---|---|
-| Trạng thái | Màu giao diện hiện tại (xấp xỉ) |
+| Trạng thái | Màu giao diện (xấp xỉ) |
 |---|---|
 | Trống | Xanh nhạt |
 | Đã đặt | Vàng nhạt |
@@ -89,4 +87,30 @@ stateDiagram-v2
 | Dọn dẹp | Nâu nhạt |
 | Bảo trì | Xám/nâu nhạt |
 
-Màu được xác định trong `UcTrangThaiPhong`; mã màu cụ thể có thể thay đổi theo theme.
+Màu được xác định theo bộ màu hiện hành trong `GiaoDien.MauPhong` (dùng bởi `UcTrangThaiPhong`); ở chế độ tối các màu này dùng sắc độ tối hơn nhưng giữ nguyên ý nghĩa.
+
+## 6. Quy trình mở rộng: khách tra cứu bằng mã QR
+
+Quy trình bổ sung, không thay đổi dữ liệu nghiệp vụ nào ở các mục trên.
+
+```mermaid
+flowchart TD
+    A([Lễ tân/Quản lý mở Tra cứu → Mã QR phòng và giá]) --> B[Chọn phòng hoặc Bảng giá]
+    B --> C[Hệ thống sinh QR chứa đường dẫn công khai]
+    C --> D[Lưu PNG / In / Xuất tất cả]
+    D --> E([Dán QR ở phòng hoặc quầy])
+    E --> F([Khách quét bằng điện thoại])
+    F --> G[Cổng web: /phong/số hoặc /gia]
+    G --> H[Xem loại phòng, giá, tình trạng rút gọn]
+    H --> I{Cần biết ngày trống?}
+    I -- Có --> J[Chọn ngày đến/đi, xem còn trống và tổng tiền]
+    I -- Không --> K([Kết thúc])
+    J --> K
+```
+
+| Bước | Hoạt động | Người thực hiện | Ghi chú |
+|---|---|---|---|
+| 1 | Tạo và in mã QR | Lễ tân/Quản lý | QR chỉ chứa đường dẫn (QT65); địa chỉ gốc lấy từ `Web:BaseUrl` (QT66) |
+| 2 | Quét QR, xem phòng/giá | Khách | Trang chỉ đọc, không đăng nhập, không hiển thị tên khách (QT69) |
+| 3 | Kiểm tra theo ngày | Khách | Ngày đến không trước hôm nay, tối đa 60 đêm (QT69) |
+| 4 | Đặt phòng thực tế | Khách liên hệ Lễ tân | Cổng web không cho đặt phòng; quy trình đặt phòng ở mục 1 giữ nguyên |

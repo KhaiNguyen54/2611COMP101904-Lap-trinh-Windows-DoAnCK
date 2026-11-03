@@ -131,6 +131,18 @@ WHERE MaPhong = @MaPhong
 | QT30–QT33 | Số lượng dịch vụ dương; đơn giá lưu theo chi tiết; xóa dòng dịch vụ chỉ khi phiếu còn "Đang ở" | Chưa có sửa số lượng (xóa rồi ghi lại) |
 | QT40–QT46 | Số đêm tối thiểu 1; phụ thu muộn đo so với 12:00 của ngày trả thực tế (≤1 giờ miễn phí, 1–3 giờ 30%, 3–6 giờ 50%, trên 6 giờ 100%); Lễ tân giảm tối đa 10% | Giờ chuẩn 12:00 vẫn là giả định nghiệp vụ; chưa có quy trình duyệt giảm giá riêng |
 | QT50–QT54 | Stored procedure trả phòng dùng transaction, một hóa đơn cho mỗi phiếu thuê, đóng phiếu, phòng chuyển Dọn dẹp | Chưa có hóa đơn điều chỉnh |
+| QT65–QT70 | Mã QR chỉ chứa đường dẫn; `Web:BaseUrl` có mặc định; giới hạn 213 byte; QR chỉ cho phòng hoạt động; trang web chỉ đọc, ẩn tên khách, kiểm tra ngày; giao diện sáng/tối lưu theo máy (`TraCuuUrl`, `QrCode`, `TraCuuService`, `GiaoDien`) | Web chưa có xác thực/HTTPS; chưa có giới hạn tần suất truy cập |
 | QT60–QT64 | Kiểm tra giấy tờ, điện thoại, email, mật khẩu mạnh, băm PBKDF2; tài khoản tự khóa bị chặn; luôn còn một Quản lý hoạt động (khóa trong transaction Serializable) | Chưa xác minh điều kiện email ở CSDL |
 
 Quy tắc SQL kiểm tra giao nhau ở mục 9 chỉ là truy vấn minh họa. Source hiện dùng `sp_KiemTraTrungLich` và transaction ở DAL để kiểm tra trước khi tạo đặt phòng.
+
+## 11. Tra cứu công khai, mã QR và giao diện
+
+| Mã | Quy tắc |
+|---|---|
+| QT65 | Mã QR chỉ chứa đường dẫn tra cứu công khai (`/phong/{số phòng}` hoặc `/gia`); không chứa thông tin khách, hóa đơn hay tài khoản |
+| QT66 | Địa chỉ gốc lấy từ khóa cấu hình `Web:BaseUrl`; thiếu thì dùng mặc định `http://localhost:5080`; dấu `/` thừa ở cuối được loại bỏ |
+| QT67 | Nội dung mã QR không rỗng và tối đa 213 byte (UTF-8); vượt giới hạn thì từ chối thay vì tạo mã sai |
+| QT68 | Chỉ tạo mã QR cho phòng đang hoạt động; số phòng được mã hóa URL khi đưa vào đường dẫn |
+| QT69 | Trang web công khai chỉ đọc: chỉ trả về loại phòng và phòng đang hoạt động; tình trạng hiển thị rút gọn (không nêu tên khách); ngày đến không trước hôm nay, ngày đến trước ngày đi, tối đa 60 đêm mỗi lần tra cứu |
+| QT70 | Lựa chọn giao diện sáng/tối được lưu theo từng máy và áp dụng ngay cho mọi cửa sổ đang mở; báo cáo in luôn dùng nền sáng |

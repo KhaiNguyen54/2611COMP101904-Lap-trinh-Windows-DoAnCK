@@ -24,7 +24,7 @@ Phạm vi đã triển khai có thể thay đổi theo phiên bản source hiệ
 - SQL Server Express, LocalDB hoặc SQL Server có quyền tạo database và bảng.
 - Kết nối Windows Authentication theo mặc định; máy chạy ứng dụng cần truy cập được SQL Server.
 
-NuGet dependency được khai báo trong project: `Microsoft.Data.SqlClient` 5.2.2. Khi restore/build lần đầu cần có kết nối NuGet.
+NuGet dependency được khai báo trong project: `Microsoft.Data.SqlClient` 5.2.2 (cả ứng dụng desktop và cổng web). Cổng web dùng ASP.NET Core đi kèm .NET 10 SDK; mã QR do bộ mã hóa tự viết trong `BLL/QrCode.cs` nên không cần thư viện QR. Khi restore/build lần đầu cần có kết nối NuGet.
 
 ## Cài đặt và chạy
 
@@ -107,16 +107,21 @@ QuanLyKhachSan/
 ├── QuanLyKhachSan.sln
 ├── README.md
 ├── docs/                         # Yêu cầu, quy trình, quy tắc và kịch bản
+├── Latex/                        # Báo cáo LaTeX và ảnh minh họa
+├── QuanLyKhachSan.Tests/         # Kiểm thử logic tự động (không cần CSDL)
+├── QuanLyKhachSan.Web/           # Cổng web tra cứu (ASP.NET Core, chỉ đọc)
 └── QuanLyKhachSan/
-    ├── BLL/                      # Kiểm tra và xử lý nghiệp vụ
+    ├── BLL/                      # Nghiệp vụ; QrCode.cs, TraCuuUrl.cs cho mã QR
     ├── DAL/                      # Truy vấn SQL, stored procedure, transaction
     ├── DTO/                      # Đối tượng truyền dữ liệu
-    ├── GUI/                      # WinForms và UserControl
+    ├── GUI/                      # WinForms và UserControl (GiaoDien.cs: bộ màu sáng/tối)
     ├── Scripts/Database.sql      # Schema, dữ liệu mẫu, index, stored procedure
-    ├── appsettings.json          # Cấu hình kết nối mặc định
+    ├── appsettings.json          # Kết nối CSDL và Web:BaseUrl cho mã QR
     ├── Program.cs
     └── QuanLyKhachSan.csproj
 ```
+
+Cổng web biên dịch lại một số tệp DTO/DAL/BLL của ứng dụng desktop (khai báo trong `QuanLyKhachSan.Web.csproj`) nên không nhân đôi nghiệp vụ.
 
 Luồng gọi chính: **GUI → BLL → DAL → SQL Server**. DTO được dùng để trao đổi dữ liệu giữa các tầng. Các truy vấn DAL sử dụng tham số SQL.
 
@@ -129,8 +134,10 @@ Sau khi build thành công và database đã kết nối được:
 3. Nhận phòng, ghi một dịch vụ, trả phòng; kiểm tra hóa đơn gồm tiền phòng, dịch vụ, phụ thu/giảm giá và tiền cọc.
 4. Mở lại hóa đơn để xem trước và in; xác nhận trả phòng lần hai không tạo hóa đơn mới.
 5. Đổi bộ lọc thời gian trên báo cáo và đối chiếu với hóa đơn trong khoảng đã chọn.
+6. Nhấn Ctrl+D để đổi giao diện sáng/tối; mở thêm vài cửa sổ và xác nhận chữ vẫn đọc được, đóng/mở lại ứng dụng để xác nhận lựa chọn được nhớ.
+7. Tra cứu → Mã QR phòng và giá: tạo QR cho một phòng, quét bằng điện thoại cùng mạng và xác nhận mở đúng trang phòng của cổng web.
 
-Kiểm thử logic tự động: `dotnet run --project QuanLyKhachSan.Tests` (quy tắc tính tiền, gom báo cáo, CSV).
+Kiểm thử logic tự động: `dotnet run --project QuanLyKhachSan.Tests` (quy tắc tính tiền, gom báo cáo, CSV, bộ mã hóa QR và đường dẫn tra cứu; 47 ca đạt khi chạy bằng Mono, chưa chạy bằng `dotnet`).
 
 Kịch bản chi tiết và trạng thái xác minh được ghi tại [`docs/07_KichBanKiemThu.md`](docs/07_KichBanKiemThu.md). Các bước trên là hướng dẫn kiểm thử thủ công; chưa hàm ý rằng mọi kịch bản giao diện đã được chạy tự động.
 
@@ -139,6 +146,7 @@ Kịch bản chi tiết và trạng thái xác minh được ghi tại [`docs/07
 - Dùng tham số cho câu truy vấn SQL; mật khẩu tài khoản mẫu lưu dưới dạng hash, không lưu rõ.
 - Tài khoản mẫu có mật khẩu mặc định dùng chung; cần đổi ngay khi đăng nhập.
 - `appsettings.json` hiện chứa cấu hình mặc định Windows Authentication. Không commit thông tin đăng nhập riêng hoặc dữ liệu khách thật.
+- Cổng web tra cứu chỉ đọc và không hiển thị thông tin khách, nhưng mặc định chạy HTTP, không xác thực và lắng nghe mọi địa chỉ; chỉ dùng trong mạng nội bộ, nên cấp tài khoản SQL chỉ có quyền đọc, và thêm HTTPS trước khi mở ra Internet.
 - Script khởi tạo có thể chạy lại và thêm dữ liệu mẫu còn thiếu; sao lưu database trước khi thử chỉnh sửa script trên database đang dùng.
 
 ## Tài liệu

@@ -45,3 +45,7 @@ erDiagram
 - Khoảng thời gian giao nhau là ràng buộc liên bản ghi, không được bảo đảm bởi `CHECK` hoặc index unique thông thường. Stored procedure và transaction ở DAL thực hiện kiểm tra khi ghi.
 - Bảng `Phong` lưu `TrangThai`, nhưng trạng thái hiển thị `Đang ở` và `Đã đặt` được suy ra từ phiếu thuê/đặt phòng khi tra cứu; không xem ERD như một bản sao toàn bộ logic hiển thị.
 - Script dùng `CREATE OR ALTER` cho stored procedure và tạo database nếu chưa tồn tại. Chạy lần đầu cần quyền tạo database; chạy lại trên database có dữ liệu cần được kiểm soát như mọi thay đổi schema.
+
+## Ghi chú: cổng web tra cứu và schema
+
+Cổng web `QuanLyKhachSan.Web` (chỉ đọc) và mã QR **không thêm bảng hay cột nào**. Cổng web dùng lại `LoaiPhong`, `Phong` và, để suy ra trạng thái hiển thị/phòng trống, `DatPhong` và `PhieuThue` qua `PhongDAL.TimKiem`/`TimKiemTrongKhoang`. Không đọc `KhachHang`, `HoaDon`, `NguoiDung`; không dùng `PhongDAL.LaySoDo` vì kết quả chứa tên khách. Tài khoản SQL dùng cho cổng web nên chỉ có quyền SELECT trên các bảng trên khi triển khai thực tế.

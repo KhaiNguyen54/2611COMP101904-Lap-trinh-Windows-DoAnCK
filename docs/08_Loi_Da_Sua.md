@@ -12,3 +12,6 @@
 | 8 | Giao diện | Số liệu thẻ thống kê và chữ "Làm mới" bị cắt; hàng/cột kích thước cố định | Viết lại bố cục: `TableLayoutPanel`/`FlowLayoutPanel` tự co, `MinimumSize`, `GiaoDien.Nhom/ThanhNgang/GocTuCo`, cỡ thẻ phòng tính từ cỡ chữ |
 | 9 | Giao diện | Tô màu nút theo nội dung chữ (dễ sai) | Nút hành động chính đánh dấu `Tag = "chinh"` |
 | 10 | Giao diện | Biểu đồ/in báo cáo/xuất CSV chưa có | `ChartPanel`, `InAn`, `CsvExporter` |
+| 11 | Trung bình | Dự án web: khai báo `None Update` cho `appsettings.json` không có tác dụng (Web SDK coi đây là `Content`), build báo trùng mục | Đổi thành `Content Update` có `CopyToOutputDirectory` |
+| 12 | Giao diện | Khi thêm bộ màu sáng/tối, một phép thay màu hàng loạt làm hỏng khai báo bộ màu sáng gây lỗi khởi tạo `GiaoDien` | Khôi phục giá trị màu gốc; xác nhận lại bằng chụp giao diện cả hai chế độ |
+| 13 | Giao diện | Ô chọn ngày hệ thống vẽ nền sáng, chữ sáng ở chế độ tối nên mờ | Giữ màu hệ thống cho `DateTimePicker`; nhãn tab được vẽ lại theo bộ màu |

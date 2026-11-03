@@ -16,15 +16,18 @@
 ├── README.md
 ├── QuanLyKhachSan.sln
 ├── docs/                    # tài liệu yêu cầu, thiết kế và kiểm thử
-└── QuanLyKhachSan/          # project WinForms
-    ├── DTO/  DAL/  BLL/  GUI/  Resources/  Scripts/
-    ├── Program.cs
-    └── QuanLyKhachSan.csproj
+├── Latex/                   # báo cáo LaTeX (bao_cao_full.tex), ảnh minh họa
+├── QuanLyKhachSan/          # project WinForms
+│   ├── DTO/  DAL/  BLL/  GUI/  Resources/  Scripts/
+│   ├── Program.cs
+│   └── QuanLyKhachSan.csproj
+├── QuanLyKhachSan.Web/      # cổng web tra cứu (ASP.NET Core), dùng chung DTO/DAL/BLL
+└── QuanLyKhachSan.Tests/    # kiểm thử logic tự động
 ```
 
 Tên thư mục workspace hiện tại có hậu tố đồ án; `QuanLyKhachSan` là tên solution/project. Có thể dùng tên repo không dấu `QuanLyKhachSan` nếu nhóm thống nhất.
 
-### `.gitignore` tối thiểu cho Visual Studio
+### `.gitignore` tối thiểu cho Visual Studio và LaTeX
 
 ```gitignore
 .vs/
@@ -34,6 +37,10 @@ obj/
 *.suo
 *.log
 packages/
+# Tệp phụ trợ khi biên dịch LaTeX
+*.aux
+*.toc
+*.out
 # Không đưa chuỗi kết nối thật hoặc dữ liệu cá nhân vào repo
 appsettings.local.json
 ```
@@ -68,7 +75,7 @@ Dạng: `<loại>(<phạm vi>): <mô tả ngắn, thể mệnh lệnh>`
 | `test` | Thêm/sửa test |
 | `chore` | Cấu hình, script, công việc vặt |
 
-Phạm vi: `dto`, `dal`, `bll`, `gui`, `sql`, `docs`.
+Phạm vi: `dto`, `dal`, `bll`, `gui`, `sql`, `docs`, `web` (cổng web tra cứu). Commit cấu hình/công việc chung không gắn phạm vi (ví dụ `chore: cập nhật .gitignore`).
 
 Ví dụ:
 ```text
@@ -77,12 +84,14 @@ feat(bll): kiểm tra giao nhau khoảng ngày khi đặt phòng
 fix(gui): sửa lỗi không tải lại lưới sau khi xóa khách
 docs: bổ sung quy tắc phụ thu trả muộn
 chore(sql): thêm dữ liệu mẫu 20 phòng
+feat(web): thêm trang tra cứu phòng trống cho khách
 ```
 
 Quy tắc:
 - Mỗi commit làm **một việc**, build được.
 - Tiêu đề không quá khoảng 72 ký tự, không có dấu chấm cuối.
 - Có thể thêm mã việc ở thân commit: `Refs: 3.3`.
+- Thông điệp commit chỉ gồm một dòng tiêu đề theo dạng trên; không chèn đường dẫn phiên làm việc hay thông tin nội bộ vào commit.
 - Không commit file `bin/`, `obj/`, `.vs/`, mật khẩu, chuỗi kết nối thật.
 
 ## 4. Quy ước đặt tên trong code
