@@ -10,6 +10,9 @@
 - Ghi/xóa dịch vụ khi đang lưu trú; trả phòng có bảng tính tiền, phụ thu trả muộn, giảm giá có giới hạn, hóa đơn trong transaction.
 - Sơ đồ phòng theo tầng (dọn phòng, bảo trì), danh sách khách đang ở.
 - Tra cứu, xem trước và in hóa đơn; báo cáo doanh thu (ngày/tháng/loại phòng) và công suất phòng, có biểu đồ, in và xuất CSV.
+- Giao diện sáng/tối: menu **Hệ thống → Giao diện tối** (Ctrl+D), áp dụng ngay cho mọi cửa sổ và được nhớ cho lần mở sau (lưu tại `%AppData%\QuanLyKhachSan\giaodien.txt`). Bản in báo cáo luôn dùng nền sáng.
+- Mã QR tra cứu: menu **Tra cứu → Mã QR phòng và giá** tạo QR cho từng phòng và bảng giá (lưu PNG, in, xuất tất cả, sao chép liên kết). Bộ mã hóa QR tự viết, không cần thư viện ngoài.
+- Cổng web cho khách (`QuanLyKhachSan.Web`): quét QR để xem giá, tình trạng và phòng trống theo ngày; chỉ đọc, không hiển thị thông tin khách.
 - Phím tắt: F2 đặt phòng, F3 nhận phòng, F4 dịch vụ, F5 sơ đồ, F6 trả phòng, F7 hóa đơn. Hướng dẫn demo: [`docs/09_HuongDan_Demo.md`](docs/09_HuongDan_Demo.md).
 
 Phạm vi đã triển khai có thể thay đổi theo phiên bản source hiện tại. Các tài liệu yêu cầu, quy tắc, use case và kịch bản được tổng hợp tại [`docs/README.md`](docs/README.md).
@@ -57,6 +60,16 @@ dotnet run --project .\QuanLyKhachSan\QuanLyKhachSan.csproj
 ```
 
 Hoặc mở solution bằng Visual Studio, đặt `QuanLyKhachSan` làm startup project và nhấn **F5**.
+
+### 4. Cổng web tra cứu và mã QR (tùy chọn)
+
+```powershell
+dotnet run --project .\QuanLyKhachSan.Web\QuanLyKhachSan.Web.csproj
+```
+
+- Chuỗi kết nối trong `QuanLyKhachSan.Web\appsettings.json` (cùng CSDL với ứng dụng); mặc định lắng nghe cổng 5080.
+- Để điện thoại quét QR truy cập được, đặt `Web:BaseUrl` trong `QuanLyKhachSan\appsettings.json` thành địa chỉ IP trong mạng nội bộ của máy chạy web (ví dụ `http://192.168.1.20:5080`) và mở cổng 5080 trên tường lửa.
+- Các trang: `/` (tìm phòng trống), `/gia` (bảng giá), `/phong/{số phòng}`; JSON: `/api/gia`, `/api/phong/{số}`, `/api/phong-trong`.
 
 ## Tài khoản dữ liệu mẫu
 

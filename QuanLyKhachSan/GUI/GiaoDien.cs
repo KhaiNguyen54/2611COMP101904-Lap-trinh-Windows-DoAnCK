@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using QuanLyKhachSan.DTO;
 
 namespace QuanLyKhachSan.GUI
 {
@@ -10,13 +13,107 @@ namespace QuanLyKhachSan.GUI
     /// </summary>
     internal static class GiaoDien
     {
-        public static readonly Color Nen = Color.FromArgb(248, 244, 237);
-        public static readonly Color Chu = Color.FromArgb(62, 47, 38);
-        public static readonly Color Phu = Color.FromArgb(130, 113, 99);
-        public static readonly Color BeMat = Color.FromArgb(255, 252, 247);
-        public static readonly Color Vien = Color.FromArgb(231, 219, 204);
-        public static readonly Color MauThu = Color.FromArgb(177, 82, 55);
-        public static readonly Color CamLa = Color.FromArgb(202, 133, 57);
+        /// <summary>Bộ màu của một chế độ giao diện (sáng hoặc tối).</summary>
+        internal sealed class BoMau
+        {
+            public Color Nen, Chu, Phu, BeMat, Vien, MauThu, CamLa, TieuDeLuoi, ChonLuoi, XenKe;
+            public Color DaDat, DangO, DonDep, BaoTri, Trong;
+
+            /// <summary>Mọi màu theo thứ tự cố định, dùng để đổi màu từ bộ này sang bộ kia.</summary>
+            public Color[] Tat()
+            {
+                return new[] { Nen, Chu, Phu, BeMat, Vien, MauThu, CamLa, TieuDeLuoi, ChonLuoi, XenKe, DaDat, DangO, DonDep, BaoTri, Trong };
+            }
+        }
+
+        private static readonly BoMau BoSang = new BoMau
+        {
+            Nen = Color.FromArgb(248, 244, 237), Chu = Color.FromArgb(62, 47, 38), Phu = Color.FromArgb(130, 113, 99),
+            BeMat = Color.FromArgb(255, 252, 247), Vien = Color.FromArgb(231, 219, 204),
+            MauThu = Color.FromArgb(177, 82, 55), CamLa = Color.FromArgb(202, 133, 57),
+            TieuDeLuoi = Color.FromArgb(243, 233, 219), ChonLuoi = Color.FromArgb(247, 225, 203), XenKe = Color.FromArgb(250, 246, 240),
+            DaDat = Color.FromArgb(246, 224, 187), DangO = Color.FromArgb(234, 190, 173), DonDep = Color.FromArgb(205, 218, 232),
+            BaoTri = Color.FromArgb(210, 197, 184), Trong = Color.FromArgb(214, 226, 200)
+        };
+
+        private static readonly BoMau BoToi = new BoMau
+        {
+            Nen = Color.FromArgb(31, 26, 22), Chu = Color.FromArgb(241, 231, 218), Phu = Color.FromArgb(185, 168, 151),
+            BeMat = Color.FromArgb(42, 35, 29), Vien = Color.FromArgb(71, 59, 48),
+            MauThu = Color.FromArgb(224, 128, 95), CamLa = Color.FromArgb(226, 160, 86),
+            TieuDeLuoi = Color.FromArgb(58, 48, 40), ChonLuoi = Color.FromArgb(96, 62, 46), XenKe = Color.FromArgb(36, 30, 25),
+            DaDat = Color.FromArgb(110, 84, 45), DangO = Color.FromArgb(118, 63, 48), DonDep = Color.FromArgb(52, 77, 104),
+            BaoTri = Color.FromArgb(80, 72, 64), Trong = Color.FromArgb(58, 84, 52)
+        };
+
+        private static BoMau _hien = BoSang;
+
+        static GiaoDien()
+        {
+            if (DocCheDoDaLuu()) _hien = BoToi;
+        }
+
+        /// <summary>true khi đang dùng giao diện tối.</summary>
+        public static bool Toi { get { return _hien == BoToi; } }
+
+        public static Color Nen { get { return _hien.Nen; } }
+        public static Color Chu { get { return _hien.Chu; } }
+        public static Color Phu { get { return _hien.Phu; } }
+        public static Color BeMat { get { return _hien.BeMat; } }
+        public static Color Vien { get { return _hien.Vien; } }
+        public static Color MauThu { get { return _hien.MauThu; } }
+        public static Color CamLa { get { return _hien.CamLa; } }
+
+        /// <summary>Màu nền thẻ phòng theo trạng thái (đã chỉnh cho từng chế độ).</summary>
+        public static Color MauPhong(string trangThai)
+        {
+            switch (trangThai)
+            {
+                case TrangThaiPhong.DaDat: return _hien.DaDat;
+                case TrangThaiPhong.DangO: return _hien.DangO;
+                case TrangThaiPhong.DonDep: return _hien.DonDep;
+                case TrangThaiPhong.BaoTri: return _hien.BaoTri;
+                default: return _hien.Trong;
+            }
+        }
+
+        private static string DuongDanCaiDat()
+        {
+            return System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "QuanLyKhachSan", "giaodien.txt");
+        }
+
+        private static bool DocCheDoDaLuu()
+        {
+            try
+            {
+                string p = DuongDanCaiDat();
+                return System.IO.File.Exists(p) && System.IO.File.ReadAllText(p).Trim() == "toi";
+            }
+            catch (Exception) { return false; }
+        }
+
+        private static void LuuCheDo(bool toi)
+        {
+            try
+            {
+                string p = DuongDanCaiDat();
+                System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(p));
+                System.IO.File.WriteAllText(p, toi ? "toi" : "sang");
+            }
+            catch (Exception) { /* Không lưu được thì lần sau mở lại dùng mặc định; không làm phiền người dùng. */ }
+        }
+
+        /// <summary>Đổi chế độ sáng/tối, lưu lại và áp dụng ngay cho mọi cửa sổ đang mở.</summary>
+        public static void DatCheDo(bool toi)
+        {
+            if (toi == Toi) return;
+            BoMau cu = _hien;
+            _hien = toi ? BoToi : BoSang;
+            LuuCheDo(toi);
+            foreach (Form f in new List<Form>(Application.OpenForms.Cast<Form>()))
+                TaiMauLai(f, cu);
+        }
 
         /// <summary>Tag đánh dấu nút hành động chính (tô màu nhấn).</summary>
         public const string NutChinhTag = "chinh";
@@ -145,6 +242,139 @@ namespace QuanLyKhachSan.GUI
 
             foreach (Control control in form.Controls)
                 ApDungChoControl(control);
+
+            form.HandleCreated += delegate { TieuDeToi(form); };
+            TieuDeToi(form);
+        }
+
+        /// <summary>Đổi màu một cửa sổ đang mở từ bộ màu cũ sang bộ màu hiện tại.</summary>
+        private static void TaiMauLai(Form form, BoMau cu)
+        {
+            form.SuspendLayout();
+            form.ForeColor = Chu;
+            form.BackColor = Doi(form.BackColor, cu);
+            foreach (Control c in form.Controls) DoiMauCay(c, cu);
+            foreach (Control c in form.Controls) ApDungChoControl(c);
+            form.ResumeLayout(true);
+            TieuDeToi(form);
+            form.Invalidate(true);
+        }
+
+        private static Color Doi(Color mau, BoMau cu)
+        {
+            Color[] a = cu.Tat(), b = _hien.Tat();
+            for (int i = 0; i < a.Length; i++)
+                if (mau.ToArgb() == a[i].ToArgb()) return b[i];
+            return mau;
+        }
+
+        private static void DoiMauCay(Control c, BoMau cu)
+        {
+            c.BackColor = Doi(c.BackColor, cu);
+            c.ForeColor = Doi(c.ForeColor, cu);
+            var link = c as LinkLabel;
+            if (link != null)
+            {
+                link.LinkColor = Doi(link.LinkColor, cu);
+                link.ActiveLinkColor = Doi(link.ActiveLinkColor, cu);
+                link.VisitedLinkColor = Doi(link.VisitedLinkColor, cu);
+            }
+            var nut = c as Button;
+            if (nut != null && nut.FlatStyle == FlatStyle.Flat)
+                nut.FlatAppearance.BorderColor = Doi(nut.FlatAppearance.BorderColor, cu);
+            foreach (Control con in c.Controls) DoiMauCay(con, cu);
+            c.Invalidate();
+        }
+
+        [DllImport("dwmapi.dll")]
+        private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int value, int size);
+
+        /// <summary>Thanh tiêu đề tối trên Windows 10/11; bỏ qua lặng lẽ nếu hệ điều hành không hỗ trợ.</summary>
+        private static void TieuDeToi(Form form)
+        {
+            if (Environment.OSVersion.Platform != PlatformID.Win32NT || !form.IsHandleCreated) return;
+            try
+            {
+                int v = Toi ? 1 : 0;
+                if (DwmSetWindowAttribute(form.Handle, 20, ref v, sizeof(int)) != 0)
+                    DwmSetWindowAttribute(form.Handle, 19, ref v, sizeof(int));
+            }
+            catch (Exception) { }
+        }
+
+        /// <summary>Tô màu thanh menu/thanh trạng thái/menu chuột phải theo giao diện hiện tại.</summary>
+        public static void DungToolStrip(ToolStrip strip)
+        {
+            if (Toi) strip.Renderer = new ToolStripProfessionalRenderer(new BangMauToi());
+            else strip.RenderMode = ToolStripRenderMode.System;
+            strip.BackColor = BeMat;
+            strip.ForeColor = Chu;
+            foreach (ToolStripItem it in strip.Items) TuMauMuc(it);
+        }
+
+        private static void TuMauMuc(ToolStripItem it)
+        {
+            it.ForeColor = Chu;
+            var m = it as ToolStripMenuItem;
+            if (m != null)
+            {
+                m.DropDown.BackColor = BeMat;
+                m.DropDown.ForeColor = Chu;
+                if (Toi) m.DropDown.Renderer = new ToolStripProfessionalRenderer(new BangMauToi());
+                else m.DropDown.RenderMode = ToolStripRenderMode.System;
+                foreach (ToolStripItem con in m.DropDownItems) TuMauMuc(con);
+            }
+        }
+
+        /// <summary>Bảng màu menu cho giao diện tối (renderer chuyên nghiệp cho phép tự chọn màu).</summary>
+        private sealed class BangMauToi : ProfessionalColorTable
+        {
+            public BangMauToi() { UseSystemColors = false; }
+            public override Color ToolStripDropDownBackground { get { return BoToi.BeMat; } }
+            public override Color MenuBorder { get { return BoToi.Vien; } }
+            public override Color MenuItemBorder { get { return BoToi.MauThu; } }
+            public override Color MenuItemSelected { get { return BoToi.ChonLuoi; } }
+            public override Color MenuItemSelectedGradientBegin { get { return BoToi.ChonLuoi; } }
+            public override Color MenuItemSelectedGradientEnd { get { return BoToi.ChonLuoi; } }
+            public override Color MenuItemPressedGradientBegin { get { return BoToi.TieuDeLuoi; } }
+            public override Color MenuItemPressedGradientMiddle { get { return BoToi.TieuDeLuoi; } }
+            public override Color MenuItemPressedGradientEnd { get { return BoToi.TieuDeLuoi; } }
+            public override Color MenuStripGradientBegin { get { return BoToi.BeMat; } }
+            public override Color MenuStripGradientEnd { get { return BoToi.BeMat; } }
+            public override Color ImageMarginGradientBegin { get { return BoToi.BeMat; } }
+            public override Color ImageMarginGradientMiddle { get { return BoToi.BeMat; } }
+            public override Color ImageMarginGradientEnd { get { return BoToi.BeMat; } }
+            public override Color SeparatorDark { get { return BoToi.Vien; } }
+            public override Color SeparatorLight { get { return BoToi.Vien; } }
+            public override Color ToolStripBorder { get { return BoToi.Vien; } }
+            public override Color ToolStripGradientBegin { get { return BoToi.BeMat; } }
+            public override Color ToolStripGradientMiddle { get { return BoToi.BeMat; } }
+            public override Color ToolStripGradientEnd { get { return BoToi.BeMat; } }
+            public override Color StatusStripGradientBegin { get { return BoToi.BeMat; } }
+            public override Color StatusStripGradientEnd { get { return BoToi.BeMat; } }
+            public override Color CheckBackground { get { return BoToi.ChonLuoi; } }
+            public override Color CheckSelectedBackground { get { return BoToi.ChonLuoi; } }
+            public override Color CheckPressedBackground { get { return BoToi.TieuDeLuoi; } }
+            public override Color ButtonSelectedHighlight { get { return BoToi.ChonLuoi; } }
+            public override Color ButtonSelectedGradientBegin { get { return BoToi.ChonLuoi; } }
+            public override Color ButtonSelectedGradientMiddle { get { return BoToi.ChonLuoi; } }
+            public override Color ButtonSelectedGradientEnd { get { return BoToi.ChonLuoi; } }
+            public override Color GripDark { get { return BoToi.Phu; } }
+            public override Color GripLight { get { return BoToi.Vien; } }
+        }
+
+        private static readonly HashSet<TabControl> _tabDaNoi = new HashSet<TabControl>();
+
+        /// <summary>Vẽ nhãn tab theo bảng màu hiện tại (nhãn tab hệ thống không đổi màu được).</summary>
+        private static void VeThanhTab(object sender, DrawItemEventArgs e)
+        {
+            var tabs = (TabControl)sender;
+            bool chon = e.Index == tabs.SelectedIndex;
+            Rectangle r = tabs.GetTabRect(e.Index);
+            using (var nen = new SolidBrush(chon ? BeMat : _hien.TieuDeLuoi))
+                e.Graphics.FillRectangle(nen, r);
+            TextRenderer.DrawText(e.Graphics, tabs.TabPages[e.Index].Text, tabs.Font, r, chon ? MauThu : Chu,
+                TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis);
         }
 
         private static void ApDungChoControl(Control control)
@@ -159,15 +389,15 @@ namespace QuanLyKhachSan.GUI
                 grid.CellBorderStyle = DataGridViewCellBorderStyle.Single;
                 grid.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
                 grid.EnableHeadersVisualStyles = false;
-                grid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(243, 233, 219);
+                grid.ColumnHeadersDefaultCellStyle.BackColor = _hien.TieuDeLuoi;
                 grid.ColumnHeadersDefaultCellStyle.ForeColor = Chu;
                 grid.ColumnHeadersDefaultCellStyle.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold);
                 grid.ColumnHeadersDefaultCellStyle.SelectionBackColor = grid.ColumnHeadersDefaultCellStyle.BackColor;
                 grid.DefaultCellStyle.BackColor = BeMat;
                 grid.DefaultCellStyle.ForeColor = Chu;
-                grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(247, 225, 203);
+                grid.DefaultCellStyle.SelectionBackColor = _hien.ChonLuoi;
                 grid.DefaultCellStyle.SelectionForeColor = Chu;
-                grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(250, 246, 240);
+                grid.AlternatingRowsDefaultCellStyle.BackColor = _hien.XenKe;
                 grid.RowHeadersVisible = false;
                 grid.ColumnHeadersHeight = 26;
                 grid.RowTemplate.Height = 24;
@@ -186,6 +416,18 @@ namespace QuanLyKhachSan.GUI
             {
                 control.BackColor = BeMat;
                 control.ForeColor = Chu;
+                var ngay = control as DateTimePicker;
+                if (ngay != null)
+                {
+                    // Ô nhập ngày của Windows luôn vẽ nền sáng hệ thống: giữ chữ tối để không bị mờ ở chế độ tối.
+                    ngay.BackColor = SystemColors.Window;
+                    ngay.ForeColor = SystemColors.WindowText;
+                    ngay.CalendarMonthBackground = BeMat;
+                    ngay.CalendarForeColor = Chu;
+                    ngay.CalendarTitleBackColor = _hien.TieuDeLuoi;
+                    ngay.CalendarTitleForeColor = Chu;
+                    ngay.CalendarTrailingForeColor = Phu;
+                }
             }
             else if (control is FlowLayoutPanel || control is TableLayoutPanel)
             {
@@ -193,11 +435,15 @@ namespace QuanLyKhachSan.GUI
                 if (control is TableLayoutPanel || control.Dock == DockStyle.Top)
                     control.BackColor = BeMat;
             }
+            else if (control is TabControl tabs)
+            {
+                tabs.DrawMode = TabDrawMode.OwnerDrawFixed;
+                if (_tabDaNoi.Add(tabs)) tabs.DrawItem += VeThanhTab;
+                tabs.Invalidate();
+            }
             else if (control is ToolStrip strip)
             {
-                strip.BackColor = BeMat;
-                strip.ForeColor = Chu;
-                strip.RenderMode = ToolStripRenderMode.System;
+                DungToolStrip(strip);
                 strip.GripStyle = ToolStripGripStyle.Visible;
                 strip.Padding = new Padding(4, 2, 4, 2);
             }

@@ -1697,6 +1697,8 @@ Qua quá trình thực hiện, nhóm đã xây dựng hoàn chỉnh một ứng 
 
 Về mặt tổ chức,  đã áp dụng cách phân chia công việc theo trục kỹ thuật dọc (mỗi người phụ trách trọn một nhóm chức năng từ CSDL đến giao diện) thay vì phân chia ngang theo lớp kiến trúc, giúp giảm phụ thuộc chờ đợi lẫn nhau và phù hợp với quy mô nhóm nhỏ.
 
+Ngoài phạm vi đặc tả ban đầu, nhóm đã bổ sung ba tính năng mở rộng. Thứ nhất, chế độ giao diện sáng/tối chuyển đổi bằng phím tắt Ctrl+D, áp dụng ngay cho các cửa sổ đang mở và được ghi nhớ giữa các lần chạy; bản in báo cáo luôn dùng nền sáng. Thứ hai, chức năng tạo mã QR tra cứu phòng và giá (menu Tra cứu), dùng bộ mã hóa QR do nhóm tự cài đặt (chế độ byte UTF-8, mức sửa lỗi M, phiên bản 1--10, mã Reed--Solomon trên GF(256)) nên không phụ thuộc thư viện ngoài; bộ kiểm thử tự động bổ sung thêm các ca cho bộ mã hóa QR và đường dẫn tra cứu, nâng tổng số lên 47 ca đạt khi chạy bằng Mono, và các mã QR sinh ra đã được giải mã đúng bằng thư viện OpenCV. Thứ ba, cổng web chỉ đọc \texttt{QuanLyKhachSan.Web} (ASP.NET Core) dùng chung các lớp DTO/DAL/BLL với ứng dụng WinForms, cho phép khách quét mã QR để xem giá, tình trạng phòng và phòng trống theo ngày; trang công khai không hiển thị thông tin khách, mọi dữ liệu xuất ra đều được mã hóa HTML và lỗi cơ sở dữ liệu chỉ được ghi log nội bộ. Các tính năng này đã được biên dịch và chạy thử bằng Mono hoặc với dữ liệu giả, chưa được xác nhận trên .NET SDK chính thức cùng SQL Server thật.
+
 \section*{2. Hạn chế}
 \addcontentsline{toc}{section}{2. Hạn chế}
 
@@ -1706,6 +1708,7 @@ Về mặt tổ chức,  đã áp dụng cách phân chia công việc theo tr�
   \item Các kịch bản kiểm thử giao diện (UI-01 đến UI-12) là kiểm thử thủ công, chưa được tự động hóa bằng công cụ kiểm thử giao diện chuyên dụng.
   \item Ứng dụng hiện chỉ hỗ trợ một máy trạm kết nối trực tiếp tới một CSDL tập trung, chưa tính tới kịch bản nhiều chi nhánh hoặc truy cập đồng thời ở quy mô lớn.
   \item Chưa có chức năng xuất báo cáo ra định dạng Excel (.xlsx), hiện chỉ hỗ trợ xuất CSV.
+  \item Cổng web hiện chỉ cho tra cứu (chưa cho khách tự đặt phòng) và chưa có xác thực hay HTTPS; muốn điện thoại quét được mã QR cần cấu hình địa chỉ mạng nội bộ (\texttt{Web:BaseUrl}) và mở cổng trên tường lửa.
 \end{itemize}
 
 \section*{3. Hướng phát triển}
@@ -1716,7 +1719,8 @@ Về mặt tổ chức,  đã áp dụng cách phân chia công việc theo tr�
   \item Chạy lại và mở rộng bộ kiểm thử tự động trên môi trường .NET SDK chính thức, bổ sung kiểm thử tích hợp có kết nối CSDL thử nghiệm.
   \item Bổ sung xuất báo cáo ra Excel, hỗ trợ định dạng và công thức tính sẵn cho người dùng tùy biến thêm.
   \item Nghiên cứu khả năng mở rộng thành mô hình nhiều chi nhánh, đồng bộ dữ liệu qua một CSDL trung tâm hoặc kiến trúc client-server mở rộng.
-  \item Xây dựng thêm lớp dịch vụ (Web API) trên nền tảng BLL hiện có, mở đường cho một ứng dụng web hoặc di động cho khách tự đặt phòng trong tương lai mà không cần viết lại toàn bộ logic nghiệp vụ.
+  \item Mở rộng cổng web chỉ đọc hiện có thành chức năng khách tự đặt phòng (kèm xác thực, HTTPS và giới hạn tần suất truy cập), tái sử dụng lớp BLL để không phải viết lại logic nghiệp vụ; các điểm cuối JSON sẵn có (\texttt{/api/gia}, \texttt{/api/phong-trong}) cũng là nền tảng cho ứng dụng di động.
+  \item Hoàn thiện giao diện tối (hiện là bộ màu tự cài đặt, chưa dùng thư viện giao diện chuyên dụng) và kiểm tra trên nhiều phiên bản Windows, đặc biệt các điều khiển hệ thống như ô chọn ngày.
 \end{enumerate}
 
 % ===== end chuong/ket_luan.tex =====

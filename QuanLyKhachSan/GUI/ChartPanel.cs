@@ -20,8 +20,10 @@ namespace QuanLyKhachSan.GUI
     /// </summary>
     public sealed class ChartPanel : Control
     {
-        private static readonly Color MauChinh = Color.FromArgb(177, 82, 55);
-        private static readonly Color MauLuoi = Color.FromArgb(231, 219, 204);
+        // Màn hình theo giao diện sáng/tối; bản in (VeRaBitmap) luôn dùng nền trắng để tiết kiệm mực.
+        private bool _toi;
+        private Color MauChinh { get { return _toi ? Color.FromArgb(224, 128, 95) : Color.FromArgb(177, 82, 55); } }
+        private Color MauLuoi { get { return _toi ? Color.FromArgb(71, 59, 48) : Color.FromArgb(231, 219, 204); } }
 
         private readonly ToolTip _goiY = new ToolTip();
         private readonly List<string> _nhan = new List<string>();
@@ -32,7 +34,7 @@ namespace QuanLyKhachSan.GUI
         {
             DoubleBuffered = true;
             ResizeRedraw = true;
-            BackColor = Color.White;
+            BackColor = GiaoDien.BeMat;
             Height = 260;
         }
 
@@ -82,14 +84,20 @@ namespace QuanLyKhachSan.GUI
         {
             var bmp = new Bitmap(rong, cao);
             using (Graphics g = Graphics.FromImage(bmp))
-                Ve(g, new Rectangle(0, 0, rong, cao), Font);
+                VeBan(g, false, new Rectangle(0, 0, rong, cao), Font);
             return bmp;
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            Ve(e.Graphics, ClientRectangle, Font);
+            VeBan(e.Graphics, GiaoDien.Toi, ClientRectangle, Font);
+        }
+
+        private void VeBan(Graphics g, bool toi, Rectangle r, Font font)
+        {
+            _toi = toi;
+            Ve(g, r, font);
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -138,11 +146,11 @@ namespace QuanLyKhachSan.GUI
         {
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-            using (var nen = new SolidBrush(Color.White))
+            using (var nen = new SolidBrush(_toi ? GiaoDien.BeMat : Color.White))
                 g.FillRectangle(nen, r);
 
-            using (var chu = new SolidBrush(Color.FromArgb(60, 66, 78)))
-            using (var chuNhat = new SolidBrush(Color.FromArgb(110, 118, 130)))
+            using (var chu = new SolidBrush(_toi ? GiaoDien.Chu : Color.FromArgb(60, 66, 78)))
+            using (var chuNhat = new SolidBrush(_toi ? GiaoDien.Phu : Color.FromArgb(110, 118, 130)))
             using (var fontTieuDe = new Font(font, FontStyle.Bold))
             {
                 if (!string.IsNullOrEmpty(TieuDe))

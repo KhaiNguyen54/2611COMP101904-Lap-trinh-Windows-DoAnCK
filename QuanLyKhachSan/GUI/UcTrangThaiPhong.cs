@@ -57,14 +57,7 @@ namespace QuanLyKhachSan.GUI
 
         public static Color MauTrangThai(string trangThai)
         {
-            switch (trangThai)
-            {
-                case TrangThaiPhong.DaDat: return Color.FromArgb(246, 224, 187);
-                case TrangThaiPhong.DangO: return Color.FromArgb(234, 190, 173);
-                case TrangThaiPhong.DonDep: return Color.FromArgb(205, 218, 232);
-                case TrangThaiPhong.BaoTri: return Color.FromArgb(210, 197, 184);
-                default: return Color.FromArgb(214, 226, 200);
-            }
+            return GiaoDien.MauPhong(trangThai);
         }
 
         /// <summary>Tải lại sơ đồ từ CSDL; lỗi kết nối hiển thị tại chỗ thay vì làm sập màn hình.</summary>
@@ -240,6 +233,7 @@ namespace QuanLyKhachSan.GUI
                 menu.Items.Add("Kết thúc bảo trì (chuyển sang Trống)", null,
                     delegate { ThucHien(delegate { new PhongBLL().KetThucBaoTri(maPhong, true); }); });
 
+            GiaoDien.DungToolStrip(menu);
             return menu;
         }
 

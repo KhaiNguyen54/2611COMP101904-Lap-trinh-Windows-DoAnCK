@@ -29,10 +29,10 @@ namespace QuanLyKhachSan.GUI
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
                 RowHeadersVisible = false,
-                BackgroundColor = SystemColors.Window,
+                BackgroundColor = GiaoDien.Toi ? GiaoDien.BeMat : SystemColors.Window,
                 BorderStyle = BorderStyle.None
             };
-            grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(244, 247, 251);
+            grid.AlternatingRowsDefaultCellStyle.BackColor = GiaoDien.Toi ? Color.FromArgb(36, 30, 25) : Color.FromArgb(244, 247, 251);
             grid.ColumnHeadersDefaultCellStyle.Font = new Font(grid.Font, FontStyle.Bold);
             return grid;
         }

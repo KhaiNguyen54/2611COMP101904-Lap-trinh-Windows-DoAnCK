@@ -96,6 +96,11 @@ namespace QuanLyKhachSan.GUI
             if (LaQuanLy)
                 heThong.DropDownItems.Add(Muc("Quản lý tài khoản", delegate { MoHopThoai(new FrmTaiKhoan(_nguoiDung)); }));
             heThong.DropDownItems.Add(new ToolStripSeparator());
+            var toi = new ToolStripMenuItem("Giao diện tối") { CheckOnClick = true, Checked = GiaoDien.Toi, ShortcutKeys = Keys.Control | Keys.D };
+            toi.Click += delegate { GiaoDien.DatCheDo(toi.Checked); };
+            heThong.DropDownItems.Add(new ToolStripSeparator());
+            heThong.DropDownItems.Add(toi);
+            heThong.DropDownItems.Add(new ToolStripSeparator());
             heThong.DropDownItems.Add(Muc("Đăng xuất", delegate { DangXuat = true; Close(); }));
             heThong.DropDownItems.Add(Muc("Thoát", delegate { Close(); }));
 
@@ -116,6 +121,8 @@ namespace QuanLyKhachSan.GUI
             var traCuu = Muc("Tra cứu");
             traCuu.DropDownItems.Add(Muc("Khách đang ở", delegate { MoHopThoai(new FrmKhachDangO()); }));
             traCuu.DropDownItems.Add(Muc("Hóa đơn \t(F7)", delegate { MoHopThoai(new FrmHoaDon()); }));
+            traCuu.DropDownItems.Add(new ToolStripSeparator());
+            traCuu.DropDownItems.Add(Muc("Mã QR phòng và giá", delegate { MoHopThoai(new FrmQrPhong()); }));
 
             var baoCao = Muc("Báo cáo");
             baoCao.Visible = LaQuanLy;
