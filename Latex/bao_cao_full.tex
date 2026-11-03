@@ -193,7 +193,8 @@ Nhóm thực hiện theo quy trình gồm: khảo sát và đặc tả yêu cầ
 
 \begin{itemize}
   \item Ngôn ngữ lập trình C\#, nền tảng .NET (target \texttt{net10.0-windows}).
-  \item Giao diện: Windows Forms.
+  \item Giao diện: Windows Forms; chế độ sáng/tối tự cài đặt bằng mã.
+  \item Cổng web tra cứu cho khách: ASP.NET Core (minimal API) dùng chung các lớp DTO/DAL/BLL; mã QR do bộ mã hóa tự viết, không dùng thư viện ngoài.
   \item Cơ sở dữ liệu: Microsoft SQL Server, truy xuất qua ADO.NET với truy vấn tham số hóa và stored procedure.
   \item Kiểm thử: project kiểm thử tự động độc lập (\texttt{QuanLyKhachSan.Tests}) cho các quy tắc nghiệp vụ không phụ thuộc CSDL.
 \end{itemize}
@@ -235,7 +236,7 @@ Những vấn đề trên là động lực trực tiếp để nhóm xây dựn
 
 \subsection{Tổng quan chức năng theo nhóm nghiệp vụ}
 
-Chức năng của hệ thống được chia thành bốn nhóm, trình bày trong Bảng~\ref{tab:nhom-chuc-nang}.
+Chức năng của hệ thống được chia thành bốn nhóm chính cùng một nhóm mở rộng bổ sung sau khi hoàn thành đặc tả ban đầu, trình bày trong Bảng~\ref{tab:nhom-chuc-nang}.
 
 \begin{table}[H]
 \centering
@@ -248,6 +249,7 @@ Hệ thống & Đăng nhập, đăng xuất, đổi mật khẩu, quản lý tà
 Danh mục & Loại phòng, Phòng, Khách hàng, Dịch vụ -- thêm, sửa, tìm kiếm, ngừng sử dụng \\\hline
 Nghiệp vụ & Đặt phòng, hủy/đánh dấu không đến, nhận phòng, ghi/xóa dịch vụ, trả phòng và lập hóa đơn, sơ đồ trạng thái phòng theo tầng \\\hline
 Tra cứu / Báo cáo & Tra cứu hóa đơn, danh sách khách đang lưu trú, báo cáo doanh thu và công suất phòng kèm biểu đồ, in và xuất CSV \\\hline
+Mở rộng (ngoài đặc tả) & Giao diện sáng/tối, tạo mã QR tra cứu phòng và giá, cổng web tra cứu cho khách quét QR \\\hline
 \end{tabularx}
 \end{table}
 
@@ -283,9 +285,12 @@ BC03 & Xem trước và in báo cáo & BB & QL \\\hline
 BC04 & Thống kê công suất phòng & NC & QL \\\hline
 BC05 & Sơ đồ phòng theo tầng & NC & LT, QL \\\hline
 BC06 & Xuất danh sách khách đang lưu trú (CSV) & NC & LT, QL \\\hline
+MR01 & Giao diện sáng/tối: chuyển bằng menu hoặc Ctrl+D, ghi nhớ theo máy & MR & LT, QL \\\hline
+MR02 & Tạo mã QR tra cứu phòng và bảng giá: xem, lưu PNG, in, xuất hàng loạt, sao chép liên kết & MR & LT, QL \\\hline
+MR03 & Cổng web tra cứu cho khách: bảng giá, tình trạng phòng, tìm phòng trống theo ngày (chỉ đọc) & MR & Khách (công khai) \\\hline
 \end{longtable}
 
-Trong 23 chức năng ở trên, 19 chức năng thuộc nhóm bắt buộc và 4 chức năng thuộc nhóm nâng cao (NV08 đổi phòng -- chưa triển khai, BC04, BC05, BC06).
+Trong 23 chức năng ở trên, 19 chức năng thuộc nhóm bắt buộc và 4 chức năng thuộc nhóm nâng cao (NV08 đổi phòng -- chưa triển khai, BC04, BC05, BC06). Ba chức năng MR01--MR03 (loại \textbf{MR} -- mở rộng) được nhóm bổ sung ngoài đặc tả ban đầu và không được tính vào 23 chức năng này.
 
 \subsection{Đối tượng tương tác với hệ thống}
 
@@ -313,7 +318,9 @@ Hệ thống hướng tới bốn mục tiêu cụ thể:
 Ứng dụng desktop Windows Forms, lưu dữ liệu trên SQL Server, phục vụ hai vai trò Lễ tân và Quản lý; bao phủ toàn bộ quy trình quản lý phòng, khách hàng, đặt phòng, nhận/trả phòng, dịch vụ phát sinh, hóa đơn và báo cáo doanh thu/công suất.
 
 \subsection{Ngoài phạm vi}
-Theo yêu cầu đề bài, các nội dung sau không thuộc phạm vi đồ án: website hoặc Web API cho khách tự đặt phòng, ứng dụng di động, hệ thống phân tán nhiều chi nhánh, tích hợp cổng thanh toán trực tuyến hoặc kênh đặt phòng OTA (Booking.com, Agoda...), quản lý nhân sự/lương/kho/kế toán.
+Theo yêu cầu đề bài, các nội dung sau không thuộc phạm vi đồ án: website hoặc Web API cho khách \emph{tự đặt phòng}, ứng dụng di động, hệ thống phân tán nhiều chi nhánh, tích hợp cổng thanh toán trực tuyến hoặc kênh đặt phòng OTA (Booking.com, Agoda...), quản lý nhân sự/lương/kho/kế toán.
+
+Ngoài phạm vi bắt buộc, nhóm bổ sung ở mức \emph{mở rộng} ba tính năng: giao diện sáng/tối, mã QR tra cứu phòng và giá, và một cổng web \emph{chỉ đọc} cho khách quét QR để xem giá, tình trạng phòng và phòng trống. Cổng web không cho phép đặt phòng, không đăng nhập và không hiển thị thông tin khách nên không đi ngược phạm vi đề bài; chi tiết ở các Chương~3, 5, 6, 7 và 8.
 
 \subsection{Đối chiếu với sản phẩm thực tế}
 
@@ -330,6 +337,7 @@ Hệ thống & Đăng nhập (khóa 30 giây sau 5 lần sai), đăng xuất, đ
 Danh mục & Khách hàng, loại phòng, phòng, dịch vụ: thêm, sửa, tìm kiếm, ngừng sử dụng; Lễ tân chỉ xem ba danh mục sau & Chưa có bộ lọc riêng theo tầng/loại trong màn hình Phòng (đã có ở sơ đồ phòng) \\\hline
 Nghiệp vụ & Tạo/hủy đặt phòng, đánh dấu khách không đến, cọc tối đa 1 đêm × số đêm; nhận phòng từ đặt trước hoặc vãng lai; ghi và xóa dịch vụ; trả phòng có transaction và hóa đơn; sơ đồ phòng theo tầng; bảo trì/dọn dẹp & Chưa có sửa đặt phòng và đổi phòng (NV08) \\\hline
 Tra cứu/Báo cáo & Tra cứu hóa đơn, khách đang ở; doanh thu theo ngày/tháng/loại phòng; công suất phòng; biểu đồ; xem trước/in; xuất CSV & Chưa có xuất Excel (.xlsx) \\\hline
+Mở rộng & Giao diện sáng/tối (Ctrl+D, ghi nhớ); tạo mã QR phòng/giá, lưu PNG, in, xuất tất cả; cổng web tra cứu \texttt{QuanLyKhachSan.Web} (trang chủ tìm phòng trống, bảng giá, chi tiết phòng, API JSON) & Web chưa cho đặt phòng, chưa có xác thực/HTTPS; chưa kiểm chứng trên .NET SDK chính thức \\\hline
 \end{tabularx}
 \end{table}
 
@@ -642,7 +650,7 @@ Hình~\ref{fig:uc-diagram} trình bày sơ đồ use case tổng quát của h�
 \section{Danh sách use case}
 \label{sec:uc-list}
 
-Bảng~\ref{tab:uc-list} liệt kê toàn bộ 19 use case, mã hóa theo \texttt{UCxx}, kèm tác nhân thực hiện, mã chức năng tương ứng (đối chiếu Bảng~\ref{tab:chuc-nang-chi-tiet}) và phân loại bắt buộc/nâng cao.
+Bảng~\ref{tab:uc-list} liệt kê 19 use case của đặc tả ban đầu và 3 use case mở rộng (UC20--UC22), mã hóa theo \texttt{UCxx}, kèm tác nhân thực hiện, mã chức năng tương ứng (đối chiếu Bảng~\ref{tab:chuc-nang-chi-tiet}) và phân loại bắt buộc/nâng cao.
 
 \begin{longtable}{|c|p{4.3cm}|c|l|c|}
 \caption{Danh sách use case của hệ thống}\label{tab:uc-list}\\
@@ -670,6 +678,9 @@ UC16 & Báo cáo doanh thu & QL & BC01, BC02, BC03 & BB \\\hline
 UC17 & Thống kê công suất phòng & QL & BC04 & NC \\\hline
 UC18 & Xuất danh sách khách đang lưu trú & LT, QL & BC06 & NC \\\hline
 UC19 & Quản lý dịch vụ & QL & DM05 & BB \\\hline
+UC20 & Tạo mã QR phòng và giá & LT, QL & MR02 & MR \\\hline
+UC21 & Tra cứu giá và phòng trống qua cổng web (quét QR) & Khách & MR03 & MR \\\hline
+UC22 & Chuyển giao diện sáng/tối & LT, QL & MR01 & MR \\\hline
 \end{longtable}
 
 \section{Đặc tả chi tiết các use case trọng tâm}
@@ -766,6 +777,23 @@ Do giới hạn dung lượng báo cáo, mục này trình bày đặc tả đ�
   \item[Đặc điểm kỹ thuật:] Kết quả gom nhóm bao gồm cả các ngày không phát sinh doanh thu (hiển thị 0), giúp biểu đồ phản ánh đúng xu hướng liên tục theo thời gian thay vì bỏ trống các mốc không có giao dịch.
 \end{description}
 
+\subsection{UC20 -- Tạo mã QR phòng và giá}
+\begin{description}
+  \item[Tác nhân:] Lễ tân, Quản lý.
+  \item[Điều kiện tiên quyết:] Đã đăng nhập; địa chỉ gốc của cổng web đã được cấu hình (\texttt{Web:BaseUrl}).
+  \item[Luồng chính:] Người dùng mở \textit{Tra cứu $\rightarrow$ Mã QR phòng và giá}; chọn một phòng đang hoạt động hoặc mục \textit{Bảng giá toàn khách sạn}; hệ thống sinh mã QR chứa đường dẫn tra cứu tương ứng và hiển thị thẻ gồm tiêu đề, mã QR, dòng mô tả và đường dẫn; người dùng lưu thành ảnh PNG, in, xuất mã cho tất cả các phòng, hoặc sao chép liên kết.
+  \item[Luồng ngoại lệ:] Nội dung vượt giới hạn 213 byte hoặc rỗng: từ chối và báo lỗi; không lấy được danh sách phòng/giá từ CSDL: thông báo lỗi tại chỗ, không làm sập màn hình.
+  \item[Hậu điều kiện:] Mã QR chỉ chứa đường dẫn công khai, không chứa dữ liệu khách hay hóa đơn.
+\end{description}
+
+\subsection{UC21 -- Tra cứu giá và phòng trống qua cổng web}
+\begin{description}
+  \item[Tác nhân:] Khách (không cần đăng nhập).
+  \item[Luồng chính:] Khách quét mã QR dán ở phòng hoặc quầy lễ tân; trình duyệt mở trang \texttt{/phong/\{số phòng\}} hiển thị loại phòng, giá mỗi đêm, tầng, sức chứa và tình trạng hiện tại; khách chọn ngày đến/đi để kiểm tra phòng còn trống và tổng tiền theo số đêm; hoặc mở trang chủ để xem danh sách phòng trống và trang \texttt{/gia} để xem bảng giá.
+  \item[Luồng ngoại lệ:] Phòng không tồn tại hoặc đã ngừng hoạt động: trang 404 thân thiện; ngày không hợp lệ, ngày đến trước hôm nay, ngày đến không trước ngày đi hoặc quá 60 đêm: thông báo lỗi tiếng Việt; CSDL không truy cập được: trang 503 chung, không lộ chuỗi kết nối.
+  \item[Đặc điểm:] Chỉ đọc; tình trạng phòng hiển thị dạng rút gọn (ví dụ \textit{Hiện đang có khách}), không nêu tên khách.
+\end{description}
+
 \section{Ma trận chức năng -- vai trò}
 \label{sec:ma-tran}
 
@@ -785,6 +813,9 @@ Loại phòng / Phòng / Dịch vụ (danh mục) & Chỉ xem & Đầy đủ \\\
 Quản lý tài khoản & Không hiển thị & Đầy đủ \\\hline
 Báo cáo doanh thu / công suất & Không hiển thị & Đầy đủ \\\hline
 Đổi mật khẩu & Đầy đủ & Đầy đủ \\\hline
+Mã QR phòng và giá & Đầy đủ & Đầy đủ \\\hline
+Giao diện tối (Ctrl+D) & Đầy đủ & Đầy đủ \\\hline
+Cổng web tra cứu (khách) & \multicolumn{2}{c|}{Công khai, chỉ đọc, không đăng nhập} \\\hline
 \end{tabularx}
 \end{table}
 
@@ -1257,6 +1288,22 @@ QT63 & Chỉ Quản lý được xác nhận mức giảm giá vượt ngưỡng
 QT64 & Mọi kiểm tra quyền ở giao diện đều được kiểm tra lại ở tầng BLL trước khi ghi dữ liệu. \\\hline
 \end{longtable}
 
+\subsection{Nhóm Tra cứu công khai, mã QR và giao diện (QT65--QT70)}
+
+\begin{longtable}{|c|p{12cm}|}
+\caption{Quy tắc nhóm Tra cứu công khai, mã QR và giao diện}\\\hline
+\textbf{Mã} & \textbf{Nội dung}\\\hline
+\endfirsthead
+\hline \textbf{Mã} & \textbf{Nội dung}\\\hline
+\endhead
+QT65 & Mã QR chỉ chứa đường dẫn tra cứu công khai (\texttt{/phong/\{số phòng\}} hoặc \texttt{/gia}); tuyệt đối không chứa thông tin khách, hóa đơn hay tài khoản. \\\hline
+QT66 & Địa chỉ gốc của đường dẫn lấy từ khóa cấu hình \texttt{Web:BaseUrl}; nếu thiếu dùng mặc định \texttt{http://localhost:5080}; dấu \texttt{/} thừa ở cuối được loại bỏ. \\\hline
+QT67 & Nội dung mã QR không rỗng và tối đa 213 byte (UTF-8); vượt giới hạn thì từ chối thay vì tạo mã sai. \\\hline
+QT68 & Chỉ tạo mã QR cho phòng đang hoạt động; số phòng được mã hóa URL khi đưa vào đường dẫn. \\\hline
+QT69 & Trang web công khai chỉ đọc: chỉ trả về loại phòng và phòng đang hoạt động, tình trạng hiển thị rút gọn (không nêu tên khách); ngày đến không trước hôm nay, ngày đến trước ngày đi, tối đa 60 đêm mỗi lần tra cứu. \\\hline
+QT70 & Lựa chọn giao diện sáng/tối được lưu theo từng máy và áp dụng ngay cho mọi cửa sổ đang mở; báo cáo in luôn dùng nền sáng. \\\hline
+\end{longtable}
+
 % ===== end chuong/chuong5.tex =====
 
 % ===== begin chuong/chuong6.tex =====
@@ -1274,10 +1321,12 @@ với \textbf{DTO (Data Transfer Object)} là các lớp dữ liệu thuần (pl
 
 \begin{itemize}
   \item \textbf{GUI}: các form WinForms, chỉ chịu trách nhiệm hiển thị, thu thập dữ liệu nhập và gọi phương thức của BLL tương ứng; không chứa quy tắc nghiệp vụ, không thao tác trực tiếp với CSDL.
-  \item \textbf{BLL}: hiện thực toàn bộ quy tắc nghiệp vụ QT01--QT64 (Chương~5): kiểm tra ràng buộc dữ liệu đầu vào, tính toán nghiệp vụ (số đêm, phụ thu, tổng tiền), kiểm tra quyền truy cập theo vai trò, rồi gọi DAL để đọc/ghi dữ liệu.
+  \item \textbf{BLL}: hiện thực toàn bộ quy tắc nghiệp vụ QT01--QT70 (Chương~5): kiểm tra ràng buộc dữ liệu đầu vào, tính toán nghiệp vụ (số đêm, phụ thu, tổng tiền), kiểm tra quyền truy cập theo vai trò, rồi gọi DAL để đọc/ghi dữ liệu.
   \item \textbf{DAL}: chịu trách nhiệm duy nhất giao tiếp với SQL Server -- mở kết nối, thực thi câu lệnh SQL/stored procedure tham số hóa, ánh xạ kết quả trả về thành đối tượng DTO. DAL không chứa quy tắc nghiệp vụ và không được gọi ngược lên BLL (nguyên tắc một chiều của kiến trúc phân lớp).
   \item \textbf{DTO}: ví dụ \texttt{PhongDTO}, \texttt{DatPhongDTO}, \texttt{PhieuThueDTO}, \texttt{HoaDonDTO} -- là các lớp thuộc tính tương ứng 1--1 với cột trong bảng CSDL liên quan, giúp dữ liệu di chuyển giữa các tầng có kiểu rõ ràng, tránh dùng \texttt{DataTable} rời rạc xuyên suốt ứng dụng.
 \end{itemize}
+
+Cổng web mở rộng \texttt{QuanLyKhachSan.Web} là một dự án ASP.NET Core riêng nhưng \emph{biên dịch lại cùng các tệp} DTO, DAL, BLL cần thiết (\texttt{Database}, \texttt{PhongDAL}, \texttt{LoaiPhongDAL}, \texttt{PhongBLL}, \texttt{LoaiPhongBLL}) từ ứng dụng WinForms, nên không nhân đôi logic nghiệp vụ và vẫn tuân theo chiều gọi một chiều; phần giao diện web chỉ gồm dịch vụ tra cứu chỉ đọc và bộ dựng HTML.
 
 Nguyên tắc phân lớp một chiều (GUI chỉ gọi BLL, BLL chỉ gọi DAL, không có chiều ngược lại) được áp dụng nghiêm ngặt sau khi phát hiện và sửa lỗi kiến trúc ở giai đoạn kiểm thử (xem mục lỗi \#5 trong Bảng~\ref{tab:loi-da-sua}, Chương~8), nơi một đoạn kiểm tra cọc ban đầu bị đặt nhầm ở tầng DAL và được chuyển về đúng tầng BLL.
 
@@ -1350,6 +1399,50 @@ Lỗi hiển thị cho người dùng cuối chỉ chứa nội dung lỗi nghi�
 \section{Chuẩn hóa giao diện dùng chung}
 
 Để tránh lặp lại style rải rác trong từng form (nguyên nhân chính của lỗi giao diện chồng chéo ghi nhận ở Bảng~\ref{tab:loi-da-sua}), nhóm xây dựng lớp tiện ích tĩnh \texttt{GiaoDien} cung cấp các phương thức dựng sẵn: \texttt{GiaoDien.Nhom} (tạo \texttt{GroupBox} với padding chuẩn), \texttt{GiaoDien.ThanhNgang} (thanh công cụ ngang tự giãn theo \texttt{FlowLayoutPanel}), \texttt{GiaoDien.GocTuCo} (bo góc và tự co giãn theo nội dung). Toàn bộ layout chính trong các form nghiệp vụ và danh mục dùng \\~\texttt{TableLayoutPanel}/\texttt{FlowLayoutPanel} thay cho tọa độ cố định, giúp giao diện không bị cắt chữ hoặc chồng lấn khi thay đổi kích thước cửa sổ hoặc cỡ chữ hệ thống.
+
+\section{Chế độ giao diện sáng/tối}
+
+Lớp \texttt{GiaoDien} lưu hai bộ màu (\texttt{BoSang}, \texttt{BoToi}) gồm màu nền, chữ, viền, nhấn, màu tiêu đề/dòng chọn/dòng xen kẽ của lưới và năm màu trạng thái phòng. Các thuộc tính màu (\texttt{GiaoDien.Nen}, \texttt{Chu}, \texttt{BeMat}, \ldots) trả về giá trị theo bộ màu hiện hành nên toàn bộ form cũ không phải sửa. Khi người dùng đổi chế độ (\texttt{GiaoDien.DatCheDo}), hệ thống: (1) lưu lựa chọn vào tệp cấu hình theo người dùng Windows (\texttt{\%AppData\%/QuanLyKhachSan/giaodien.txt}); (2) duyệt các cửa sổ đang mở, đổi mọi màu đang trùng với bộ màu cũ sang màu tương ứng của bộ mới, rồi áp lại kiểu cho lưới, nút, menu; (3) đặt thanh tiêu đề tối trên Windows 10/11 qua \texttt{DwmSetWindowAttribute}, bỏ qua lặng lẽ nếu hệ điều hành không hỗ trợ. Menu và menu chuột phải dùng bảng màu riêng cho \texttt{ToolStripProfessionalRenderer}; nhãn tab được vẽ lại theo bộ màu; biểu đồ vẽ nền tối trên màn hình nhưng bản in (\texttt{VeRaBitmap}) luôn nền trắng.
+
+\section{Mã QR tra cứu phòng và giá}
+
+\subsection{Bộ mã hóa QR}
+Do môi trường phát triển không tải được thư viện QR từ NuGet và để tránh phụ thuộc ngoài, nhóm tự cài đặt bộ mã hóa trong \texttt{BLL/QrCode.cs} (hàm thuần, không phụ thuộc giao diện). Bộ mã hóa dùng chế độ byte UTF-8 (hỗ trợ tiếng Việt có dấu), mức sửa lỗi M, tự chọn phiên bản nhỏ nhất đủ chứa dữ liệu trong khoảng 1--10 (tối đa 213 byte), mã sửa lỗi Reed--Solomon trên trường GF(256) với đa thức \texttt{0x11D}, thử cả 8 mặt nạ và chọn mặt nạ có điểm phạt thấp nhất, ghi thông tin định dạng bằng mã BCH và thông tin phiên bản cho phiên bản $\ge 7$. Hàm \texttt{QrCode.Tao} trả về ma trận \texttt{bool[,]}; dữ liệu rỗng hoặc quá dài làm phát sinh \texttt{ArgumentException} (QT67).
+
+\subsection{Đường dẫn và hiển thị}
+Lớp \texttt{TraCuuUrl} ghép địa chỉ gốc (đọc bởi \texttt{CauHinhWeb} từ khóa \texttt{Web:BaseUrl}) với đường dẫn phòng hoặc bảng giá (QT65, QT66, QT68). Lớp \texttt{QrHinh} vẽ ma trận thành ảnh nền trắng có vùng đệm 4 ô, không làm mịn để các ô giữ cạnh sắc, và dựng thẻ gồm tiêu đề, mã QR, dòng mô tả và đường dẫn. Biểu mẫu \texttt{FrmQrPhong} dựng danh sách mục từ \texttt{LoaiPhongBLL} (bảng giá) và \texttt{PhongBLL} (phòng đang hoạt động), cho lưu PNG, in, xuất tất cả và sao chép liên kết.
+
+\subsection{Kiểm chứng}
+Các mã sinh ra được giải mã lại bằng \texttt{QRCodeDetector} của OpenCV: 23/23 mã thử nghiệm (nhiều độ dài và phiên bản, gồm chuỗi tiếng Việt) cho đúng nội dung. Project kiểm thử bổ sung các ca kiểm tra kích thước theo phiên bản, mẫu định vị và mẫu thời gian, ô tối cố định, tính hợp lệ BCH của thông tin định dạng và bản sao của nó, mức sửa lỗi, tính xác định của kết quả và việc từ chối đầu vào không hợp lệ.
+
+\section{Cổng web tra cứu cho khách}
+
+Dự án \texttt{QuanLyKhachSan.Web} (ASP.NET Core, minimal API) lắng nghe mặc định cổng 5080 và cung cấp các điểm truy cập trong Bảng~\ref{tab:web-routes}.
+
+\begin{table}[H]
+\centering
+\caption{Các điểm truy cập của cổng web tra cứu}
+\label{tab:web-routes}
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\textbf{Đường dẫn} & \textbf{Chức năng} \\\hline
+\texttt{/} & Tìm phòng trống theo ngày đến/đi (mặc định hôm nay $\rightarrow$ ngày mai) \\\hline
+\texttt{/gia} & Bảng giá theo loại phòng (loại đang hoạt động) \\\hline
+\texttt{/phong/\{số\}} & Chi tiết phòng và kiểm tra theo ngày (\texttt{?den=\&di=}); đích của mã QR \\\hline
+\texttt{/api/gia}, \texttt{/api/phong/\{số\}}, \texttt{/api/phong-trong} & Dữ liệu JSON cho ứng dụng khác \\\hline
+\end{tabularx}
+\end{table}
+
+Các biện pháp an toàn áp dụng cho trang công khai:
+\begin{itemize}
+  \item \textbf{Chỉ đọc và tối thiểu dữ liệu}: dùng lại truy vấn tham số hóa của DAL; không sử dụng truy vấn sơ đồ phòng vì có chứa tên khách; tình trạng phòng được chuyển thành nhãn rút gọn (QT69).
+  \item \textbf{Chống chèn mã}: mọi dữ liệu đưa vào HTML đều được mã hóa (\texttt{HtmlEncode}); tham số ngày được phân tích nghiêm ngặt theo định dạng \texttt{yyyy-MM-dd}; số phòng bị giới hạn độ dài.
+  \item \textbf{Tiêu đề bảo mật}: \texttt{Content-Security-Policy} chỉ cho phép kiểu dáng nội tuyến (không chạy script), \texttt{X-Frame-Options: DENY}, \texttt{X-Content-Type-Options: nosniff}, \texttt{Referrer-Policy: no-referrer}.
+  \item \textbf{Thông báo lỗi}: lỗi truy cập CSDL chỉ được ghi nhật ký nội bộ; khách chỉ thấy trang 503 chung, không lộ chuỗi kết nối hay chi tiết kỹ thuật.
+  \item \textbf{Giao diện di động}: bố cục đáp ứng màn hình hẹp và tự chuyển nền tối theo thiết lập của thiết bị.
+\end{itemize}
+
+Để điện thoại truy cập được, máy chạy cổng web phải nằm cùng mạng với điện thoại, \texttt{Web:BaseUrl} trong cấu hình ứng dụng phải là địa chỉ IP nội bộ (ví dụ \texttt{http://192.168.1.20:5080}) và cổng 5080 phải được mở trên tường lửa.
 
 % ===== end chuong/chuong6.tex =====
 
@@ -1542,6 +1635,49 @@ Biểu đồ được vẽ trực tiếp bằng GDI+ (lớp \texttt{ChartPanel} 
 \label{fig:gui-danhmuc-4}
 \end{figure}
 
+\section{Màn hình Mã QR phòng và giá}
+
+Màn hình \texttt{FrmQrPhong} (menu \textit{Tra cứu $\rightarrow$ Mã QR phòng và giá}) gồm ô chọn nội dung (bảng giá hoặc một phòng), thẻ xem trước chứa mã QR cùng đường dẫn, và hàng nút \textit{Lưu PNG}, \textit{In}, \textit{Xuất tất cả}, \textit{Sao chép liên kết}, \textit{Đóng}. Thẻ xem trước dùng nền trắng cố định kể cả ở chế độ tối để mã luôn dễ quét.
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{QrPhong.png}{\fbox{\includegraphics[width=0.6\textwidth]{QrPhong.png}}}{\fbox{\parbox{0.6\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: QrPhong.png)}\vspace{3cm}}}}}
+\caption{Màn hình tạo mã QR (ví dụ: bảng giá toàn khách sạn)}
+\label{fig:gui-qr}
+\end{figure}
+
+\section{Giao diện tối}
+
+Chế độ tối được bật tại \textit{Hệ thống $\rightarrow$ Giao diện tối} hoặc bằng Ctrl+D; bảng màu nâu ấm đồng bộ với chủ đề thu của ứng dụng. Thẻ phòng giữ ý nghĩa màu theo trạng thái (xanh: trống; vàng: đã đặt; đỏ nâu: đang ở; xanh dương: dọn dẹp; xám: bảo trì) nhưng dùng sắc độ tối hơn để chữ sáng vẫn đủ tương phản.
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{FormMainToi.png}{\fbox{\includegraphics[width=1\textwidth]{FormMainToi.png}}}{\fbox{\parbox{1\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: FormMainToi.png)}\vspace{3cm}}}}}
+\caption{Màn hình chính ở chế độ tối (dữ liệu minh họa)}
+\label{fig:gui-toi}
+\end{figure}
+
+\section{Trang web tra cứu trên điện thoại}
+
+Trang web có bố cục một cột, cỡ chữ lớn, nút bấm dễ chạm và tự theo nền sáng/tối của thiết bị. Trang chi tiết phòng (Hình~\ref{fig:web-phong}) hiển thị loại phòng, giá, tầng, sức chứa, tình trạng hiện tại và biểu mẫu kiểm tra theo ngày kèm tổng tiền; trang bảng giá (Hình~\ref{fig:web-gia}) liệt kê các loại phòng đang hoạt động.
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{WebPhong.png}{\fbox{\includegraphics[width=0.45\textwidth]{WebPhong.png}}}{\fbox{\parbox{0.45\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: WebPhong.png)}\vspace{3cm}}}}}
+\caption{Trang chi tiết phòng trên điện thoại (dữ liệu minh họa)}
+\label{fig:web-phong}
+\end{figure}
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{WebGia.png}{\fbox{\includegraphics[width=0.45\textwidth]{WebGia.png}}}{\fbox{\parbox{0.45\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: WebGia.png)}\vspace{3cm}}}}}
+\caption{Trang bảng giá trên điện thoại (dữ liệu minh họa)}
+\label{fig:web-gia}
+\end{figure}
+
 Việc trình bày các hình minh họa giao diện trong chương này dưới dạng khung mô tả bố cục (thay vì ảnh chụp màn hình thật) nhằm giữ cho báo cáo mô tả đúng thiết kế đã thống nhất của nhóm; ảnh chụp màn hình thực tế từ ứng dụng đang chạy có thể được bổ sung ở bản in cuối cùng khi chạy trên môi trường có SQL Server cấu hình đầy đủ.
 
 % ===== end chuong/chuong7.tex =====
@@ -1561,6 +1697,7 @@ Ngôn ngữ & C\#, target \texttt{net10.0-windows} \\\hline
 Giao diện & Windows Forms \\\hline
 IDE & Visual Studio 2022 trở lên \\\hline
 Cơ sở dữ liệu & Microsoft SQL Server (Express/Developer Edition) \\\hline
+Cổng web (mở rộng) & ASP.NET Core, target \texttt{net10.0}, dự án \texttt{QuanLyKhachSan.Web}; cổng mặc định 5080 \\\hline
 Cấu hình kết nối & \texttt{appsettings.json} (chỉ chứa cấu hình máy phát triển, không commit mật khẩu thật) \\\hline
 Kiểm thử tự động & Project \texttt{QuanLyKhachSan.Tests}, chạy bằng \texttt{dotnet run} \\\hline
 \end{tabularx}
@@ -1573,13 +1710,14 @@ Kiểm thử tự động & Project \texttt{QuanLyKhachSan.Tests}, chạy bằng
   \item Kiểm tra \texttt{appsettings.json} trỏ đúng tới instance SQL Server đang chạy.
   \item Mở \texttt{QuanLyKhachSan.sln} bằng Visual Studio, build và chạy project \texttt{QuanLyKhachSan}.
   \item Đăng nhập bằng tài khoản mẫu đã seed sẵn trong script (một tài khoản Quản lý, một tài khoản Lễ tân).
+  \item (Tùy chọn) Chạy \texttt{dotnet run --project QuanLyKhachSan.Web}; đặt \texttt{Web:BaseUrl} trong \texttt{QuanLyKhachSan/appsettings.json} thành địa chỉ IP nội bộ của máy chạy web, mở cổng 5080 trên tường lửa, rồi tạo mã QR từ menu \textit{Tra cứu}.
 \end{enumerate}
 
 \section{Kịch bản và kết quả kiểm thử}
 
 \subsection{Kiểm thử logic tự động (độc lập CSDL)}
 
-Project \texttt{QuanLyKhachSan.Tests} kiểm tra trực tiếp các quy tắc nghiệp vụ không phụ thuộc kết nối CSDL: số đêm lưu trú tối thiểu (QT40), phụ thu trả muộn theo ba mốc 1/3/6 giờ (QT44), tổng thanh toán không âm (QT45), giới hạn tiền cọc theo số đêm (QT15), gom doanh thu theo ngày/tháng/loại phòng kể cả các ngày không phát sinh giao dịch, tính tỷ lệ công suất trung bình, và xuất CSV (thoát dấu phẩy, dấu nháy kép, chặn chèn công thức). Kết quả ghi nhận trong đợt hoàn thiện: \textbf{26/26 ca kiểm thử đạt} khi biên dịch và chạy bằng Mono; việc chạy lại bằng bộ công cụ \texttt{dotnet} chính thức chưa thực hiện được do môi trường phát triển tại thời điểm đó không có sẵn .NET SDK -- đây là hạn chế được ghi nhận trung thực thay vì bỏ qua.
+Project \texttt{QuanLyKhachSan.Tests} kiểm tra trực tiếp các quy tắc nghiệp vụ không phụ thuộc kết nối CSDL: số đêm lưu trú tối thiểu (QT40), phụ thu trả muộn theo ba mốc 1/3/6 giờ (QT44), tổng thanh toán không âm (QT45), giới hạn tiền cọc theo số đêm (QT15), gom doanh thu theo ngày/tháng/loại phòng kể cả các ngày không phát sinh giao dịch, tính tỷ lệ công suất trung bình, và xuất CSV (thoát dấu phẩy, dấu nháy kép, chặn chèn công thức). Sau khi bổ sung bộ mã hóa QR và lớp tạo đường dẫn tra cứu (QT65--QT68), bộ kiểm thử có thêm các ca tương ứng và tổng số đạt \textbf{47/47} khi chạy bằng Mono. Kết quả ghi nhận trong đợt hoàn thiện trước đó: \textbf{26/26 ca kiểm thử đạt} khi biên dịch và chạy bằng Mono; việc chạy lại bằng bộ công cụ \texttt{dotnet} chính thức chưa thực hiện được do môi trường phát triển tại thời điểm đó không có sẵn .NET SDK -- đây là hạn chế được ghi nhận trung thực thay vì bỏ qua.
 
 \subsection{Kiểm thử SQL và build}
 
@@ -1627,6 +1765,10 @@ UI-09 & Trả phòng rồi xác nhận dọn xong trên sơ đồ & Phòng chuy�
 UI-10 & Đặt phòng tương lai cho phòng đang có khách/đang dọn & Chỉ chọn được phòng không giao lịch \\\hline
 UI-11 & Đánh dấu Không đến / hủy rồi đặt lại cùng phòng, ngày & Phòng được giải phóng, đặt lại được \\\hline
 UI-12 & Lễ tân mở danh mục; Quản lý mở báo cáo công suất & Lễ tân chỉ xem; Quản lý thấy biểu đồ, in, xuất CSV \\\hline
+UI-13 & Mở \textit{Mã QR phòng và giá}, chọn phòng, lưu PNG rồi quét bằng điện thoại & Mở đúng trang \texttt{/phong/\{số\}}; mã còn quét được khi in \\\hline
+UI-14 & Bật/tắt giao diện tối bằng Ctrl+D khi đang mở nhiều cửa sổ, đóng và mở lại ứng dụng & Mọi cửa sổ đổi màu ngay, chữ đọc được; lựa chọn được ghi nhớ; báo cáo in vẫn nền sáng \\\hline
+UI-15 & Mở trang web với số phòng không tồn tại, ngày sai định dạng, ngày đến trước hôm nay, khoảng quá 60 đêm & Thông báo lỗi thân thiện, không lộ thông tin kỹ thuật \\\hline
+UI-16 & Ngắt kết nối CSDL rồi tải trang web & Trang 503 chung; không lộ chuỗi kết nối; không thấy tên khách ở bất kỳ trang nào \\\hline
 \end{longtable}
 
 Các kịch bản UI là bước kiểm thử thủ công, thực hiện trên dữ liệu giả để kiểm tra bố cục (không bị chồng chéo, không bị cắt chữ) và đúng luồng nghiệp vụ; đây chưa phải kiểm thử tự động và kết quả UI không được suy diễn chỉ từ việc script SQL hay build thành công.
@@ -1681,7 +1823,7 @@ Thông báo lỗi & Đạt & Chỉ hiển thị lỗi nghiệp vụ, không lộ
 
 \section{Đánh giá kết quả đạt được}
 
-Đối chiếu với danh sách 23 chức năng đã đặc tả ở Chương~1 (19 bắt buộc, 4 nâng cao) và các kịch bản kiểm thử ở trên, nhóm đánh giá: toàn bộ 19 chức năng bắt buộc đã được cài đặt và kiểm thử thủ công theo kịch bản UI-01 đến UI-12; 3/4 chức năng nâng cao (thống kê công suất, sơ đồ phòng theo tầng, xuất CSV) đã hoàn thành, 1 chức năng nâng cao (đổi phòng trong lúc lưu trú, NV08) chưa được triển khai. Bộ kiểm thử logic tự động đạt 26/26 ca khi chạy bằng Mono, nhưng chưa được xác nhận lại trên .NET SDK chính thức -- đây là hạng mục cần ưu tiên thực hiện trước khi đưa vào sử dụng thực tế, được nêu lại ở phần Kết luận và hướng phát triển.
+Đối chiếu với danh sách 23 chức năng đã đặc tả ở Chương~1 (19 bắt buộc, 4 nâng cao) và các kịch bản kiểm thử ở trên, nhóm đánh giá: toàn bộ 19 chức năng bắt buộc đã được cài đặt và kiểm thử thủ công theo kịch bản UI-01 đến UI-12; 3/4 chức năng nâng cao (thống kê công suất, sơ đồ phòng theo tầng, xuất CSV) đã hoàn thành, 1 chức năng nâng cao (đổi phòng trong lúc lưu trú, NV08) chưa được triển khai. Ba chức năng mở rộng (giao diện sáng/tối, mã QR, cổng web tra cứu) đã được biên dịch và kiểm tra bằng Mono hoặc dữ liệu giả; các kịch bản UI-13 đến UI-16 cần được thực hiện lại trên môi trường có .NET SDK và SQL Server thật. Bộ kiểm thử logic tự động đạt 26/26 ca cho các quy tắc cốt lõi (47/47 sau khi thêm các ca cho mã QR) khi chạy bằng Mono, nhưng chưa được xác nhận lại trên .NET SDK chính thức -- đây là hạng mục cần ưu tiên thực hiện trước khi đưa vào sử dụng thực tế, được nêu lại ở phần Kết luận và hướng phát triển.
 
 % ===== end chuong/chuong8.tex =====
 
