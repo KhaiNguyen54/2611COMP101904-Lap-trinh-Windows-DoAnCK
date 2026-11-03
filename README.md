@@ -40,7 +40,7 @@ Có thể mở `QuanLyKhachSan/Scripts/Database.sql` bằng SQL Server Managemen
 
 ### 2. Cấu hình kết nối
 
-Chuỗi mặc định trong [`QuanLyKhachSan/appsettings.json`](QuanLyKhachSan/appsettings.json) dùng SQL Server instance mặc định trên máy (`localhost`) và Windows Authentication. Nếu instance của bạn khác, thay giá trị `ConnectionStrings:KhachSan`, ví dụ:
+Chuỗi mặc định trong [`QuanLyKhachSan/appsettings.json`](QuanLyKhachSan/appsettings.json) dùng SQL Server instance mặc định trên máy (`localhost`) và Windows Authentication. Nếu instance khác, thay giá trị `ConnectionStrings:KhachSan`, ví dụ:
 ```json
 {
   "ConnectionStrings": {
@@ -51,25 +51,45 @@ Chuỗi mặc định trong [`QuanLyKhachSan/appsettings.json`](QuanLyKhachSan/a
 
 Tài khoản chạy ứng dụng cần quyền truy cập database. Không lưu mật khẩu SQL thật trong Git; nếu dùng SQL Authentication, giữ cấu hình riêng trên máy phát triển.
 
-### 3. Build và chạy
+### 3. Khởi động nhanh
+
+Từ thư mục gốc của repository:
 
 ```powershell
 dotnet restore .\QuanLyKhachSan.sln
 dotnet build .\QuanLyKhachSan.sln
+```
+
+#### 3.1. Chạy ứng dụng desktop quản lý khách sạn
+
+```powershell
 dotnet run --project .\QuanLyKhachSan\QuanLyKhachSan.csproj
 ```
 
 Hoặc mở solution bằng Visual Studio, đặt `QuanLyKhachSan` làm startup project và nhấn **F5**.
 
-### 4. Cổng web tra cứu và mã QR (tùy chọn)
+#### 3.2. Chạy cổng web tra cứu dành cho khách
 
 ```powershell
-dotnet run --project .\QuanLyKhachSan.Web\QuanLyKhachSan.Web.csproj
+dotnet run --project .\QuanLyKhachSan.Web\QuanLyKhachSan.Web.csproj --urls http://localhost:5080
 ```
 
-- Chuỗi kết nối trong `QuanLyKhachSan.Web\appsettings.json` (cùng CSDL với ứng dụng); mặc định lắng nghe cổng 5080.
-- Để điện thoại quét QR truy cập được, đặt `Web:BaseUrl` trong `QuanLyKhachSan\appsettings.json` thành địa chỉ IP trong mạng nội bộ của máy chạy web (ví dụ `http://192.168.1.20:5080`) và mở cổng 5080 trên tường lửa.
-- Các trang: `/` (tìm phòng trống), `/gia` (bảng giá), `/phong/{số phòng}`; JSON: `/api/gia`, `/api/phong/{số}`, `/api/phong-trong`.
+Sau khi chạy, mở trình duyệt và truy cập:
+
+```text
+http://localhost:5080/
+```
+
+Các đường dẫn chính:
+
+- `/` → tìm phòng trống
+- `/gia` → bảng giá
+- `/phong/{soPhong}` → chi tiết phòng
+- `/api/gia` → JSON bảng giá
+- `/api/phong/{soPhong}` → JSON chi tiết phòng
+- `/api/phong-trong` → JSON phòng trống theo ngày
+
+> Lưu ý: nếu chạy bằng `dotnet run` mà web không mở được, hãy đảm bảo dùng lệnh có `--urls http://localhost:5080`, vì đây là cổng mặc định trong project web. Nếu cần truy cập từ điện thoại cùng mạng LAN, đổi `Web:BaseUrl` trong [QuanLyKhachSan/appsettings.json](QuanLyKhachSan/appsettings.json) thành IP nội bộ của máy chạy web (ví dụ `http://192.168.1.20:5080`) và mở cổng 5080 trên tường lửa.
 
 ## Tài khoản dữ liệu mẫu
 
