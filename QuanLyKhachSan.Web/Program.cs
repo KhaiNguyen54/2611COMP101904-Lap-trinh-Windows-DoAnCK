@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -87,25 +86,10 @@ static IResult Html(HttpContext http, int ma, string tieuDe, string noiDung)
     return Results.Content(TrangHtml.Trang(tieuDe, noiDung), "text/html; charset=utf-8", System.Text.Encoding.UTF8, ma);
 }
 
-/// <summary>Đọc ?den=&di=; mặc định hôm nay → ngày mai. Trả về thông báo lỗi tiếng Việt nếu không hợp lệ.</summary>
+/// <summary>Đọc ?den=&di= từ yêu cầu (xem KhoangNgay.Doc).</summary>
 static string DocKhoangNgay(HttpContext http, out DateTime den, out DateTime di)
 {
-    den = DateTime.Today;
-    di = den.AddDays(1);
-    string sDen = http.Request.Query["den"];
-    string sDi = http.Request.Query["di"];
-    if (!string.IsNullOrEmpty(sDen) && !DateTime.TryParseExact(sDen, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out den))
-        return "Ngày đến không hợp lệ.";
-    if (string.IsNullOrEmpty(sDen)) den = DateTime.Today;
-    if (!string.IsNullOrEmpty(sDi))
-    {
-        if (!DateTime.TryParseExact(sDi, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out di))
-            return "Ngày đi không hợp lệ.";
-    }
-    else di = den.AddDays(1);
-    if (den.Date < DateTime.Today) return "Ngày đến không được trước hôm nay.";
-    if (den.Date >= di.Date) return "Ngày đến phải trước ngày đi.";
-    return null;
+    return KhoangNgay.Doc(http.Request.Query["den"], http.Request.Query["di"], DateTime.Today, out den, out di);
 }
 
 /// <summary>Chạy xử lý; lỗi cơ sở dữ liệu chỉ ghi log nội bộ, khách chỉ thấy thông báo chung (không lộ chuỗi kết nối).</summary>
