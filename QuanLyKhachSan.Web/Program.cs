@@ -15,8 +15,14 @@ app.Use(async (ctx, next) =>
     ctx.Response.Headers["X-Content-Type-Options"] = "nosniff";
     ctx.Response.Headers["Referrer-Policy"] = "no-referrer";
     ctx.Response.Headers["X-Frame-Options"] = "DENY";
-    ctx.Response.Headers["Content-Security-Policy"] = "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'";
+    ctx.Response.Headers["Content-Security-Policy"] = "default-src 'none'; style-src 'unsafe-inline'; img-src 'self'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'";
     await next();
+});
+
+app.MapGet("/logo.svg", (HttpContext http) =>
+{
+    http.Response.Headers["Cache-Control"] = "public, max-age=86400";
+    return Results.Content(TrangHtml.LogoSvg, "image/svg+xml");
 });
 
 app.MapGet("/", (HttpContext http) => Chay(http, () =>

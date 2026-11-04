@@ -11,6 +11,7 @@
 - Sơ đồ phòng theo tầng (dọn phòng, bảo trì), danh sách khách đang ở.
 - Tra cứu, xem trước và in hóa đơn; báo cáo doanh thu (ngày/tháng/loại phòng) và công suất phòng, có biểu đồ, in và xuất CSV.
 - Giao diện sáng/tối: menu **Hệ thống → Giao diện tối** (Ctrl+D), áp dụng ngay cho mọi cửa sổ và được nhớ cho lần mở sau (lưu tại `%AppData%\QuanLyKhachSan\giaodien.txt`). Bản in báo cáo luôn dùng nền sáng.
+- Logo Autumn Hotel (lá thu, mái nhà và cửa): `QuanLyKhachSan/Resources/logo.svg|png|ico`; dùng làm biểu tượng ứng dụng, đầu trang chủ và cổng web (`/logo.svg`).
 - Mã QR tra cứu: menu **Tra cứu → Mã QR phòng và giá** tạo QR cho từng phòng và bảng giá (lưu PNG, in, xuất tất cả, sao chép liên kết). Bộ mã hóa QR tự viết, không cần thư viện ngoài.
 - Cổng web cho khách (`QuanLyKhachSan.Web`): quét QR để xem giá, tình trạng và phòng trống theo ngày; chỉ đọc, không hiển thị thông tin khách.
 - Phím tắt: F2 đặt phòng, F3 nhận phòng, F4 dịch vụ, F5 sơ đồ, F6 trả phòng, F7 hóa đơn. Hướng dẫn demo: [`docs/09_HuongDan_Demo.md`](docs/09_HuongDan_Demo.md).

@@ -9,6 +9,7 @@
     <RootNamespace>QuanLyKhachSan</RootNamespace>
     <AssemblyName>QuanLyKhachSan</AssemblyName>
     <LangVersion>latest</LangVersion>
+    <ApplicationIcon>Resources\logo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>

@@ -231,8 +231,49 @@ namespace QuanLyKhachSan.GUI
             return new Label { Text = chu, AutoSize = true, Font = new Font("Microsoft Sans Serif", co, FontStyle.Bold), ForeColor = Chu };
         }
 
+        private static Icon _bieuTuong;
+        private static Bitmap _logo;
+
+        /// <summary>Biểu tượng cửa sổ (Resources/logo.ico); null nếu thiếu tệp.</summary>
+        public static Icon BieuTuong
+        {
+            get
+            {
+                if (_bieuTuong == null)
+                {
+                    try
+                    {
+                        string f = System.IO.Path.Combine(AppContext.BaseDirectory, "Resources", "logo.ico");
+                        if (System.IO.File.Exists(f)) _bieuTuong = new Icon(f);
+                    }
+                    catch (Exception) { }
+                }
+                return _bieuTuong;
+            }
+        }
+
+        /// <summary>Logo dạng ảnh (Resources/logo.png) để đặt trên giao diện; null nếu thiếu tệp.</summary>
+        public static Bitmap Logo
+        {
+            get
+            {
+                if (_logo == null)
+                {
+                    try
+                    {
+                        string f = System.IO.Path.Combine(AppContext.BaseDirectory, "Resources", "logo.png");
+                        if (System.IO.File.Exists(f))
+                            using (Image g = Image.FromFile(f)) _logo = new Bitmap(g);
+                    }
+                    catch (Exception) { }
+                }
+                return _logo;
+            }
+        }
+
         public static void ApDung(Form form)
         {
+            if (BieuTuong != null) form.Icon = BieuTuong;
             form.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point);
             form.ForeColor = Chu;
             form.BackColor = Nen;

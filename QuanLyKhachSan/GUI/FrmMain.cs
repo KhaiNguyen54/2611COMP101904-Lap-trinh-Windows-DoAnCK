@@ -189,14 +189,19 @@ namespace QuanLyKhachSan.GUI
             var hang = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, ColumnCount = 2, Margin = new Padding(0, 0, 0, 8) };
             hang.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 60));
             hang.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40));
-            hang.Controls.Add(new Label
+            var loiChao = new FlowLayoutPanel { AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, Anchor = AnchorStyles.Left, WrapContents = false, Margin = new Padding(0) };
+            if (GiaoDien.Logo != null)
+                loiChao.Controls.Add(new PictureBox { Image = GiaoDien.Logo, SizeMode = PictureBoxSizeMode.Zoom, Size = new Size(40, 40), Margin = new Padding(0, 0, 10, 0) });
+            loiChao.Controls.Add(new Label
             {
                 Text = "Xin chào, " + (LaQuanLy ? "Quản lý Vạn Năng" : "Lễ tân 0 Lương"),
                 AutoSize = true,
                 Anchor = AnchorStyles.Left,
+                Margin = new Padding(0, 8, 0, 0),
                 Font = new Font("Microsoft Sans Serif", 14F, FontStyle.Bold),
                 ForeColor = GiaoDien.Chu
-            }, 0, 0);
+            });
+            hang.Controls.Add(loiChao, 0, 0);
             hang.Controls.Add(new Label
             {
                 Text = DateTime.Now.ToString("dddd, dd/MM/yyyy") + Environment.NewLine + "Autumn Hotel · Quản lý lưu trú",

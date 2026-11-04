@@ -15,12 +15,22 @@ namespace QuanLyKhachSan.Web
 
         public static string Gia(decimal v) { return v.ToString("N0", Tien) + " đ"; }
 
+        /// <summary>Logo Autumn Hotel (lá thu có mái nhà và cửa); trùng với Resources/logo.svg của ứng dụng.</summary>
+        public const string LogoSvg =
+            "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\">"
+            + "<rect width=\"64\" height=\"64\" rx=\"15\" fill=\"#17382F\"/>"
+            + "<path d=\"M32 8.5C47 18 51.5 34 32 56C12.5 34 17 18 32 8.5Z\" fill=\"#E0A03C\"/>"
+            + "<path d=\"M20.5 37.5 32 26 43.5 37.5\" fill=\"none\" stroke=\"#17382F\" stroke-width=\"3.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>"
+            + "<path d=\"M28.2 56V45.5a3.8 3.8 0 0 1 7.6 0V56Z\" fill=\"#17382F\"/></svg>";
+
         public static string Trang(string tieuDe, string noiDung)
         {
             return "<!doctype html><html lang=\"vi\"><head><meta charset=\"utf-8\">"
                 + "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
+                + "<meta name=\"theme-color\" content=\"#17382F\"><link rel=\"icon\" type=\"image/svg+xml\" href=\"/logo.svg\">"
                 + "<title>" + E(tieuDe) + " · Autumn Hotel</title><style>" + Css + "</style></head><body>"
-                + "<header><a class=\"logo\" href=\"/\">Autumn Hotel</a><nav><a href=\"/\">Tìm phòng</a><a href=\"/gia\">Bảng giá</a></nav></header>"
+                + "<header><div class=\"thanh\"><a class=\"logo\" href=\"/\" aria-label=\"Autumn Hotel, trang chủ\"><img src=\"/logo.svg\" alt=\"\" width=\"36\" height=\"36\"><span>Autumn Hotel</span></a>"
+                + "<nav><a href=\"/\">Tìm phòng</a><a href=\"/gia\">Bảng giá</a></nav></div></header>"
                 + "<main>" + noiDung + "</main>"
                 + "<footer>Thông tin chỉ mang tính tham khảo; giá và tình trạng phòng có thể thay đổi. Vui lòng liên hệ lễ tân để đặt phòng.</footer>"
                 + "</body></html>";
@@ -96,18 +106,29 @@ namespace QuanLyKhachSan.Web
         }
 
         private const string Css =
-            ":root{--nen:#f8f4ed;--chu:#3e2f26;--phu:#826f61;--be:#fffcf7;--vien:#e7dbcc;--nhan:#b15237;--tot:#e6f3e6}"
-            + "@media(prefers-color-scheme:dark){:root{--nen:#1f1a16;--chu:#f1e7da;--phu:#b9a897;--be:#2a231d;--vien:#473b30;--nhan:#e0805f;--tot:#25402a}}"
-            + "*{box-sizing:border-box}body{margin:0;font:16px/1.5 system-ui,sans-serif;background:var(--nen);color:var(--chu)}"
-            + "header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 16px;background:var(--be);border-bottom:1px solid var(--vien)}"
-            + ".logo{font-weight:700;font-size:1.2rem;color:var(--nhan);text-decoration:none}nav a{margin-left:14px;color:var(--chu)}"
-            + "main{max-width:720px;margin:0 auto;padding:16px}h1{font-size:1.5rem;margin:.4em 0}h2{font-size:1.1rem;margin:.2em 0}"
-            + ".luoi{display:grid;gap:12px}.the{background:var(--be);border:1px solid var(--vien);border-radius:12px;padding:14px 16px;margin:10px 0}"
-            + ".gia{font-size:1.6rem;font-weight:700;color:var(--nhan);margin:.2em 0}.gia small{font-size:.9rem;font-weight:400;color:var(--phu)}.phu{color:var(--phu)}"
-            + ".bieumau{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin:10px 0}.bieumau label{display:flex;flex-direction:column;font-size:.9rem;color:var(--phu)}"
-            + "input,button{font:inherit;padding:8px 10px;border-radius:8px;border:1px solid var(--vien);background:var(--be);color:var(--chu)}button{background:var(--nhan);color:#fff;border-color:var(--nhan);cursor:pointer}"
-            + "table{width:100%;border-collapse:collapse;background:var(--be);border-radius:10px;overflow:hidden}th,td{padding:8px 10px;border-bottom:1px solid var(--vien);text-align:left}th.s,td.s{text-align:right}a{color:var(--nhan)}"
-            + ".canhbao{background:#fdecea;color:#7a1f1a;border-radius:10px;padding:10px 14px;margin:10px 0}.tot{background:var(--tot);border-radius:10px;padding:10px 14px;margin:10px 0}"
-            + "footer{max-width:720px;margin:0 auto;padding:16px;color:var(--phu);font-size:.85rem}";
+            ":root{--pine:#17382f;--nen:#eef3ef;--chu:#14221d;--phu:#566861;--be:#ffffff;--vien:#d5dfd8;--nhan:#9a5a0c;--la:#e0a03c;--nut:#17382f;--nutchu:#ffffff;--tot:#e3f1e6;--totchu:#14522a;--loi:#fbeae6;--loichu:#7a1f1a;--bong:0 1px 2px rgba(20,34,29,.06),0 8px 24px -12px rgba(20,34,29,.18);--bongcao:0 2px 4px rgba(20,34,29,.08),0 16px 32px -14px rgba(20,34,29,.28)}"
+            + "@media(prefers-color-scheme:dark){:root{--nen:#0d1714;--chu:#e8efea;--phu:#9eb0a8;--be:#14231e;--vien:#26392f;--nhan:#e8b25a;--nut:#e0a03c;--nutchu:#1a1204;--tot:#173a25;--totchu:#a9e3bb;--loi:#3d1d1a;--loichu:#f4b9b1;--bong:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);--bongcao:0 2px 4px rgba(0,0,0,.5),0 16px 32px -14px rgba(0,0,0,.7)}}"
+            + "*{box-sizing:border-box}html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}"
+            + "body{margin:0;font:16px/1.55 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--nen);color:var(--chu);-webkit-font-smoothing:antialiased}"
+            + "header{background:var(--pine);color:#f2f6f3;box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 6px 20px -10px rgba(0,0,0,.5)}"
+            + ".thanh{max-width:720px;margin:0 auto;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px 16px;flex-wrap:wrap}"
+            + ".logo{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-weight:650;font-size:1.15rem;letter-spacing:.01em}.logo img{display:block;border-radius:9px}"
+            + "nav{display:flex;gap:4px}nav a{color:#d5e3db;text-decoration:none;padding:8px 12px;border-radius:999px;transition:background-color .18s ease,color .18s ease}nav a:hover{background:rgba(255,255,255,.12);color:#fff}"
+            + "main{max-width:720px;margin:0 auto;padding:22px 16px 12px;animation:vao .32s ease-out both}@keyframes vao{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}"
+            + "h1{font-size:1.7rem;line-height:1.2;letter-spacing:-.015em;margin:.2em 0 .5em;text-wrap:balance}h2{font-size:1.1rem;line-height:1.3;margin:.2em 0;text-wrap:balance}p{margin:.4em 0}"
+            + ".luoi{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}"
+            + ".the{background:var(--be);border:1px solid var(--vien);border-radius:14px;padding:16px 18px;margin:12px 0;box-shadow:var(--bong);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.luoi .the{margin:0}.the:hover{transform:translateY(-2px);box-shadow:var(--bongcao);border-color:var(--la)}"
+            + ".gia{font-size:1.65rem;font-weight:700;color:var(--nhan);margin:.15em 0;font-variant-numeric:tabular-nums}.gia small{font-size:.9rem;font-weight:400;color:var(--phu)}.phu{color:var(--phu)}"
+            + ".bieumau{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin:12px 0 16px}.bieumau label{display:flex;flex-direction:column;gap:4px;font-size:.9rem;color:var(--phu)}"
+            + "input,button{font:inherit;min-height:44px;padding:8px 12px;border-radius:10px;border:1px solid var(--vien);background:var(--be);color:var(--chu);transition:border-color .18s ease,box-shadow .18s ease,background-color .18s ease,transform .12s ease}"
+            + "input:hover{border-color:var(--phu)}button{background:var(--nut);color:var(--nutchu);border-color:var(--nut);font-weight:600;padding:8px 20px;cursor:pointer}button:hover{box-shadow:var(--bongcao);transform:translateY(-1px)}button:active{transform:none}"
+            + "a:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid var(--la);outline-offset:2px}"
+            + "table{width:100%;border-collapse:separate;border-spacing:0;background:var(--be);border:1px solid var(--vien);border-radius:14px;overflow:hidden;box-shadow:var(--bong);font-variant-numeric:tabular-nums}"
+            + "th,td{padding:11px 12px;border-bottom:1px solid var(--vien);text-align:left}th{font-size:.85rem;color:var(--phu);font-weight:600;background:color-mix(in srgb,var(--vien) 35%,var(--be))}tbody tr{transition:background-color .15s ease}tbody tr:hover{background:color-mix(in srgb,var(--la) 12%,var(--be))}tr:last-child td{border-bottom:0}th.s,td.s{text-align:right;white-space:nowrap}"
+            + "a{color:var(--nhan);text-underline-offset:3px}td a{font-weight:650}"
+            + ".canhbao{background:var(--loi);color:var(--loichu);border-radius:12px;padding:12px 16px;margin:12px 0}.tot{background:var(--tot);color:var(--totchu);border-radius:12px;padding:12px 16px;margin:12px 0}"
+            + "footer{max-width:720px;margin:0 auto;padding:12px 16px 32px;color:var(--phu);font-size:.85rem}"
+            + "@media(max-width:480px){.bieumau label{flex:1 1 40%}.bieumau button{flex:1 1 100%}th,td{padding:10px 8px}}"
+            + "@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}";
     }
 }
