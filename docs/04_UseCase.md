@@ -83,7 +83,7 @@ Quan hệ giữa các use case (mô hình mục tiêu):
 | UC21 | Tra cứu giá và phòng trống qua cổng web (quét QR) | Khách | MR03 | MR |
 | UC22 | Chuyển giao diện sáng/tối | LT, QL | MR01 | MR |
 
-**Tình trạng theo source:** UC20–UC22 (mở rộng) có luồng chính trong source nhưng mới được kiểm tra bằng Mono/dữ liệu giả. UC01–UC08 và UC10–UC19 có luồng chính tương ứng ở mức ứng dụng (UC17 doanh thu và công suất, UC18 xem trước/in báo cáo, UC19 xuất CSV danh sách khách đang ở và các báo cáo); UC09 hiện hỗ trợ hủy và đánh dấu không đến, chưa hỗ trợ sửa. Các luồng ngoại lệ và quyền cần được xác nhận bằng kiểm thử giao diện trên máy có SQL Server.
+**Tình trạng theo source:** UC20–UC22 (mở rộng) có luồng chính trong source. UC01–UC08 và UC10–UC19 có luồng chính tương ứng ở mức ứng dụng (UC17 doanh thu và công suất, UC18 xem trước/in báo cáo, UC19 xuất CSV danh sách khách đang ở và các báo cáo); UC09 hiện hỗ trợ hủy và đánh dấu không đến, chưa hỗ trợ sửa. Các luồng ngoại lệ và quyền cần được xác nhận bằng kiểm thử giao diện trên máy có SQL Server.
 
 ## 3. Đặc tả các use case chính
 

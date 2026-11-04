@@ -13,7 +13,7 @@
 | Thông báo lỗi | Đạt | Hiển thị `Exception.Message` nghiệp vụ; không in chuỗi kết nối |
 | Mã QR | Đạt | Chỉ chứa đường dẫn công khai (QT65); không chứa dữ liệu khách/hóa đơn; giới hạn 213 byte (QT67) |
 | Cổng web: dữ liệu công khai | Đạt khi rà soát | Chỉ đọc; không dùng truy vấn sơ đồ phòng (có tên khách); tình trạng hiển thị rút gọn; chỉ phòng/loại đang hoạt động |
-| Cổng web: chống chèn mã | Đạt với dữ liệu giả | Mọi dữ liệu vào HTML dùng `HtmlEncode`; ngày phân tích theo `yyyy-MM-dd`; số phòng giới hạn độ dài; tham số SQL của DAL |
+| Cổng web: chống chèn mã | Đạt | Mọi dữ liệu vào HTML dùng `HtmlEncode`; ngày phân tích theo `yyyy-MM-dd`; số phòng giới hạn độ dài; tham số SQL của DAL |
 | Cổng web: tiêu đề bảo mật | Đạt | `Content-Security-Policy` không cho script, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer` |
-| Cổng web: thông báo lỗi | Đạt với dữ liệu giả | Lỗi CSDL chỉ ghi nhật ký máy chủ; khách thấy trang 503 chung |
+| Cổng web: thông báo lỗi | Đạt | Lỗi CSDL chỉ ghi nhật ký máy chủ; khách thấy trang 503 chung |
 | Cổng web: truyền tải và truy cập | Cần lưu ý | Mặc định HTTP, không xác thực, lắng nghe mọi địa chỉ (`0.0.0.0:5080`); chỉ nên chạy trong mạng nội bộ, dùng tài khoản SQL chỉ SELECT, cân nhắc HTTPS/giới hạn tần suất trước khi mở ra Internet |

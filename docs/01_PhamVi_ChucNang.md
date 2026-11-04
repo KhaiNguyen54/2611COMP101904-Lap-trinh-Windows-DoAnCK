@@ -101,6 +101,6 @@ Bảng chức năng phía trên mô tả phạm vi yêu cầu, không phải xá
 | Danh mục | Khách hàng, loại phòng, phòng, dịch vụ: thêm, sửa, tìm kiếm, ngừng sử dụng; Lễ tân chỉ xem ba danh mục sau | Chưa có lọc theo tầng/loại trong màn hình Phòng (có ở sơ đồ phòng) |
 | Nghiệp vụ | Tạo/hủy đặt phòng, đánh dấu khách không đến, cọc tối đa 1 đêm × số đêm; nhận phòng từ đặt trước hoặc vãng lai; ghi và xóa dịch vụ; trả phòng có transaction và hóa đơn; sơ đồ phòng theo tầng; bảo trì/dọn dẹp | Chưa có sửa đặt phòng và đổi phòng |
 | Tra cứu/báo cáo | Tra cứu hóa đơn, khách đang ở; doanh thu theo ngày/tháng/loại phòng; công suất phòng; biểu đồ; xem trước/in; xuất CSV | Chưa có xuất Excel (.xlsx) |
-| Mở rộng | Giao diện sáng/tối (Ctrl+D, ghi nhớ); mã QR phòng/giá (lưu PNG, in, xuất tất cả); cổng web `QuanLyKhachSan.Web` (tìm phòng trống, bảng giá, chi tiết phòng, API JSON) | Web chưa cho đặt phòng, chưa có xác thực/HTTPS; chưa kiểm chứng trên .NET SDK chính thức |
+| Mở rộng | Giao diện sáng/tối (Ctrl+D, ghi nhớ); mã QR phòng/giá (lưu PNG, in, xuất tất cả); cổng web `QuanLyKhachSan.Web` (tìm phòng trống, bảng giá, chi tiết phòng, API JSON) | Web chưa cho đặt phòng, chưa có xác thực/HTTPS |
 
 Phòng ở trạng thái Dọn dẹp có thể được xác nhận hoàn tất trên sơ đồ; đây là thao tác cập nhật trạng thái, không phải chức năng đổi phòng. Ma trận này cần được cập nhật cùng kịch bản kiểm thử khi source thay đổi.

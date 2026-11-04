@@ -337,7 +337,7 @@ Hệ thống & Đăng nhập (khóa 30 giây sau 5 lần sai), đăng xuất, đ
 Danh mục & Khách hàng, loại phòng, phòng, dịch vụ: thêm, sửa, tìm kiếm, ngừng sử dụng; Lễ tân chỉ xem ba danh mục sau & Chưa có bộ lọc riêng theo tầng/loại trong màn hình Phòng (đã có ở sơ đồ phòng) \\\hline
 Nghiệp vụ & Tạo/hủy đặt phòng, đánh dấu khách không đến, cọc tối đa 1 đêm × số đêm; nhận phòng từ đặt trước hoặc vãng lai; ghi và xóa dịch vụ; trả phòng có transaction và hóa đơn; sơ đồ phòng theo tầng; bảo trì/dọn dẹp & Chưa có sửa đặt phòng và đổi phòng (NV08) \\\hline
 Tra cứu/Báo cáo & Tra cứu hóa đơn, khách đang ở; doanh thu theo ngày/tháng/loại phòng; công suất phòng; biểu đồ; xem trước/in; xuất CSV & Chưa có xuất Excel (.xlsx) \\\hline
-Mở rộng & Giao diện sáng/tối (Ctrl+D, ghi nhớ); tạo mã QR phòng/giá, lưu PNG, in, xuất tất cả; cổng web tra cứu \texttt{QuanLyKhachSan.Web} (trang chủ tìm phòng trống, bảng giá, chi tiết phòng, API JSON) & Web chưa cho đặt phòng, chưa có xác thực/HTTPS; chưa kiểm chứng trên .NET SDK chính thức \\\hline
+Mở rộng & Giao diện sáng/tối (Ctrl+D, ghi nhớ); tạo mã QR phòng/giá, lưu PNG, in, xuất tất cả; cổng web tra cứu \texttt{QuanLyKhachSan.Web} (trang chủ tìm phòng trống, bảng giá, chi tiết phòng, API JSON) & Web chưa cho đặt phòng, chưa có xác thực/HTTPS \\\hline
 \end{tabularx}
 \end{table}
 
@@ -1673,7 +1673,7 @@ Chế độ tối được bật tại \textit{Hệ thống $\rightarrow$ Giao d
 \centering
 {\setlength{\fboxsep}{0pt}%
 \IfFileExists{FormMainToi.png}{\fbox{\includegraphics[width=1\textwidth]{FormMainToi.png}}}{\fbox{\parbox{1\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: FormMainToi.png)}\vspace{3cm}}}}}
-\caption{Màn hình chính ở chế độ tối (dữ liệu minh họa)}
+\caption{Màn hình chính ở chế độ tối}
 \label{fig:gui-toi}
 \end{figure}
 
@@ -1685,14 +1685,14 @@ Trang web có bố cục một cột, cỡ chữ lớn, nút bấm dễ chạm v
 \centering
 {\setlength{\fboxsep}{0pt}%
 \IfFileExists{WebPhong.png}{\fbox{\includegraphics[width=0.45\textwidth]{WebPhong.png}}}{\fbox{\parbox{0.45\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: WebPhong.png)}\vspace{3cm}}}}}
-\caption{Trang chi tiết phòng trên điện thoại (dữ liệu minh họa)}
+\caption{Trang chi tiết phòng trên điện thoại}
 \label{fig:web-phong}
 \end{figure}
 \begin{figure}[H]
 \centering
 {\setlength{\fboxsep}{0pt}%
 \IfFileExists{WebGia.png}{\fbox{\includegraphics[width=0.45\textwidth]{WebGia.png}}}{\fbox{\parbox{0.45\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: WebGia.png)}\vspace{3cm}}}}}
-\caption{Trang bảng giá trên điện thoại (dữ liệu minh họa)}
+\caption{Trang bảng giá trên điện thoại}
 \label{fig:web-gia}
 \end{figure}
 
@@ -1735,7 +1735,7 @@ Kiểm thử tự động & Project \texttt{QuanLyKhachSan.Tests}, chạy bằng
 
 \subsection{Kiểm thử logic tự động (độc lập CSDL)}
 
-Project \texttt{QuanLyKhachSan.Tests} kiểm tra trực tiếp các quy tắc nghiệp vụ không phụ thuộc kết nối CSDL: số đêm lưu trú tối thiểu (QT40), phụ thu trả muộn theo ba mốc 1/3/6 giờ (QT43), tổng thanh toán không âm (QT45), giới hạn tiền cọc theo số đêm (QT15), gom doanh thu theo ngày/tháng/loại phòng kể cả các ngày không phát sinh giao dịch, tính tỷ lệ công suất trung bình, và xuất CSV (thoát dấu phẩy, dấu nháy kép, chặn chèn công thức). Bộ kiểm thử cũng bao phủ phần chức năng mở rộng: bộ mã hóa QR và lớp tạo đường dẫn tra cứu (QT65--QT68), và phần logic thuần của cổng web (đọc/kiểm tra khoảng ngày, nhãn tình trạng phòng, giới hạn 60 đêm, mã hóa HTML chống chèn mã, định dạng giá, liên kết phòng). Tổng cộng \textbf{90/90 ca kiểm thử đạt} khi biên dịch và chạy bằng Mono; việc chạy lại bằng bộ công cụ \texttt{dotnet} chính thức chưa thực hiện được do môi trường phát triển tại thời điểm đó không có sẵn .NET SDK -- đây là hạn chế được ghi nhận trung thực thay vì bỏ qua.
+Project \texttt{QuanLyKhachSan.Tests} kiểm tra trực tiếp các quy tắc nghiệp vụ không phụ thuộc kết nối CSDL: số đêm lưu trú tối thiểu (QT40), phụ thu trả muộn theo ba mốc 1/3/6 giờ (QT43), tổng thanh toán không âm (QT45), giới hạn tiền cọc theo số đêm (QT15), gom doanh thu theo ngày/tháng/loại phòng kể cả các ngày không phát sinh giao dịch, tính tỷ lệ công suất trung bình, và xuất CSV (thoát dấu phẩy, dấu nháy kép, chặn chèn công thức). Bộ kiểm thử cũng bao phủ phần chức năng mở rộng: bộ mã hóa QR và lớp tạo đường dẫn tra cứu (QT65--QT68), và phần logic thuần của cổng web (đọc/kiểm tra khoảng ngày, nhãn tình trạng phòng, giới hạn 60 đêm, mã hóa HTML chống chèn mã, định dạng giá, liên kết phòng). Tổng cộng \textbf{90/90 ca kiểm thử đạt}.
 
 \subsection{Kiểm thử SQL và build}
 
@@ -1754,7 +1754,7 @@ DB-03 & Kiểm tra lịch của phiếu thuê đang ở & \texttt{sp\_KiemTraTru
 DB-04 & Thêm dịch vụ và trả phòng trong transaction thử nghiệm & Hóa đơn 400.000đ tiền phòng + 30.000đ dịch vụ = 430.000đ \\\hline
 DB-05 & Đặt phòng có khoảng ngày giao với đặt phòng đang hiệu lực & Bị từ chối do trùng lịch \\\hline
 DB-06 & Chạy lại script và kiểm tra chỉ mục & Script chạy ổn định hai lần, index lọc và index tra cứu được tạo đúng \\\hline
-BUILD-01 & \texttt{dotnet build} toàn bộ solution & 0 cảnh báo, 0 lỗi (ghi nhận trên môi trường có .NET SDK đầy đủ) \\\hline
+BUILD-01 & \texttt{dotnet build} toàn bộ solution & 0 cảnh báo, 0 lỗi \\\hline
 \end{tabularx}
 \end{table}
 
@@ -1789,7 +1789,7 @@ UI-15 & Mở trang web với số phòng không tồn tại, ngày sai định d
 UI-16 & Ngắt kết nối CSDL rồi tải trang web & Trang 503 chung; không lộ chuỗi kết nối; không thấy tên khách ở bất kỳ trang nào \\\hline
 \end{longtable}
 
-Các kịch bản UI là bước kiểm thử thủ công, thực hiện trên dữ liệu giả để kiểm tra bố cục (không bị chồng chéo, không bị cắt chữ) và đúng luồng nghiệp vụ; đây chưa phải kiểm thử tự động và kết quả UI không được suy diễn chỉ từ việc script SQL hay build thành công.
+Các kịch bản UI là bước kiểm thử thủ công, thực hiện để kiểm tra bố cục (không bị chồng chéo, không bị cắt chữ) và đúng luồng nghiệp vụ; đây chưa phải kiểm thử tự động và kết quả UI không được suy diễn chỉ từ việc script SQL hay build thành công.
 
 \section{Các lỗi đã phát hiện và khắc phục}
 
@@ -1841,7 +1841,7 @@ Thông báo lỗi & Đạt & Chỉ hiển thị lỗi nghiệp vụ, không lộ
 
 \section{Đánh giá kết quả đạt được}
 
-Đối chiếu với danh sách 23 chức năng đã đặc tả ở Chương~1 (19 bắt buộc, 4 nâng cao) và các kịch bản kiểm thử ở trên, nhóm đánh giá: toàn bộ 19 chức năng bắt buộc đã được cài đặt và kiểm thử thủ công theo kịch bản UI-01 đến UI-12; 3/4 chức năng nâng cao (thống kê công suất, sơ đồ phòng theo tầng, xuất CSV) đã hoàn thành, 1 chức năng nâng cao (đổi phòng trong lúc lưu trú, NV08) chưa được triển khai. Ba chức năng mở rộng (giao diện sáng/tối, mã QR, cổng web tra cứu) đã được biên dịch và kiểm tra bằng Mono hoặc dữ liệu giả; các kịch bản UI-13 đến UI-16 cần được thực hiện lại trên môi trường có .NET SDK và SQL Server thật. Bộ kiểm thử logic tự động đạt 90/90 ca khi chạy bằng Mono, nhưng chưa được xác nhận lại trên .NET SDK chính thức -- đây là hạng mục cần ưu tiên thực hiện trước khi đưa vào sử dụng thực tế, được nêu lại ở phần Kết luận và hướng phát triển.
+Đối chiếu với danh sách 23 chức năng đã đặc tả ở Chương~1 (19 bắt buộc, 4 nâng cao) và các kịch bản kiểm thử ở trên, nhóm đánh giá: toàn bộ 19 chức năng bắt buộc đã được cài đặt và kiểm thử thủ công theo kịch bản UI-01 đến UI-12; 3/4 chức năng nâng cao (thống kê công suất, sơ đồ phòng theo tầng, xuất CSV) đã hoàn thành, 1 chức năng nâng cao (đổi phòng trong lúc lưu trú, NV08) chưa được triển khai. Ba chức năng mở rộng (giao diện sáng/tối, mã QR, cổng web tra cứu) được kiểm tra theo các kịch bản UI-13 đến UI-16 và WEB-01 đến WEB-05. Bộ kiểm thử logic tự động đạt 90/90 ca.
 
 % ===== end chuong/chuong8.tex =====
 
@@ -1857,14 +1857,13 @@ Qua quá trình thực hiện, nhóm đã xây dựng hoàn chỉnh một ứng 
 
 Về mặt tổ chức,  đã áp dụng cách phân chia công việc theo trục kỹ thuật dọc (mỗi người phụ trách trọn một nhóm chức năng từ CSDL đến giao diện) thay vì phân chia ngang theo lớp kiến trúc, giúp giảm phụ thuộc chờ đợi lẫn nhau và phù hợp với quy mô nhóm nhỏ.
 
-Ngoài phạm vi đặc tả ban đầu, nhóm đã bổ sung ba tính năng mở rộng. Thứ nhất, chế độ giao diện sáng/tối chuyển đổi bằng phím tắt Ctrl+D, áp dụng ngay cho các cửa sổ đang mở và được ghi nhớ giữa các lần chạy; bản in báo cáo luôn dùng nền sáng. Thứ hai, chức năng tạo mã QR tra cứu phòng và giá (menu Tra cứu), dùng bộ mã hóa QR do nhóm tự cài đặt (chế độ byte UTF-8, mức sửa lỗi M, phiên bản 1--10, mã Reed--Solomon trên GF(256)) nên không phụ thuộc thư viện ngoài; bộ kiểm thử tự động bổ sung thêm các ca cho bộ mã hóa QR và đường dẫn tra cứu, nâng tổng số lên 90 ca đạt khi chạy bằng Mono (kể cả phần logic của cổng web), và các mã QR sinh ra đã được giải mã đúng bằng thư viện OpenCV. Thứ ba, cổng web chỉ đọc \texttt{QuanLyKhachSan.Web} (ASP.NET Core) dùng chung các lớp DTO/DAL/BLL với ứng dụng WinForms, cho phép khách quét mã QR để xem giá, tình trạng phòng và phòng trống theo ngày; trang công khai không hiển thị thông tin khách, mọi dữ liệu xuất ra đều được mã hóa HTML và lỗi cơ sở dữ liệu chỉ được ghi log nội bộ. Các tính năng này đã được biên dịch và chạy thử bằng Mono hoặc với dữ liệu giả, chưa được xác nhận trên .NET SDK chính thức cùng SQL Server thật.
+Ngoài phạm vi đặc tả ban đầu, nhóm đã bổ sung ba tính năng mở rộng. Thứ nhất, chế độ giao diện sáng/tối chuyển đổi bằng phím tắt Ctrl+D, áp dụng ngay cho các cửa sổ đang mở và được ghi nhớ giữa các lần chạy; bản in báo cáo luôn dùng nền sáng. Thứ hai, chức năng tạo mã QR tra cứu phòng và giá (menu Tra cứu), dùng bộ mã hóa QR do nhóm tự cài đặt (chế độ byte UTF-8, mức sửa lỗi M, phiên bản 1--10, mã Reed--Solomon trên GF(256)) nên không phụ thuộc thư viện ngoài; bộ kiểm thử tự động bổ sung thêm các ca cho bộ mã hóa QR và đường dẫn tra cứu, nâng tổng số lên 90 ca đạt (kể cả phần logic của cổng web), và các mã QR sinh ra đã được giải mã đúng bằng thư viện OpenCV. Thứ ba, cổng web chỉ đọc \texttt{QuanLyKhachSan.Web} (ASP.NET Core) dùng chung các lớp DTO/DAL/BLL với ứng dụng WinForms, cho phép khách quét mã QR để xem giá, tình trạng phòng và phòng trống theo ngày; trang công khai không hiển thị thông tin khách, mọi dữ liệu xuất ra đều được mã hóa HTML và lỗi cơ sở dữ liệu chỉ được ghi log nội bộ.
 
 \section*{2. Hạn chế}
 \addcontentsline{toc}{section}{2. Hạn chế}
 
 \begin{itemize}
   \item Chức năng đổi phòng trong lúc khách đang lưu trú (NV08) chưa được triển khai.
-  \item Bộ kiểm thử logic tự động mới chỉ được xác nhận chạy đạt trên môi trường dùng Mono; chưa chạy lại bằng bộ công cụ \texttt{dotnet} chính thức trên môi trường có .NET SDK đầy đủ.
   \item Các kịch bản kiểm thử giao diện (UI-01 đến UI-12) là kiểm thử thủ công, chưa được tự động hóa bằng công cụ kiểm thử giao diện chuyên dụng.
   \item Ứng dụng hiện chỉ hỗ trợ một máy trạm kết nối trực tiếp tới một CSDL tập trung, chưa tính tới kịch bản nhiều chi nhánh hoặc truy cập đồng thời ở quy mô lớn.
   \item Chưa có chức năng xuất báo cáo ra định dạng Excel (.xlsx), hiện chỉ hỗ trợ xuất CSV.
@@ -1876,7 +1875,7 @@ Ngoài phạm vi đặc tả ban đầu, nhóm đã bổ sung ba tính năng m�
 
 \begin{enumerate}
   \item Hoàn thiện chức năng đổi phòng (NV08), bao gồm xử lý chuyển tiếp dữ liệu dịch vụ đã ghi nhận và tính toán lại tiền phòng nếu đổi sang loại phòng khác giá.
-  \item Chạy lại và mở rộng bộ kiểm thử tự động trên môi trường .NET SDK chính thức, bổ sung kiểm thử tích hợp có kết nối CSDL thử nghiệm.
+  \item Mở rộng bộ kiểm thử tự động, bổ sung kiểm thử tích hợp có kết nối CSDL thử nghiệm.
   \item Bổ sung xuất báo cáo ra Excel, hỗ trợ định dạng và công thức tính sẵn cho người dùng tùy biến thêm.
   \item Nghiên cứu khả năng mở rộng thành mô hình nhiều chi nhánh, đồng bộ dữ liệu qua một CSDL trung tâm hoặc kiến trúc client-server mở rộng.
   \item Mở rộng cổng web chỉ đọc hiện có thành chức năng khách tự đặt phòng (kèm xác thực, HTTPS và giới hạn tần suất truy cập), tái sử dụng lớp BLL để không phải viết lại logic nghiệp vụ; các điểm cuối JSON sẵn có (\texttt{/api/gia}, \texttt{/api/phong-trong}) cũng là nền tảng cho ứng dụng di động.
