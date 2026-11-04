@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using QuanLyKhachSan.BLL;
+using QuanLyKhachSan.Web;
 
 namespace QuanLyKhachSan.Tests
 {
@@ -38,6 +39,9 @@ namespace QuanLyKhachSan.Tests
             Csv();
             Qr();
             DuongDanTraCuu();
+            KhoangNgayWeb();
+            DichVuTraCuu();
+            TrangWeb();
 
             Console.WriteLine("Đạt " + _dat + ", lỗi " + _loi);
             return _loi == 0 ? 0 : 1;
@@ -171,6 +175,87 @@ namespace QuanLyKhachSan.Tests
             Kiem("URL: giao thức ftp bị từ chối", Nem(delegate { TraCuuUrl.ChuanHoaGoc("ftp://x"); }));
             Kiem("URL: địa chỉ rỗng bị từ chối", Nem(delegate { TraCuuUrl.ChuanHoaGoc("  "); }));
             Kiem("URL: số phòng rỗng bị từ chối", Nem(delegate { TraCuuUrl.Phong("http://a", " "); }));
+        }
+        private static void KhoangNgayWeb()
+        {
+            DateTime den, di;
+            var hom = new DateTime(2026, 11, 4, 15, 30, 0);
+
+            Bang("Ngày: mặc định không lỗi", KhoangNgay.Doc(null, null, hom, out den, out di), (string)null);
+            Bang("Ngày: mặc định đến hôm nay", den, new DateTime(2026, 11, 4));
+            Bang("Ngày: mặc định đi ngày mai", di, new DateTime(2026, 11, 5));
+
+            Bang("Ngày: hợp lệ", KhoangNgay.Doc("2026-11-10", "2026-11-12", hom, out den, out di), (string)null);
+            Bang("Ngày: đến hợp lệ", den, new DateTime(2026, 11, 10));
+            Bang("Ngày: đi hợp lệ", di, new DateTime(2026, 11, 12));
+
+            Bang("Ngày: chỉ có ngày đến thì đi = đến + 1", KhoangNgay.Doc("2026-11-10", "", hom, out den, out di), (string)null);
+            Bang("Ngày: đi = đến + 1", di, new DateTime(2026, 11, 11));
+
+            Bang("Ngày: đến là hôm nay được chấp nhận", KhoangNgay.Doc("2026-11-04", "2026-11-05", hom, out den, out di), (string)null);
+            Bang("Ngày: đến sai định dạng", KhoangNgay.Doc("04/11/2026", null, hom, out den, out di), "Ngày đến không hợp lệ.");
+            Bang("Ngày: đến là chữ", KhoangNgay.Doc("abc", null, hom, out den, out di), "Ngày đến không hợp lệ.");
+            Bang("Ngày: đi sai định dạng", KhoangNgay.Doc("2026-11-10", "2026-13-40", hom, out den, out di), "Ngày đi không hợp lệ.");
+            Bang("Ngày: đến trước hôm nay", KhoangNgay.Doc("2026-11-03", "2026-11-05", hom, out den, out di), "Ngày đến không được trước hôm nay.");
+            Bang("Ngày: đến bằng đi", KhoangNgay.Doc("2026-11-10", "2026-11-10", hom, out den, out di), "Ngày đến phải trước ngày đi.");
+            Bang("Ngày: đến sau đi", KhoangNgay.Doc("2026-11-10", "2026-11-09", hom, out den, out di), "Ngày đến phải trước ngày đi.");
+        }
+
+        private static void DichVuTraCuu()
+        {
+            Bang("Nhãn: trống", TraCuuService.NhanTrangThai("Trống"), "Hiện đang trống");
+            Bang("Nhãn: đang ở không nêu khách", TraCuuService.NhanTrangThai("Đang ở"), "Hiện đang có khách");
+            Bang("Nhãn: đã đặt", TraCuuService.NhanTrangThai("Đã đặt"), "Đã có lịch đặt sắp tới");
+            Bang("Nhãn: dọn dẹp", TraCuuService.NhanTrangThai("Dọn dẹp"), "Đang được dọn");
+            Bang("Nhãn: bảo trì", TraCuuService.NhanTrangThai("Bảo trì"), "Đang bảo trì");
+            Bang("Nhãn: giá trị lạ giữ nguyên", TraCuuService.NhanTrangThai("Khác"), "Khác");
+
+            // Các nhánh sau trả về trước khi truy cập CSDL nên kiểm thử được mà không cần SQL Server.
+            Kiem("Phòng: số phòng rỗng → null", TraCuuService.LayPhong("") == null);
+            Kiem("Phòng: chỉ khoảng trắng → null", TraCuuService.LayPhong("   ") == null);
+            Kiem("Phòng: null → null", TraCuuService.LayPhong(null) == null);
+            Kiem("Phòng: dài quá 10 ký tự → null", TraCuuService.LayPhong("12345678901") == null);
+
+            var tuNgay = new DateTime(2026, 11, 10);
+            Kiem("Phòng trống: quá 60 đêm bị từ chối", Nem(delegate { TraCuuService.LayPhongTrong(tuNgay, tuNgay.AddDays(TraCuuService.ToiDaDem + 1)); }));
+            Bang("Giới hạn số đêm", TraCuuService.ToiDaDem, 60);
+        }
+
+        /// <summary>HtmlEncode có thể đổi ký tự có dấu thành thực thể số; giải mã lại để so sánh nội dung tiếng Việt.</summary>
+        private static string Dec(string html) { return System.Net.WebUtility.HtmlDecode(html); }
+
+        private static void TrangWeb()
+        {
+            Bang("HTML: mã hóa thẻ script", TrangHtml.E("<script>alert(1)</script>"), "&lt;script&gt;alert(1)&lt;/script&gt;");
+            Bang("HTML: null thành rỗng", TrangHtml.E(null), "");
+            Bang("HTML: giá có dấu chấm ngăn nghìn", TrangHtml.Gia(450000m), "450.000 đ");
+            Bang("HTML: giá triệu", TrangHtml.Gia(1250000m), "1.250.000 đ");
+
+            var xau = "<img src=x onerror=alert(1)>";
+            var ds = new List<GiaLoaiPhong> { new GiaLoaiPhong { TenLoai = xau, MoTa = xau, GiaMoiDem = 450000m, SucChua = 2 } };
+            string bangGia = TrangHtml.BangGia(ds);
+            Kiem("HTML: bảng giá không chứa thẻ img thô", bangGia.IndexOf("<img", StringComparison.Ordinal) < 0);
+            Kiem("HTML: bảng giá chứa nội dung đã mã hóa", bangGia.Contains("&lt;img"));
+            Kiem("HTML: bảng giá rỗng có thông báo", TrangHtml.BangGia(new List<GiaLoaiPhong>()).Contains("Chưa có dữ liệu giá"));
+
+            var phong = new ThongTinPhong { SoPhong = "<b>1</b>", Tang = 1, TenLoai = xau, MoTa = "", GiaMoiDem = 450000m, SucChua = 2, TrangThai = "Đang ở" };
+            string ct = TrangHtml.ChiTietPhong(phong, null, null, null);
+            Kiem("HTML: chi tiết phòng mã hóa số phòng", ct.IndexOf("<b>1</b>", StringComparison.Ordinal) < 0 && ct.Contains("&lt;b&gt;1"));
+            Kiem("HTML: chi tiết phòng chỉ hiện nhãn rút gọn", Dec(ct).Contains("Hiện đang có khách"));
+
+            var den = new DateTime(2026, 11, 10);
+            var di = new DateTime(2026, 11, 12);
+            var ok = new ThongTinPhong { SoPhong = "101", Tang = 1, TenLoai = "Standard", MoTa = "", GiaMoiDem = 450000m, SucChua = 2, TrangThai = "Trống" };
+            Kiem("HTML: còn trống hiện tổng 2 đêm", TrangHtml.ChiTietPhong(ok, den, di, true).Contains("900.000 đ"));
+            Kiem("HTML: không còn trống hiện cảnh báo", Dec(TrangHtml.ChiTietPhong(ok, den, di, false)).Contains("không còn trống"));
+
+            var trong = new List<ThongTinPhong> { new ThongTinPhong { SoPhong = "A 1/2", Tang = 1, TenLoai = "Standard", GiaMoiDem = 450000m, TrangThai = "Trống" } };
+            string tim = TrangHtml.TimPhong(den, di, trong, null);
+            Kiem("HTML: liên kết phòng mã hóa URL", tim.Contains("/phong/A%201%2F2?den=2026-11-10"));
+            Kiem("HTML: tổng tiền theo số đêm", tim.Contains("900.000 đ"));
+            Kiem("HTML: lỗi hiển thị thay danh sách", Dec(TrangHtml.TimPhong(den, di, new List<ThongTinPhong>(), "Lỗi thử")).Contains("Lỗi thử"));
+            Kiem("HTML: trang có ngôn ngữ vi và meta viewport", TrangHtml.Trang("T", "x").Contains("lang=\"vi\"") && TrangHtml.Trang("T", "x").Contains("viewport"));
+            Kiem("HTML: tiêu đề trang được mã hóa", TrangHtml.Trang("<x>", "").IndexOf("<title><x>", StringComparison.Ordinal) < 0);
         }
     }
 }

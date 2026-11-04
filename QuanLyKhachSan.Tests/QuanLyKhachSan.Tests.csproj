@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Logic thuần của cổng web tra cứu: biên dịch cùng project kiểm thử, không cần chạy ASP.NET Core. -->
+    <Compile Include="..\QuanLyKhachSan.Web\KhoangNgay.cs" Link="Web\KhoangNgay.cs" />
+    <Compile Include="..\QuanLyKhachSan.Web\TraCuuService.cs" Link="Web\TraCuuService.cs" />
+    <Compile Include="..\QuanLyKhachSan.Web\TrangHtml.cs" Link="Web\TrangHtml.cs" />
     <ProjectReference Include="..\QuanLyKhachSan\QuanLyKhachSan.csproj" />
   </ItemGroup>
 
