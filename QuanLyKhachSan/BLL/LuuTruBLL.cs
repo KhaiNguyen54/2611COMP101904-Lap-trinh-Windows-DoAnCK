@@ -62,6 +62,34 @@ namespace QuanLyKhachSan.BLL
             return _phieuThueDal.LayKhachDangO();
         }
 
+        /// <summary>
+        /// Các phòng có thể đổi sang (trống trọn khoảng còn lại của kỳ lưu trú, QT47), không gồm phòng hiện tại.
+        /// </summary>
+        public DataTable LayPhongCoTheDoi(int maPhongHienTai, DateTime ngayDiDuKien)
+        {
+            DateTime den, di;
+            QuyTacDoiPhong.KhoangCanTrong(DateTime.Today, ngayDiDuKien, out den, out di);
+            DataTable t = new PhongBLL().TimKiemTrongKhoang(den, di);
+            for (int i = t.Rows.Count - 1; i >= 0; i--)
+                if (Convert.ToInt32(t.Rows[i]["MaPhong"]) == maPhongHienTai) t.Rows.RemoveAt(i);
+            return t;
+        }
+
+        /// <summary>Đổi phòng khi khách đang ở (NV08, QT47–QT49).</summary>
+        public void DoiPhong(int maPhieuThue, int maPhongMoi, int maNguoiDung, string lyDo)
+        {
+            if (maPhieuThue <= 0)
+                throw new ArgumentException("Chọn phiếu thuê đang ở.");
+            if (maPhongMoi <= 0)
+                throw new ArgumentException("Chọn phòng mới.");
+            _phieuThueDal.DoiPhong(maPhieuThue, maPhongMoi, maNguoiDung, QuyTacDoiPhong.ChuanHoaLyDo(lyDo));
+        }
+
+        public DataTable LayLichSuDoiPhong(int maPhieuThue)
+        {
+            return _phieuThueDal.LayLichSuDoiPhong(maPhieuThue);
+        }
+
         public BaoGiaHoaDon TinhTamTinh(int maPhieuThue, DateTime ngayTra)
         {
             return _hoaDonBll.TinhTamTinh(maPhieuThue, ngayTra);

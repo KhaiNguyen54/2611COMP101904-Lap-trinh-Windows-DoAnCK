@@ -16,4 +16,6 @@
 | Cổng web: chống chèn mã | Đạt | Mọi dữ liệu vào HTML dùng `HtmlEncode`; ngày phân tích theo `yyyy-MM-dd`; số phòng giới hạn độ dài; tham số SQL của DAL |
 | Cổng web: tiêu đề bảo mật | Đạt | `Content-Security-Policy` không cho script (chỉ cho kiểu dáng nội tuyến và ảnh cùng nguồn), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer` |
 | Cổng web: thông báo lỗi | Đạt | Lỗi CSDL chỉ ghi nhật ký máy chủ; khách thấy trang 503 chung |
+| Cổng web: bộ lọc tìm phòng | Đạt | `loai` giới hạn 50 ký tự, `gia` chỉ nhận số nguyên dương ≤ 100.000.000; lọc trong bộ nhớ sau truy vấn tham số hóa; giá trị được `HtmlEncode` khi in lại vào form (QT71) |
+| Đổi phòng | Đạt | `sp_DoiPhong` dùng tham số, transaction và khóa dòng; lịch sử ghi người thực hiện; BLL giới hạn lý do 200 ký tự |
 | Cổng web: truyền tải và truy cập | Cần lưu ý | Mặc định HTTP, không xác thực, lắng nghe mọi địa chỉ (`0.0.0.0:5080`); chỉ nên chạy trong mạng nội bộ, dùng tài khoản SQL chỉ SELECT, cân nhắc HTTPS/giới hạn tần suất trước khi mở ra Internet |

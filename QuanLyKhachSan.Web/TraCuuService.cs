@@ -96,6 +96,46 @@ namespace QuanLyKhachSan.Web
             return kq;
         }
 
+        public const decimal GiaLocToiDa = 100000000m;
+
+        /// <summary>
+        /// Đọc bộ lọc ?loai=&amp;gia= của trang tìm phòng. Trả về thông báo lỗi tiếng Việt hoặc null nếu hợp lệ.
+        /// Để trống nghĩa là không lọc.
+        /// </summary>
+        public static string DocBoLoc(string loai, string gia, out string loaiChon, out decimal? giaToiDa)
+        {
+            loaiChon = null;
+            giaToiDa = null;
+            if (!string.IsNullOrWhiteSpace(loai))
+            {
+                string l = loai.Trim();
+                if (l.Length > 50) return "Loại phòng không hợp lệ.";
+                loaiChon = l;
+            }
+            if (!string.IsNullOrWhiteSpace(gia))
+            {
+                decimal v;
+                if (!decimal.TryParse(gia.Trim(), System.Globalization.NumberStyles.Integer,
+                        System.Globalization.CultureInfo.InvariantCulture, out v) || v <= 0 || v > GiaLocToiDa)
+                    return "Giá tối đa phải là số tiền dương (đồng mỗi đêm), ví dụ 600000.";
+                giaToiDa = v;
+            }
+            return null;
+        }
+
+        /// <summary>Lọc danh sách phòng theo loại (không phân biệt hoa thường) và giá tối đa mỗi đêm.</summary>
+        public static List<ThongTinPhong> Loc(IList<ThongTinPhong> ds, string loai, decimal? giaToiDa)
+        {
+            var kq = new List<ThongTinPhong>();
+            foreach (ThongTinPhong p in ds)
+            {
+                if (!string.IsNullOrEmpty(loai) && !string.Equals(p.TenLoai, loai, StringComparison.OrdinalIgnoreCase)) continue;
+                if (giaToiDa.HasValue && p.GiaMoiDem > giaToiDa.Value) continue;
+                kq.Add(p);
+            }
+            return kq;
+        }
+
         /// <summary>Tên trạng thái thân thiện cho khách (không tiết lộ ai đang ở).</summary>
         public static string NhanTrangThai(string trangThai)
         {

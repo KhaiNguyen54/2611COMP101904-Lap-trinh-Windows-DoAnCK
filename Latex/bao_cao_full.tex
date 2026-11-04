@@ -186,7 +186,7 @@ Quản lý khách sạn là một bài toán nghiệp vụ điển hình, bao g�
 \section*{4. Phương pháp thực hiện}
 \addcontentsline{toc}{section}{4. Phương pháp thực hiện}
 
-Nhóm thực hiện theo quy trình gồm: khảo sát và đặc tả yêu cầu (liệt kê chức năng, use case); thiết kế dữ liệu (ERD, ràng buộc, stored procedure); thiết kế quy tắc nghiệp vụ (các quy tắc QT01--QT70); xây dựng theo kiến trúc ba lớp; kiểm thử (tự động cho logic tính tiền, thủ công cho giao diện và CSDL); và hoàn thiện dựa trên các lỗi phát hiện được. Quy trình này được lặp lại thành nhiều vòng nhỏ giữa các giai đoạn thay vì thực hiện tuần tự một lần duy nhất, đặc biệt ở giai đoạn xây dựng và kiểm thử.
+Nhóm thực hiện theo quy trình gồm: khảo sát và đặc tả yêu cầu (liệt kê chức năng, use case); thiết kế dữ liệu (ERD, ràng buộc, stored procedure); thiết kế quy tắc nghiệp vụ (các quy tắc QT01--QT71); xây dựng theo kiến trúc ba lớp; kiểm thử (tự động cho logic tính tiền, thủ công cho giao diện và CSDL); và hoàn thiện dựa trên các lỗi phát hiện được. Quy trình này được lặp lại thành nhiều vòng nhỏ giữa các giai đoạn thay vì thực hiện tuần tự một lần duy nhất, đặc biệt ở giai đoạn xây dựng và kiểm thử.
 
 \section*{5. Công nghệ sử dụng}
 \addcontentsline{toc}{section}{5. Công nghệ sử dụng}
@@ -290,7 +290,7 @@ MR02 & Tạo mã QR tra cứu phòng và bảng giá: xem, lưu PNG, in, xuất 
 MR03 & Cổng web tra cứu cho khách: bảng giá, tình trạng phòng, tìm phòng trống theo ngày (chỉ đọc) & MR & Khách (công khai) \\\hline
 \end{longtable}
 
-Trong 23 chức năng ở trên, 19 chức năng thuộc nhóm bắt buộc và 4 chức năng thuộc nhóm nâng cao (NV08 đổi phòng -- chưa triển khai, BC04, BC05, BC06). Ba chức năng MR01--MR03 (loại \textbf{MR} -- mở rộng) được nhóm bổ sung ngoài đặc tả ban đầu và không được tính vào 23 chức năng này.
+Trong 23 chức năng ở trên, 19 chức năng thuộc nhóm bắt buộc và 4 chức năng thuộc nhóm nâng cao (NV08 đổi phòng, BC04, BC05, BC06). Ba chức năng MR01--MR03 (loại \textbf{MR} -- mở rộng) được nhóm bổ sung ngoài đặc tả ban đầu và không được tính vào 23 chức năng này.
 
 \subsection{Đối tượng tương tác với hệ thống}
 
@@ -335,7 +335,7 @@ Bảng~\ref{tab:doichieu-c1} đối chiếu phạm vi yêu cầu với tình tr�
 \textbf{Nhóm} & \textbf{Đã có trong source} & \textbf{Chưa có hoặc chưa hoàn tất} \\\hline
 Hệ thống & Đăng nhập (khóa 30 giây sau 5 lần sai), đăng xuất, đổi mật khẩu; Quản lý tạo/khóa/đặt lại mật khẩu; luôn còn ít nhất một tài khoản Quản lý hoạt động & Chưa có sửa thông tin tài khoản, xóa tài khoản \\\hline
 Danh mục & Khách hàng, loại phòng, phòng, dịch vụ: thêm, sửa, tìm kiếm, ngừng sử dụng; Lễ tân chỉ xem ba danh mục sau & Chưa có bộ lọc riêng theo tầng/loại trong màn hình Phòng (đã có ở sơ đồ phòng) \\\hline
-Nghiệp vụ & Tạo/hủy đặt phòng, đánh dấu khách không đến, cọc tối đa 1 đêm × số đêm; nhận phòng từ đặt trước hoặc vãng lai; ghi và xóa dịch vụ; trả phòng có transaction và hóa đơn; sơ đồ phòng theo tầng; bảo trì/dọn dẹp & Chưa có sửa đặt phòng và đổi phòng (NV08) \\\hline
+Nghiệp vụ & Tạo/hủy đặt phòng, đánh dấu khách không đến, cọc tối đa 1 đêm × số đêm; nhận phòng từ đặt trước hoặc vãng lai; ghi và xóa dịch vụ; đổi phòng khi đang ở (F8, có lịch sử); trả phòng có transaction và hóa đơn; sơ đồ phòng theo tầng; bảo trì/dọn dẹp & Chưa có sửa đặt phòng; đổi phòng giữ nguyên đơn giá phiếu thuê, chưa tách tiền phòng theo từng chặng giá \\\hline
 Tra cứu/Báo cáo & Tra cứu hóa đơn, khách đang ở; doanh thu theo ngày/tháng/loại phòng; công suất phòng; biểu đồ; xem trước/in; xuất CSV & Chưa có xuất Excel (.xlsx) \\\hline
 Mở rộng & Giao diện sáng/tối (Ctrl+D, ghi nhớ); tạo mã QR phòng/giá, lưu PNG, in, xuất tất cả; cổng web tra cứu \texttt{QuanLyKhachSan.Web} (trang chủ tìm phòng trống, bảng giá, chi tiết phòng, API JSON) & Web chưa cho đặt phòng, chưa có xác thực/HTTPS \\\hline
 \end{tabularx}
@@ -672,6 +672,7 @@ UC10 & Xem sơ đồ phòng theo tầng & LT, QL & NV03 & BB \\\hline
 UC11 & Nhận phòng & LT, QL & NV04 & BB \\\hline
 UC12 & Ghi nhận dịch vụ & LT, QL & NV05 & BB \\\hline
 UC13 & Trả phòng và lập hóa đơn & LT, QL & NV06 & BB \\\hline
+UC23 & Đổi phòng khi đang lưu trú & LT, QL & NV08 & NC \\\hline
 UC14 & In hóa đơn & LT, QL & NV07 & BB \\\hline
 UC15 & Tra cứu (phòng/đặt phòng/phiếu thuê/hóa đơn) & LT, QL & TC01 & BB \\\hline
 UC16 & Báo cáo doanh thu & QL & BC01, BC02, BC03 & BB \\\hline
@@ -768,6 +769,21 @@ Do giới hạn dung lượng báo cáo, mục này trình bày đặc tả đ�
     \item Phiếu thuê đã được trả phòng trước đó (thao tác lặp): hệ thống từ chối tạo hóa đơn thứ hai cho cùng phiếu thuê.
   \end{itemize}
   \item[Hậu điều kiện:] Một hóa đơn duy nhất được tạo cho phiếu thuê; phòng chuyển sang trạng thái "Dọn dẹp", không thể nhận khách mới cho đến khi được xác nhận dọn xong.
+\end{description}
+
+\subsection{UC23 -- Đổi phòng khi đang lưu trú}
+\begin{description}
+  \item[Tác nhân:] Lễ tân, Quản lý.
+  \item[Điều kiện tiên quyết:] Có phiếu thuê "Đang ở" và có phòng khác trống trọn thời gian còn lại của kỳ lưu trú.
+  \item[Luồng chính:]
+  \begin{enumerate}
+    \item Người dùng mở \textit{Nghiệp vụ $\rightarrow$ Đổi phòng} (F8) và chọn phòng đang có khách.
+    \item Hệ thống liệt kê các phòng trống từ hôm nay đến ngày đi dự kiến (kèm tầng, loại, giá); nếu giá phòng mới khác giá đang áp dụng thì nhắc người dùng.
+    \item Người dùng chọn phòng mới, nhập lý do (tùy chọn) và xác nhận.
+    \item Hệ thống chuyển phiếu thuê sang phòng mới, đặt phòng cũ sang "Dọn dẹp", phòng mới sang "Đang ở" và ghi một dòng lịch sử trong cùng một giao dịch.
+  \end{enumerate}
+  \item[Luồng ngoại lệ:] Phòng mới vừa bị đặt hoặc có khách ở máy khác: từ chối, tải lại danh sách (QT47). Lý do dài quá 200 ký tự: báo lỗi. Lỗi ở bất kỳ bước nào: rollback, dữ liệu giữ nguyên (QT48).
+  \item[Hậu điều kiện:] Phiếu thuê gắn phòng mới, dịch vụ đã ghi vẫn thuộc phiếu thuê; đơn giá phiếu thuê không đổi (QT49).
 \end{description}
 
 \subsection{UC16 -- Báo cáo doanh thu}
@@ -1058,6 +1074,7 @@ Năm thủ tục lưu trữ chính hiện thực các nghiệp vụ đòi hỏi 
   \item[\texttt{sp\_KiemTraTrungLich}] Nhận tham số mã phòng, ngày nhận và ngày trả dự kiến; trả về 1 nếu tồn tại đặt phòng hoặc phiếu thuê đang hiệu lực giao nhau với khoảng ngày truyền vào (theo quy tắc khoảng nửa mở), ngược lại trả về 0. Được gọi trong giao dịch Serializable khi tạo đặt phòng hoặc nhận phòng trực tiếp, nhằm loại bỏ khoảng hở giữa lúc kiểm tra và lúc ghi (ngăn race condition).
   \item[\texttt{sp\_NhanPhong}] Thực hiện trong một transaction: tạo bản ghi \texttt{PhieuThue} mới với giá snapshot, cập nhật trạng thái \texttt{DatPhong} liên quan (nếu có) sang "Đã nhận phòng", cập nhật trạng thái \texttt{Phong} sang "Đang sử dụng".
   \item[\texttt{sp\_TraPhong}] Thực hiện trong một transaction: tính tổng tiền phòng theo số đêm và giá snapshot, cộng tổng tiền dịch vụ từ \texttt{ChiTietDichVu}, tính phụ thu trả muộn theo mốc giờ, trừ tiền cọc, áp giảm giá, tạo bản ghi \texttt{HoaDon}, đóng \texttt{PhieuThue} (chuyển "Đã trả phòng"), cập nhật \texttt{Phong} sang "Dọn dẹp". Toàn bộ các bước trên cùng thành công hoặc cùng bị rollback nếu có lỗi ở bất kỳ bước nào.
+  \item[\texttt{sp\_DoiPhong}] Đổi phòng cho phiếu thuê đang ở (QT47--QT49): khóa dòng phiếu thuê và phòng mới, kiểm tra phòng mới hoạt động, không có khách và không có đặt chỗ giao nhau từ hôm nay đến ngày đi dự kiến; cập nhật phiếu thuê, đặt phòng cũ sang "Dọn dẹp", phòng mới sang "Đang ở" và ghi bảng \texttt{LichSuDoiPhong} trong cùng một giao dịch. Phần quy tắc thuần (khoảng cần trống, chuẩn hóa lý do, lời nhắc giá) nằm ở lớp \texttt{QuyTacDoiPhong} trong BLL để kiểm thử không cần CSDL.
   \item[\texttt{sp\_ThongKeDoanhThu}] Nhận tham số khoảng thời gian và tiêu chí gom nhóm (ngày/tháng/loại phòng); trả về tập kết quả tổng doanh thu theo từng nhóm, bao gồm cả các mốc thời gian không phát sinh doanh thu (giá trị 0), phục vụ vẽ biểu đồ liên tục.
   \item[\texttt{sp\_ThongKeCongSuat}] Tính tỷ lệ phần trăm số phòng được sử dụng trên tổng số phòng khả dụng theo từng ngày trong khoảng thời gian truyền vào, hỗ trợ báo cáo công suất phòng (BC04).
 \end{description}
@@ -1239,6 +1256,9 @@ QT43 & \textit{(Giả định)} Giờ trả phòng chuẩn 12:00. Phụ thu tr�
 QT44 & Giảm giá nhập tay bằng số tiền, không vượt tiền phòng cộng dịch vụ cộng phụ thu; Lễ tân chỉ được giảm tối đa 10\%, mức cao hơn do Quản lý nhập (chưa có luồng yêu cầu/ghi nhận duyệt riêng). \\\hline
 QT45 & Tổng thanh toán bằng tiền phòng cộng tiền dịch vụ cộng phụ thu trừ giảm giá trừ tiền cọc và không được âm (phần cọc dư được hoàn lại, hóa đơn ghi nhận 0). \\\hline
 QT46 & Trả phòng sớm: tính theo số đêm thực tế (ngày đi thực tế), tối thiểu 1 đêm. \\\hline
+QT47 & Đổi phòng chỉ áp dụng cho phiếu thuê đang ở; phòng mới phải khác phòng hiện tại, đang hoạt động, ở trạng thái Trống hoặc Đã đặt, không có khách và không vướng đặt chỗ nào từ hôm nay đến ngày đi dự kiến (tối thiểu 1 đêm). \\\hline
+QT48 & Đổi phòng chạy trong một giao dịch: chuyển phiếu thuê sang phòng mới, phòng cũ sang Dọn dẹp, phòng mới sang Đang ở, ghi lịch sử (phòng cũ/mới, giá cũ/mới, lý do tối đa 200 ký tự, người thực hiện); dịch vụ đã ghi vẫn gắn với phiếu thuê. \\\hline
+QT49 & Đơn giá của phiếu thuê được giữ nguyên sau khi đổi phòng; nếu giá phòng mới khác, màn hình nhắc người dùng và lịch sử lưu cả hai mức giá để xử lý chênh lệch khi trả phòng. \\\hline
 \end{longtable}
 
 \paragraph{Công thức tính tiền.} Gọi $G$ là giá phòng snapshot/đêm, $n$ là số đêm, $D$ là tổng tiền dịch vụ, $P$ là phụ thu trả muộn, $C$ là tiền cọc, $r$ là tỷ lệ giảm giá ($0 \le r \le 1$). Tổng thanh toán được tính:
@@ -1306,7 +1326,7 @@ Giảm giá vượt 10\% & Không & Có \\\hline
 \end{tabularx}
 \end{table}
 
-\subsection{Nhóm Tra cứu công khai, mã QR và giao diện (QT65--QT70)}
+\subsection{Nhóm Tra cứu công khai, mã QR và giao diện (QT65--QT71)}
 
 \begin{longtable}{|c|p{12cm}|}
 \caption{Quy tắc nhóm Tra cứu công khai, mã QR và giao diện}\\\hline
@@ -1320,6 +1340,7 @@ QT67 & Nội dung mã QR không rỗng và tối đa 213 byte (UTF-8); vượt g
 QT68 & Chỉ tạo mã QR cho phòng đang hoạt động; số phòng được mã hóa URL khi đưa vào đường dẫn. \\\hline
 QT69 & Trang web công khai chỉ đọc: chỉ trả về loại phòng và phòng đang hoạt động, tình trạng hiển thị rút gọn (không nêu tên khách); ngày đến không trước hôm nay, ngày đến trước ngày đi, tối đa 60 đêm mỗi lần tra cứu. \\\hline
 QT70 & Lựa chọn giao diện sáng/tối được lưu theo từng máy và áp dụng ngay cho mọi cửa sổ đang mở; báo cáo in luôn dùng nền sáng. \\\hline
+QT71 & Bộ lọc tìm phòng trên web: loại phòng tối đa 50 ký tự (so khớp không phân biệt hoa thường); giá tối đa là số nguyên dương không quá 100.000.000; giá sai định dạng bị từ chối bằng thông báo; việc lọc thực hiện sau khi lấy danh sách phòng trống. \\\hline
 \end{longtable}
 
 % ===== end chuong/chuong5.tex =====
@@ -1457,7 +1478,7 @@ Dự án \texttt{QuanLyKhachSan.Web} (ASP.NET Core, minimal API) lắng nghe m�
 \begin{tabularx}{\textwidth}{|l|X|}
 \hline
 \textbf{Đường dẫn} & \textbf{Chức năng} \\\hline
-\texttt{/} (trang chủ) & Tìm phòng trống theo ngày đến/đi (mặc định hôm nay $\rightarrow$ ngày mai) \\\hline
+\texttt{/} (trang chủ) & Tìm phòng trống theo ngày đến/đi (mặc định hôm nay $\rightarrow$ ngày mai), lọc theo loại phòng và giá tối đa mỗi đêm \\\hline
 \texttt{/gia} & Bảng giá theo loại phòng (loại đang hoạt động) \\\hline
 \texttt{/phong/\{số\}} & Chi tiết phòng và kiểm tra theo ngày (\texttt{?den=\&di=}); đích của mã QR \\\hline
 \texttt{/api/gia}, \texttt{/api/phong/\{số\}}, \texttt{/api/phong-trong} & Dữ liệu JSON cho ứng dụng khác \\\hline
@@ -1693,7 +1714,7 @@ Chế độ tối được bật tại \textit{Hệ thống $\rightarrow$ Giao d
 
 \section{Trang web tra cứu trên điện thoại}
 
-Giao diện web dùng bảng màu xanh thông đậm làm màu chủ đạo, hổ phách cho giá, nút và viền focus, nền trang xám phớt xanh; bản tối có bảng màu riêng với nút hổ phách. Các thẻ nổi nhẹ khi rê chuột, dòng bảng đổi màu khi rê, nội dung hiện dần khi vào trang và toàn bộ hiệu ứng được tắt khi thiết bị bật chế độ giảm chuyển động; hiệu ứng chỉ dùng CSS nên không vi phạm chính sách không chạy script. Bố cục một cột, thẻ bảng giá tự xếp lưới, ô nhập và nút đủ lớn để chạm, số tiền không bị ngắt dòng. Trang chi tiết phòng (Hình~\ref{fig:web-phong}) hiển thị loại phòng, giá, tầng, sức chứa, tình trạng hiện tại và biểu mẫu kiểm tra theo ngày kèm tổng tiền; trang bảng giá (Hình~\ref{fig:web-gia}) liệt kê các loại phòng đang hoạt động.
+Giao diện web dùng bảng màu xanh thông đậm làm màu chủ đạo, hổ phách cho giá, nút và viền focus, nền trang xám phớt xanh; bản tối có bảng màu riêng với nút hổ phách. Các thẻ nổi nhẹ khi rê chuột, dòng bảng đổi màu khi rê, nội dung hiện dần khi vào trang và toàn bộ hiệu ứng được tắt khi thiết bị bật chế độ giảm chuyển động; hiệu ứng chỉ dùng CSS nên không vi phạm chính sách không chạy script. Mỗi loại phòng có hình minh họa vẽ bằng SVG nội tuyến (số giường theo sức chứa, tông màu theo tên loại phòng), nên không cần tải ảnh ngoài và vẫn tuân thủ chính sách chỉ cho phép ảnh cùng nguồn. Trang tìm phòng có hai bộ lọc: loại phòng (danh sách lấy từ bảng giá) và giá tối đa mỗi đêm; kết quả nêu số phòng phù hợp trên tổng số phòng trống và gợi ý nới bộ lọc khi không có phòng nào. Bố cục một cột, thẻ bảng giá tự xếp lưới, ô nhập và nút đủ lớn để chạm, số tiền không bị ngắt dòng. Trang chi tiết phòng (Hình~\ref{fig:web-phong}) hiển thị loại phòng, giá, tầng, sức chứa, tình trạng hiện tại và biểu mẫu kiểm tra theo ngày kèm tổng tiền; trang bảng giá (Hình~\ref{fig:web-gia}) liệt kê các loại phòng đang hoạt động.
 
 \begin{figure}[H]
 \centering
@@ -1749,7 +1770,7 @@ Kiểm thử tự động & Project \texttt{QuanLyKhachSan.Tests}, chạy bằng
 
 \subsection{Kiểm thử logic tự động (độc lập CSDL)}
 
-Project \texttt{QuanLyKhachSan.Tests} kiểm tra trực tiếp các quy tắc nghiệp vụ không phụ thuộc kết nối CSDL: số đêm lưu trú tối thiểu (QT40), phụ thu trả muộn theo ba mốc 1/3/6 giờ (QT43), tổng thanh toán không âm (QT45), giới hạn tiền cọc theo số đêm (QT15), gom doanh thu theo ngày/tháng/loại phòng kể cả các ngày không phát sinh giao dịch, tính tỷ lệ công suất trung bình, và xuất CSV (thoát dấu phẩy, dấu nháy kép, chặn chèn công thức). Bộ kiểm thử cũng bao phủ phần chức năng mở rộng: bộ mã hóa QR và lớp tạo đường dẫn tra cứu (QT65--QT68), và phần logic thuần của cổng web (đọc/kiểm tra khoảng ngày, nhãn tình trạng phòng, giới hạn 60 đêm, mã hóa HTML chống chèn mã, định dạng giá, liên kết phòng). Tổng cộng \textbf{90/90 ca kiểm thử đạt}.
+Project \texttt{QuanLyKhachSan.Tests} kiểm tra trực tiếp các quy tắc nghiệp vụ không phụ thuộc kết nối CSDL: số đêm lưu trú tối thiểu (QT40), phụ thu trả muộn theo ba mốc 1/3/6 giờ (QT43), tổng thanh toán không âm (QT45), giới hạn tiền cọc theo số đêm (QT15), gom doanh thu theo ngày/tháng/loại phòng kể cả các ngày không phát sinh giao dịch, tính tỷ lệ công suất trung bình, và xuất CSV (thoát dấu phẩy, dấu nháy kép, chặn chèn công thức). Bộ kiểm thử cũng bao phủ phần chức năng mở rộng: bộ mã hóa QR và lớp tạo đường dẫn tra cứu (QT65--QT68), quy tắc đổi phòng (QT47--QT49), bộ lọc tìm phòng và hình minh họa của cổng web (QT71), và phần logic thuần của cổng web (đọc/kiểm tra khoảng ngày, nhãn tình trạng phòng, giới hạn 60 đêm, mã hóa HTML chống chèn mã, định dạng giá, liên kết phòng). Tổng cộng \textbf{129/129 ca kiểm thử đạt}.
 
 \subsection{Kiểm thử SQL và build}
 
@@ -1802,6 +1823,8 @@ UI-14 & Bật/tắt giao diện tối bằng Ctrl+D khi đang mở nhiều cửa
 UI-15 & Mở trang web với số phòng không tồn tại, ngày sai định dạng, ngày đến trước hôm nay, khoảng quá 60 đêm & Thông báo lỗi thân thiện, không lộ thông tin kỹ thuật \\\hline
 UI-16 & Ngắt kết nối CSDL rồi tải trang web & Trang 503 chung; không lộ chuỗi kết nối; không thấy tên khách ở bất kỳ trang nào \\\hline
 UI-17 & Mở ứng dụng, xem biểu tượng cửa sổ, thanh tác vụ và màn hình chính & Logo hiển thị ở biểu tượng và cạnh lời chào; vẫn chạy bình thường nếu thiếu tệp logo \\\hline
+UI-18 & Mở Đổi phòng (F8), chọn phòng đang ở, chọn phòng trống khác mức giá, nhập lý do và xác nhận & Có lời nhắc giá; phòng cũ sang Dọn dẹp, phòng mới sang Đang ở; lịch sử hiện một dòng; dịch vụ đã ghi còn nguyên; trả phòng sau đó tính theo đơn giá cũ \\\hline
+UI-19 & Đổi phòng khi phòng mới vừa bị đặt ở máy khác; đổi khi không còn phòng trống & Báo lỗi rõ, dữ liệu không đổi; thông báo không có phòng trống khi danh sách rỗng \\\hline
 \end{longtable}
 
 Các kịch bản UI là bước kiểm thử thủ công, thực hiện để kiểm tra bố cục (không bị chồng chéo, không bị cắt chữ) và đúng luồng nghiệp vụ; đây chưa phải kiểm thử tự động và kết quả UI không được suy diễn chỉ từ việc script SQL hay build thành công.
@@ -1856,7 +1879,7 @@ Thông báo lỗi & Đạt & Chỉ hiển thị lỗi nghiệp vụ, không lộ
 
 \section{Đánh giá kết quả đạt được}
 
-Đối chiếu với danh sách 23 chức năng đã đặc tả ở Chương~1 (19 bắt buộc, 4 nâng cao) và các kịch bản kiểm thử ở trên, nhóm đánh giá: toàn bộ 19 chức năng bắt buộc đã được cài đặt và kiểm thử thủ công theo kịch bản UI-01 đến UI-12; 3/4 chức năng nâng cao (thống kê công suất, sơ đồ phòng theo tầng, xuất CSV) đã hoàn thành, 1 chức năng nâng cao (đổi phòng trong lúc lưu trú, NV08) chưa được triển khai. Ba chức năng mở rộng (giao diện sáng/tối, mã QR, cổng web tra cứu) được kiểm tra theo các kịch bản UI-13 đến UI-17 và WEB-01 đến WEB-06. Bộ kiểm thử logic tự động đạt 90/90 ca.
+Đối chiếu với danh sách 23 chức năng đã đặc tả ở Chương~1 (19 bắt buộc, 4 nâng cao) và các kịch bản kiểm thử ở trên, nhóm đánh giá: toàn bộ 19 chức năng bắt buộc đã được cài đặt và kiểm thử thủ công theo kịch bản UI-01 đến UI-12; toàn bộ 4 chức năng nâng cao (đổi phòng trong lúc lưu trú, thống kê công suất, sơ đồ phòng theo tầng, xuất CSV) đã hoàn thành; riêng đổi phòng kiểm tra theo kịch bản UI-18, UI-19. Ba chức năng mở rộng (giao diện sáng/tối, mã QR, cổng web tra cứu) được kiểm tra theo các kịch bản UI-13 đến UI-17 và WEB-01 đến WEB-08. Bộ kiểm thử logic tự động đạt 129/129 ca.
 
 % ===== end chuong/chuong8.tex =====
 
@@ -1868,17 +1891,17 @@ Thông báo lỗi & Đạt & Chỉ hiển thị lỗi nghiệp vụ, không lộ
 \section*{1. Kết quả đạt được}
 \addcontentsline{toc}{section}{1. Kết quả đạt được}
 
-Qua quá trình thực hiện, nhóm đã xây dựng hoàn chỉnh một ứng dụng quản lý khách sạn theo kiến trúc ba lớp GUI -- BLL -- DAL với tầng DTO trung gian, bao phủ 19/19 chức năng bắt buộc và 3/4 chức năng nâng cao đã đặc tả ở Chương~1. Hệ thống hiện thực đầy đủ chu trình nghiệp vụ từ đặt phòng, nhận phòng, ghi nhận dịch vụ, trả phòng, lập hóa đơn đến báo cáo doanh thu và công suất phòng, với các ràng buộc toàn vẹn dữ liệu quan trọng (kiểm tra trùng lịch bằng giao dịch Serializable, snapshot giá, UNIQUE trên hóa đơn theo phiếu thuê) được đảm bảo ở tầng cơ sở dữ liệu chứ không chỉ ở tầng ứng dụng. Về bảo mật, hệ thống áp dụng băm mật khẩu PBKDF2, truy vấn tham số hóa, giới hạn đăng nhập sai và phân quyền hai lớp (giao diện và BLL). Bộ kiểm thử logic tự động đạt 90/90 ca (quy tắc tính tiền, báo cáo, CSV, mã QR và logic cổng web). Mười lỗi phát hiện trong quá trình hoàn thiện (4 lỗi mức cao liên quan trực tiếp tới các quy tắc nghiệp vụ QT15, QT43 và ràng buộc trạng thái phòng) đã được khắc phục và ghi nhận đầy đủ trong Chương~8.
+Qua quá trình thực hiện, nhóm đã xây dựng hoàn chỉnh một ứng dụng quản lý khách sạn theo kiến trúc ba lớp GUI -- BLL -- DAL với tầng DTO trung gian, bao phủ 19/19 chức năng bắt buộc và 4/4 chức năng nâng cao đã đặc tả ở Chương~1. Hệ thống hiện thực đầy đủ chu trình nghiệp vụ từ đặt phòng, nhận phòng, ghi nhận dịch vụ, trả phòng, lập hóa đơn đến báo cáo doanh thu và công suất phòng, với các ràng buộc toàn vẹn dữ liệu quan trọng (kiểm tra trùng lịch bằng giao dịch Serializable, snapshot giá, UNIQUE trên hóa đơn theo phiếu thuê) được đảm bảo ở tầng cơ sở dữ liệu chứ không chỉ ở tầng ứng dụng. Về bảo mật, hệ thống áp dụng băm mật khẩu PBKDF2, truy vấn tham số hóa, giới hạn đăng nhập sai và phân quyền hai lớp (giao diện và BLL). Bộ kiểm thử logic tự động đạt 129/129 ca (quy tắc tính tiền, báo cáo, CSV, mã QR và logic cổng web). Mười lỗi phát hiện trong quá trình hoàn thiện (4 lỗi mức cao liên quan trực tiếp tới các quy tắc nghiệp vụ QT15, QT43 và ràng buộc trạng thái phòng) đã được khắc phục và ghi nhận đầy đủ trong Chương~8.
 
 Về mặt tổ chức,  đã áp dụng cách phân chia công việc theo trục kỹ thuật dọc (mỗi người phụ trách trọn một nhóm chức năng từ CSDL đến giao diện) thay vì phân chia ngang theo lớp kiến trúc, giúp giảm phụ thuộc chờ đợi lẫn nhau và phù hợp với quy mô nhóm nhỏ.
 
-Ngoài phạm vi đặc tả ban đầu, nhóm đã bổ sung ba tính năng mở rộng. Thứ nhất, chế độ giao diện sáng/tối chuyển đổi bằng phím tắt Ctrl+D, áp dụng ngay cho các cửa sổ đang mở và được ghi nhớ giữa các lần chạy; bản in báo cáo luôn dùng nền sáng. Thứ hai, chức năng tạo mã QR tra cứu phòng và giá (menu Tra cứu), dùng bộ mã hóa QR do nhóm tự cài đặt (chế độ byte UTF-8, mức sửa lỗi M, phiên bản 1--10, mã Reed--Solomon trên GF(256)) nên không phụ thuộc thư viện ngoài; bộ kiểm thử tự động bổ sung thêm các ca cho bộ mã hóa QR và đường dẫn tra cứu, nâng tổng số lên 90 ca đạt (kể cả phần logic của cổng web), và các mã QR sinh ra đã được giải mã đúng bằng thư viện OpenCV. Thứ ba, cổng web chỉ đọc \texttt{QuanLyKhachSan.Web} (ASP.NET Core) dùng chung các lớp DTO/DAL/BLL với ứng dụng WinForms, cho phép khách quét mã QR để xem giá, tình trạng phòng và phòng trống theo ngày; trang công khai không hiển thị thông tin khách, mọi dữ liệu xuất ra đều được mã hóa HTML và lỗi cơ sở dữ liệu chỉ được ghi log nội bộ.
+Ngoài phạm vi đặc tả ban đầu, nhóm đã bổ sung ba tính năng mở rộng. Thứ nhất, chế độ giao diện sáng/tối chuyển đổi bằng phím tắt Ctrl+D, áp dụng ngay cho các cửa sổ đang mở và được ghi nhớ giữa các lần chạy; bản in báo cáo luôn dùng nền sáng. Thứ hai, chức năng tạo mã QR tra cứu phòng và giá (menu Tra cứu), dùng bộ mã hóa QR do nhóm tự cài đặt (chế độ byte UTF-8, mức sửa lỗi M, phiên bản 1--10, mã Reed--Solomon trên GF(256)) nên không phụ thuộc thư viện ngoài; bộ kiểm thử tự động bổ sung thêm các ca cho bộ mã hóa QR và đường dẫn tra cứu, nâng tổng số lên 129 ca đạt (kể cả phần logic của cổng web, bộ lọc và quy tắc đổi phòng), và các mã QR sinh ra đã được giải mã đúng bằng thư viện OpenCV. Thứ ba, cổng web chỉ đọc \texttt{QuanLyKhachSan.Web} (ASP.NET Core) dùng chung các lớp DTO/DAL/BLL với ứng dụng WinForms, cho phép khách quét mã QR để xem giá, tình trạng phòng và phòng trống theo ngày; trang công khai không hiển thị thông tin khách, mọi dữ liệu xuất ra đều được mã hóa HTML và lỗi cơ sở dữ liệu chỉ được ghi log nội bộ.
 
 \section*{2. Hạn chế}
 \addcontentsline{toc}{section}{2. Hạn chế}
 
 \begin{itemize}
-  \item Chức năng đổi phòng trong lúc khách đang lưu trú (NV08) chưa được triển khai.
+  \item Khi đổi phòng giữa hai loại phòng khác giá, đơn giá phiếu thuê được giữ nguyên và chênh lệch xử lý thủ công khi trả phòng; thống kê công suất tính theo phòng cuối cùng của phiếu thuê.
   \item Các kịch bản kiểm thử giao diện (UI-01 đến UI-12) là kiểm thử thủ công, chưa được tự động hóa bằng công cụ kiểm thử giao diện chuyên dụng.
   \item Ứng dụng hiện chỉ hỗ trợ một máy trạm kết nối trực tiếp tới một CSDL tập trung, chưa tính tới kịch bản nhiều chi nhánh hoặc truy cập đồng thời ở quy mô lớn.
   \item Chưa có chức năng xuất báo cáo ra định dạng Excel (.xlsx), hiện chỉ hỗ trợ xuất CSV.
@@ -1889,7 +1912,7 @@ Ngoài phạm vi đặc tả ban đầu, nhóm đã bổ sung ba tính năng m�
 \addcontentsline{toc}{section}{3. Hướng phát triển}
 
 \begin{enumerate}
-  \item Hoàn thiện chức năng đổi phòng (NV08), bao gồm xử lý chuyển tiếp dữ liệu dịch vụ đã ghi nhận và tính toán lại tiền phòng nếu đổi sang loại phòng khác giá.
+  \item Tách tiền phòng theo từng chặng giá khi đổi phòng giữa hai loại phòng khác giá và tính công suất theo từng chặng.
   \item Mở rộng bộ kiểm thử tự động, bổ sung kiểm thử tích hợp có kết nối CSDL thử nghiệm.
   \item Bổ sung xuất báo cáo ra Excel, hỗ trợ định dạng và công thức tính sẵn cho người dùng tùy biến thêm.
   \item Nghiên cứu khả năng mở rộng thành mô hình nhiều chi nhánh, đồng bộ dữ liệu qua một CSDL trung tâm hoặc kiến trúc client-server mở rộng.

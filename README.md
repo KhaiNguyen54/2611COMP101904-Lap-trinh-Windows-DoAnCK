@@ -6,15 +6,15 @@
 
 - Đăng nhập (khóa tạm sau 5 lần sai), đăng xuất, đổi mật khẩu, quản lý tài khoản; menu và quyền theo vai trò Lễ tân/Quản lý.
 - Quản lý loại phòng, phòng, khách hàng, dịch vụ (Lễ tân chỉ xem ba danh mục đầu).
-- Đặt phòng với kiểm tra trùng lịch và cọc tối đa; hủy đặt, đánh dấu khách không đến; nhận phòng từ đặt trước hoặc khách vãng lai.
+- Đặt phòng với kiểm tra trùng lịch và cọc tối đa; hủy đặt, đánh dấu khách không đến; nhận phòng từ đặt trước hoặc khách vãng lai; đổi phòng khi đang ở (F8) có lịch sử và giữ nguyên đơn giá phiếu thuê.
 - Ghi/xóa dịch vụ khi đang lưu trú; trả phòng có bảng tính tiền, phụ thu trả muộn, giảm giá có giới hạn, hóa đơn trong transaction.
 - Sơ đồ phòng theo tầng (dọn phòng, bảo trì), danh sách khách đang ở.
 - Tra cứu, xem trước và in hóa đơn; báo cáo doanh thu (ngày/tháng/loại phòng) và công suất phòng, có biểu đồ, in và xuất CSV.
 - Giao diện sáng/tối: menu **Hệ thống → Giao diện tối** (Ctrl+D), áp dụng ngay cho mọi cửa sổ và được nhớ cho lần mở sau (lưu tại `%AppData%\QuanLyKhachSan\giaodien.txt`). Bản in báo cáo luôn dùng nền sáng.
 - Logo Autumn Hotel (lá thu, mái nhà và cửa): `QuanLyKhachSan/Resources/logo.svg|png|ico`; dùng làm biểu tượng ứng dụng, đầu trang chủ và cổng web (`/logo.svg`).
 - Mã QR tra cứu: menu **Tra cứu → Mã QR phòng và giá** tạo QR cho từng phòng và bảng giá (lưu PNG, in, xuất tất cả, sao chép liên kết). Bộ mã hóa QR tự viết, không cần thư viện ngoài.
-- Cổng web cho khách (`QuanLyKhachSan.Web`): quét QR để xem giá, tình trạng và phòng trống theo ngày; chỉ đọc, không hiển thị thông tin khách.
-- Phím tắt: F2 đặt phòng, F3 nhận phòng, F4 dịch vụ, F5 sơ đồ, F6 trả phòng, F7 hóa đơn. Hướng dẫn demo: [`docs/09_HuongDan_Demo.md`](docs/09_HuongDan_Demo.md).
+- Cổng web cho khách (`QuanLyKhachSan.Web`): quét QR để xem giá, tình trạng và phòng trống theo ngày (lọc theo loại và giá tối đa, có hình minh họa phòng); chỉ đọc, không hiển thị thông tin khách.
+- Phím tắt: F2 đặt phòng, F3 nhận phòng, F4 dịch vụ, F5 sơ đồ, F6 trả phòng, F7 hóa đơn, F8 đổi phòng. Hướng dẫn demo: [`docs/09_HuongDan_Demo.md`](docs/09_HuongDan_Demo.md).
 
 Phạm vi đã triển khai có thể thay đổi theo phiên bản source hiện tại. Các tài liệu yêu cầu, quy tắc, use case và kịch bản được tổng hợp tại [`docs/README.md`](docs/README.md).
 
@@ -38,6 +38,8 @@ sqlcmd -S localhost -E -C -b -f 65001 -i .\QuanLyKhachSan\Scripts\Database.sql
 ```
 
 Có thể mở `QuanLyKhachSan/Scripts/Database.sql` bằng SQL Server Management Studio và chọn **Execute**. Script tạo database `QuanLyKhachSan`, schema, stored procedure, index và dữ liệu mẫu; script được thiết kế để chạy lại mà không xóa dữ liệu hiện có.
+
+Nếu đã tạo CSDL từ phiên bản trước, chạy lại `Database.sql` để bổ sung bảng `LichSuDoiPhong` và `sp_DoiPhong` (đổi phòng khi đang ở); script không xóa dữ liệu hiện có.
 
 ### 2. Cấu hình kết nối
 
@@ -138,7 +140,7 @@ Sau khi build thành công và database đã kết nối được:
 6. Nhấn Ctrl+D để đổi giao diện sáng/tối; mở thêm vài cửa sổ và xác nhận chữ vẫn đọc được, đóng/mở lại ứng dụng để xác nhận lựa chọn được nhớ.
 7. Tra cứu → Mã QR phòng và giá: tạo QR cho một phòng, quét bằng điện thoại cùng mạng và xác nhận mở đúng trang phòng của cổng web.
 
-Kiểm thử logic tự động: `dotnet run --project QuanLyKhachSan.Tests` (quy tắc tính tiền, gom báo cáo, CSV, bộ mã hóa QR, đường dẫn tra cứu và logic cổng web; 90 ca).
+Kiểm thử logic tự động: `dotnet run --project QuanLyKhachSan.Tests` (quy tắc tính tiền, gom báo cáo, CSV, bộ mã hóa QR, đường dẫn tra cứu và logic cổng web; 129 ca).
 
 Kịch bản chi tiết và trạng thái xác minh được ghi tại [`docs/07_KichBanKiemThu.md`](docs/07_KichBanKiemThu.md). Các bước trên là hướng dẫn kiểm thử thủ công; chưa hàm ý rằng mọi kịch bản giao diện đã được chạy tự động.
 

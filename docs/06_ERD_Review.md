@@ -12,6 +12,8 @@ erDiagram
     NguoiDung ||--o{ PhieuThue : tiep_nhan
     PhieuThue ||--o{ ChiTietDichVu : phat_sinh
     DichVu ||--o{ ChiTietDichVu : su_dung
+    PhieuThue ||--o{ LichSuDoiPhong : doi_phong
+    Phong ||--o{ LichSuDoiPhong : phong_cu_moi
     PhieuThue ||--o| HoaDon : thanh_toan
     NguoiDung ||--o{ HoaDon : lap
     LoaiPhong { int MaLoaiPhong PK; nvarchar TenLoaiPhong UK; nvarchar MoTa; decimal GiaMoiDem; int SucChua; bit HoatDong }
@@ -22,6 +24,7 @@ erDiagram
     DatPhong { int MaDatPhong PK; int MaKhachHang FK; int MaPhong FK; int MaNguoiDung FK; date NgayDen; date NgayDi; decimal TienCoc; nvarchar TrangThai; datetime2 NgayTao }
     PhieuThue { int MaPhieuThue PK; int MaDatPhong FK_UK; int MaKhachHang FK; int MaPhong FK; int MaNguoiDung FK; datetime2 NgayNhan; date NgayDiDuKien; datetime2 NgayDiThucTe; decimal GiaPhongMoiDem; nvarchar TrangThai }
     ChiTietDichVu { int MaChiTietDichVu PK; int MaPhieuThue FK; int MaDichVu FK; decimal SoLuong; decimal DonGia; datetime2 ThoiDiemSuDung }
+    LichSuDoiPhong { int MaDoiPhong PK; int MaPhieuThue FK; int MaPhongCu FK; int MaPhongMoi FK; decimal GiaCu; decimal GiaMoi; datetime2 ThoiDiemDoi; nvarchar LyDo; int MaNguoiDung FK }
     HoaDon { int MaHoaDon PK; int MaPhieuThue FK_UK; int MaNguoiDung FK; datetime2 NgayLap; int SoDem; decimal TienPhong; decimal TienDichVu; decimal PhuThu; decimal GiamGia; decimal TienCoc; decimal TongThanhToan; nvarchar HinhThucThanhToan }
 ```
 
@@ -29,6 +32,7 @@ erDiagram
 
 - Thêm `DatPhong` ngoài tám thực thể được nêu để tách đặt trước khỏi lưu trú; đặt phòng chuyển thành phiếu thuê khi nhận phòng, còn khách vãng lai tạo phiếu thuê trực tiếp.
 - Đặt phòng dùng `date` và khoảng nửa mở `[NgàyDen, NgàyDi)`; phiếu thuê ghi thời điểm nhận/trả và giá phòng snapshot.
+- Đổi phòng giữ một phiếu thuê duy nhất và ghi mỗi lần đổi vào `LichSuDoiPhong` (`CHECK MaPhongCu <> MaPhongMoi`); `sp_DoiPhong` thực hiện trong một transaction.
 - Giá dịch vụ cũng được snapshot ở `ChiTietDichVu`; hóa đơn giữ snapshot các khoản tiền và có `UNIQUE(MaPhieuThue)` để chặn hóa đơn thứ hai.
 - Loại phòng, phòng và dịch vụ được ngừng hoạt động bằng cờ `HoatDong`, không xóa lịch sử được tham chiếu bởi khóa ngoại.
 - Mật khẩu mẫu dùng PBKDF2-SHA256, salt riêng, 100000 vòng; không lưu mật khẩu rõ. Tài khoản mẫu tạm dùng `Admin@123` và phải đổi trước khi dùng thật.

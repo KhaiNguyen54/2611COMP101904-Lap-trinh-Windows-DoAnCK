@@ -42,6 +42,8 @@ namespace QuanLyKhachSan.Tests
             KhoangNgayWeb();
             DichVuTraCuu();
             TrangWeb();
+            LocPhongWeb();
+            DoiPhong();
 
             Console.WriteLine("Đạt " + _dat + ", lỗi " + _loi);
             return _loi == 0 ? 0 : 1;
@@ -256,6 +258,82 @@ namespace QuanLyKhachSan.Tests
             Kiem("HTML: lỗi hiển thị thay danh sách", Dec(TrangHtml.TimPhong(den, di, new List<ThongTinPhong>(), "Lỗi thử")).Contains("Lỗi thử"));
             Kiem("HTML: trang có ngôn ngữ vi và meta viewport", TrangHtml.Trang("T", "x").Contains("lang=\"vi\"") && TrangHtml.Trang("T", "x").Contains("viewport"));
             Kiem("HTML: tiêu đề trang được mã hóa", TrangHtml.Trang("<x>", "").IndexOf("<title><x>", StringComparison.Ordinal) < 0);
+        }
+        private static void LocPhongWeb()
+        {
+            string loai; decimal? gia;
+            Kiem("Bộ lọc: để trống hợp lệ", TraCuuService.DocBoLoc("", "", out loai, out gia) == null && loai == null && !gia.HasValue);
+            Kiem("Bộ lọc: loại và giá hợp lệ", TraCuuService.DocBoLoc(" Deluxe ", "600000", out loai, out gia) == null && loai == "Deluxe" && gia == 600000m);
+            Kiem("Bộ lọc: giá chữ bị từ chối", TraCuuService.DocBoLoc("", "abc", out loai, out gia) != null && !gia.HasValue);
+            Kiem("Bộ lọc: giá âm bị từ chối", TraCuuService.DocBoLoc("", "-5", out loai, out gia) != null);
+            Kiem("Bộ lọc: giá 0 bị từ chối", TraCuuService.DocBoLoc("", "0", out loai, out gia) != null);
+            Kiem("Bộ lọc: giá quá lớn bị từ chối", TraCuuService.DocBoLoc("", "100000001", out loai, out gia) != null);
+            Kiem("Bộ lọc: giá thập phân bị từ chối", TraCuuService.DocBoLoc("", "1.5", out loai, out gia) != null);
+            Kiem("Bộ lọc: loại quá dài bị từ chối", TraCuuService.DocBoLoc(new string('x', 51), "", out loai, out gia) != null);
+
+            var ds = new List<ThongTinPhong>
+            {
+                new ThongTinPhong { SoPhong = "101", TenLoai = "Standard", GiaMoiDem = 450000m },
+                new ThongTinPhong { SoPhong = "102", TenLoai = "Standard", GiaMoiDem = 450000m },
+                new ThongTinPhong { SoPhong = "201", TenLoai = "Deluxe", GiaMoiDem = 750000m }
+            };
+            Bang("Lọc: không điều kiện giữ nguyên", TraCuuService.Loc(ds, null, null).Count, 3);
+            Bang("Lọc: theo loại (không phân biệt hoa thường)", TraCuuService.Loc(ds, "deluxe", null).Count, 1);
+            Bang("Lọc: theo giá tối đa (bằng giá vẫn lấy)", TraCuuService.Loc(ds, null, 450000m).Count, 2);
+            Bang("Lọc: loại và giá kết hợp", TraCuuService.Loc(ds, "Deluxe", 450000m).Count, 0);
+
+            var loaiPhong = new List<GiaLoaiPhong>
+            {
+                new GiaLoaiPhong { TenLoai = "Standard", GiaMoiDem = 450000m, SucChua = 2 },
+                new GiaLoaiPhong { TenLoai = "Deluxe", GiaMoiDem = 750000m, SucChua = 3 }
+            };
+            var den = new DateTime(2026, 11, 10);
+            var di = new DateTime(2026, 11, 12);
+            string tim = Dec(TrangHtml.TimPhong(den, di, TraCuuService.Loc(ds, "Deluxe", null), null, loaiPhong, "Deluxe", null, 3));
+            Kiem("HTML: form lọc có chọn đúng loại", tim.Contains("<option value=\"Deluxe\" selected>"));
+            Kiem("HTML: form lọc không chọn loại khác", !tim.Contains("<option value=\"Standard\" selected>"));
+            Kiem("HTML: nêu số phòng phù hợp và tổng", tim.Contains("1 phòng phù hợp") && tim.Contains("trong tổng 3 phòng trống"));
+            string rong = Dec(TrangHtml.TimPhong(den, di, new List<ThongTinPhong>(), null, loaiPhong, "Deluxe", 100000m, 3));
+            Kiem("HTML: lọc không có kết quả có gợi ý", rong.Contains("Không có phòng phù hợp bộ lọc"));
+            Kiem("HTML: giữ lại giá đã nhập", rong.Contains("value=\"100000\""));
+            string xau = TrangHtml.TimPhong(den, di, new List<ThongTinPhong>(), null, new List<GiaLoaiPhong> { new GiaLoaiPhong { TenLoai = "\"><script>", GiaMoiDem = 1m } }, null, null, 0);
+            Kiem("HTML: tên loại trong form được mã hóa", xau.IndexOf("<script>", StringComparison.Ordinal) < 0);
+            Kiem("HTML: tìm phòng không có danh sách loại vẫn chạy", !TrangHtml.TimPhong(den, di, ds, null).Contains("<select"));
+
+            string anh = TrangHtml.MinhHoa("Standard", 2);
+            Kiem("Minh họa: 1 giường cho sức chứa 2", System.Text.RegularExpressions.Regex.Matches(anh, "class=\"goi\"").Count == 1);
+            Kiem("Minh họa: 2 giường cho sức chứa 4", System.Text.RegularExpressions.Regex.Matches(TrangHtml.MinhHoa("A", 4), "class=\"goi\"").Count == 2);
+            Kiem("Minh họa: 3 giường cho sức chứa 6", System.Text.RegularExpressions.Regex.Matches(TrangHtml.MinhHoa("A", 6), "class=\"goi\"").Count == 3);
+            Kiem("Minh họa: cùng loại cho cùng kết quả", TrangHtml.MinhHoa("Deluxe", 3) == TrangHtml.MinhHoa("Deluxe", 3));
+            Kiem("Minh họa: tên loại được mã hóa", TrangHtml.MinhHoa("<img onerror=1>", 2).IndexOf("<img", StringComparison.Ordinal) < 0);
+            Kiem("Minh họa: chịu được tên rỗng", TrangHtml.MinhHoa(null, 0).StartsWith("<svg"));
+            Kiem("Bảng giá có hình minh họa", TrangHtml.BangGia(loaiPhong).Contains("<svg"));
+        }
+
+        private static void DoiPhong()
+        {
+            var homNay = new DateTime(2026, 11, 10, 15, 30, 0);
+            DateTime den, di;
+            QuyTacDoiPhong.KhoangCanTrong(homNay, new DateTime(2026, 11, 14), out den, out di);
+            Kiem("Đổi phòng: khoảng từ hôm nay đến ngày đi dự kiến", den == new DateTime(2026, 11, 10) && di == new DateTime(2026, 11, 14));
+            QuyTacDoiPhong.KhoangCanTrong(homNay, new DateTime(2026, 11, 10), out den, out di);
+            Kiem("Đổi phòng: đi dự kiến là hôm nay vẫn giữ tối thiểu 1 đêm", di == new DateTime(2026, 11, 11));
+            QuyTacDoiPhong.KhoangCanTrong(homNay, new DateTime(2026, 11, 8), out den, out di);
+            Kiem("Đổi phòng: quá hạn dự kiến vẫn giữ tối thiểu 1 đêm", di == new DateTime(2026, 11, 11));
+
+            Kiem("Lý do: rỗng → null", QuyTacDoiPhong.ChuanHoaLyDo("  ") == null && QuyTacDoiPhong.ChuanHoaLyDo(null) == null);
+            Bang("Lý do: cắt khoảng trắng", QuyTacDoiPhong.ChuanHoaLyDo("  Máy lạnh hỏng "), "Máy lạnh hỏng");
+            Kiem("Lý do: đúng 200 ký tự hợp lệ", QuyTacDoiPhong.ChuanHoaLyDo(new string('a', 200)).Length == 200);
+            Kiem("Lý do: quá 200 ký tự bị từ chối", Nem(delegate { QuyTacDoiPhong.ChuanHoaLyDo(new string('a', 201)); }));
+
+            Kiem("Lời nhắc giá: bằng nhau không nhắc", QuyTacDoiPhong.LoiNhacGia(450000m, 450000m) == null);
+            Kiem("Lời nhắc giá: phòng mới đắt hơn", QuyTacDoiPhong.LoiNhacGia(450000m, 750000m).Contains("cao hơn"));
+            Kiem("Lời nhắc giá: phòng mới rẻ hơn", QuyTacDoiPhong.LoiNhacGia(750000m, 450000m).Contains("thấp hơn"));
+
+            var bll = new LuuTruBLL();
+            Kiem("Đổi phòng: thiếu phiếu thuê bị từ chối", Nem(delegate { bll.DoiPhong(0, 5, 1, null); }));
+            Kiem("Đổi phòng: thiếu phòng mới bị từ chối", Nem(delegate { bll.DoiPhong(5, 0, 1, null); }));
+            Kiem("Đổi phòng: lý do quá dài bị từ chối trước khi vào CSDL", Nem(delegate { bll.DoiPhong(5, 6, 1, new string('a', 201)); }));
         }
     }
 }

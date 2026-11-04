@@ -29,13 +29,22 @@ app.MapGet("/", (HttpContext http) => Chay(http, () =>
 {
     DateTime den, di;
     string loi = DocKhoangNgay(http, out den, out di);
+    string loaiChon; decimal? giaToiDa;
+    string loiLoc = TraCuuService.DocBoLoc(http.Request.Query["loai"], http.Request.Query["gia"], out loaiChon, out giaToiDa);
+    loi = loi ?? loiLoc;
     var ds = new System.Collections.Generic.List<ThongTinPhong>();
+    int tong = 0;
     if (loi == null)
     {
-        try { ds = TraCuuService.LayPhongTrong(den, di); }
+        try
+        {
+            var tatCa = TraCuuService.LayPhongTrong(den, di);
+            tong = tatCa.Count;
+            ds = TraCuuService.Loc(tatCa, loaiChon, giaToiDa);
+        }
         catch (ArgumentException ex) { loi = ex.Message; }
     }
-    return Html(http, 200, "Tìm phòng", TrangHtml.TimPhong(den, di, ds, loi));
+    return Html(http, 200, "Tìm phòng", TrangHtml.TimPhong(den, di, ds, loi, TraCuuService.LayBangGia(), loaiChon, giaToiDa, tong));
 }));
 
 app.MapGet("/gia", (HttpContext http) => Chay(http, () =>

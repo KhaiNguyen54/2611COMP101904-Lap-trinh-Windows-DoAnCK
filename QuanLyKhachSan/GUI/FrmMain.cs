@@ -116,6 +116,7 @@ namespace QuanLyKhachSan.GUI
             nghiepVu.DropDownItems.Add(Muc("Đặt phòng \t(F2)", delegate { MoHopThoai(new FrmDatPhong(_nguoiDung)); }));
             nghiepVu.DropDownItems.Add(Muc("Nhận phòng \t(F3)", delegate { MoHopThoai(new FrmNhanPhong(_nguoiDung)); }));
             nghiepVu.DropDownItems.Add(Muc("Ghi dịch vụ \t(F4)", delegate { MoHopThoai(new FrmGhiDichVu(_nguoiDung)); }));
+            nghiepVu.DropDownItems.Add(Muc("Đổi phòng \t(F8)", delegate { MoHopThoai(new FrmDoiPhong(_nguoiDung)); }));
             nghiepVu.DropDownItems.Add(Muc("Trả phòng \t(F6)", delegate { MoHopThoai(new FrmTraPhong(_nguoiDung)); }));
 
             var traCuu = Muc("Tra cứu");
@@ -154,6 +155,7 @@ namespace QuanLyKhachSan.GUI
                 case Keys.F5: f = new FrmSoDoPhong(_nguoiDung); break;
                 case Keys.F6: f = new FrmTraPhong(_nguoiDung); break;
                 case Keys.F7: f = new FrmHoaDon(); break;
+                case Keys.F8: f = new FrmDoiPhong(_nguoiDung); break;
             }
             if (f != null)
             {
@@ -246,6 +248,7 @@ namespace QuanLyKhachSan.GUI
             ThemTacVu(hang, "Đặt phòng (F2)", delegate { MoHopThoai(new FrmDatPhong(_nguoiDung)); });
             ThemTacVu(hang, "Nhận phòng (F3)", delegate { MoHopThoai(new FrmNhanPhong(_nguoiDung)); });
             ThemTacVu(hang, "Ghi dịch vụ (F4)", delegate { MoHopThoai(new FrmGhiDichVu(_nguoiDung)); });
+            ThemTacVu(hang, "Đổi phòng (F8)", delegate { MoHopThoai(new FrmDoiPhong(_nguoiDung)); });
             ThemTacVu(hang, "Trả phòng (F6)", delegate { MoHopThoai(new FrmTraPhong(_nguoiDung)); });
             ThemTacVu(hang, "Khách đang ở", delegate { MoHopThoai(new FrmKhachDangO()); });
             return hang;

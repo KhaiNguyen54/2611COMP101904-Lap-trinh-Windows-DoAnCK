@@ -158,6 +158,29 @@ IF NOT EXISTS(SELECT 1 FROM sys.indexes WHERE object_id=OBJECT_ID(N'dbo.ChiTietD
         INCLUDE (MaDichVu,SoLuong,DonGia);
 GO
 
+IF OBJECT_ID(N'dbo.LichSuDoiPhong', N'U') IS NULL
+CREATE TABLE dbo.LichSuDoiPhong (
+    MaDoiPhong int IDENTITY(1,1) CONSTRAINT PK_LichSuDoiPhong PRIMARY KEY,
+    MaPhieuThue int NOT NULL,
+    MaPhongCu int NOT NULL,
+    MaPhongMoi int NOT NULL,
+    GiaCu decimal(18,2) NOT NULL,
+    GiaMoi decimal(18,2) NOT NULL,
+    ThoiDiemDoi datetime2(0) NOT NULL CONSTRAINT DF_LichSuDoiPhong_ThoiDiem DEFAULT SYSDATETIME(),
+    LyDo nvarchar(200) NULL,
+    MaNguoiDung int NOT NULL,
+    CONSTRAINT FK_LichSuDoiPhong_PhieuThue FOREIGN KEY (MaPhieuThue) REFERENCES dbo.PhieuThue(MaPhieuThue),
+    CONSTRAINT FK_LichSuDoiPhong_PhongCu FOREIGN KEY (MaPhongCu) REFERENCES dbo.Phong(MaPhong),
+    CONSTRAINT FK_LichSuDoiPhong_PhongMoi FOREIGN KEY (MaPhongMoi) REFERENCES dbo.Phong(MaPhong),
+    CONSTRAINT FK_LichSuDoiPhong_NguoiDung FOREIGN KEY (MaNguoiDung) REFERENCES dbo.NguoiDung(MaNguoiDung),
+    CONSTRAINT CK_LichSuDoiPhong_KhacPhong CHECK (MaPhongCu <> MaPhongMoi)
+);
+GO
+
+IF NOT EXISTS(SELECT 1 FROM sys.indexes WHERE object_id=OBJECT_ID(N'dbo.LichSuDoiPhong') AND name=N'IX_LichSuDoiPhong_PhieuThue')
+    CREATE INDEX IX_LichSuDoiPhong_PhieuThue ON dbo.LichSuDoiPhong(MaPhieuThue, ThoiDiemDoi);
+GO
+
 IF OBJECT_ID(N'dbo.HoaDon', N'U') IS NULL
 CREATE TABLE dbo.HoaDon (
     MaHoaDon int IDENTITY(1,1) CONSTRAINT PK_HoaDon PRIMARY KEY,
@@ -297,6 +320,42 @@ BEGIN
         COMMIT;
         SELECT CAST(SCOPE_IDENTITY() AS int) AS MaHoaDon,@SoDem AS SoDem,@TienPhong AS TienPhong,
                @TienDichVu AS TienDichVu,@PhuThu AS PhuThu,@GiamGia AS GiamGia,@TienCoc AS TienCoc,@Tong AS TongThanhToan;
+    END TRY BEGIN CATCH
+        IF @@TRANCOUNT>0 ROLLBACK; THROW;
+    END CATCH
+END;
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_DoiPhong
+    @MaPhieuThue int, @MaPhongMoi int, @MaNguoiDung int, @LyDo nvarchar(200) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON; SET XACT_ABORT ON;
+    BEGIN TRANSACTION;
+    BEGIN TRY
+        DECLARE @MaPhongCu int,@NgayDiDuKien date,@GiaCu decimal(18,2),@GiaMoi decimal(18,2),
+                @Den date=CONVERT(date,SYSDATETIME()),@Di date;
+        SELECT @MaPhongCu=MaPhong,@NgayDiDuKien=CONVERT(date,NgayDiDuKien),@GiaCu=GiaPhongMoiDem
+        FROM dbo.PhieuThue WITH (UPDLOCK,HOLDLOCK) WHERE MaPhieuThue=@MaPhieuThue AND TrangThai=N'Đang ở';
+        IF @MaPhongCu IS NULL THROW 50012,N'Phiếu thuê không tồn tại hoặc đã trả.',1;
+        IF @MaPhongCu=@MaPhongMoi THROW 50013,N'Phòng mới phải khác phòng hiện tại.',1;
+        -- Phòng mới phải trống từ hôm nay đến ngày đi dự kiến (tối thiểu 1 đêm).
+        SET @Di=CASE WHEN @NgayDiDuKien>@Den THEN @NgayDiDuKien ELSE DATEADD(day,1,@Den) END;
+        IF NOT EXISTS(SELECT 1 FROM dbo.Phong WITH (UPDLOCK,HOLDLOCK) WHERE MaPhong=@MaPhongMoi AND HoatDong=1 AND TrangThai IN (N'Trống',N'Đã đặt'))
+            THROW 50014,N'Phòng mới không sẵn sàng (đang có khách, đang dọn, bảo trì hoặc ngừng sử dụng).',1;
+        IF EXISTS(SELECT 1 FROM dbo.PhieuThue WITH (UPDLOCK,HOLDLOCK) WHERE MaPhong=@MaPhongMoi AND TrangThai=N'Đang ở')
+            THROW 50014,N'Phòng mới đang có khách lưu trú.',1;
+        IF EXISTS(SELECT 1 FROM dbo.DatPhong WITH (UPDLOCK,HOLDLOCK)
+                  WHERE MaPhong=@MaPhongMoi AND TrangThai=N'Đã đặt' AND NgayDen<@Di AND @Den<NgayDi)
+            THROW 50015,N'Phòng mới có đặt chỗ khác trong thời gian còn lại của kỳ lưu trú.',1;
+        SELECT @GiaMoi=l.GiaMoiDem FROM dbo.Phong p JOIN dbo.LoaiPhong l ON p.MaLoaiPhong=l.MaLoaiPhong WHERE p.MaPhong=@MaPhongMoi;
+        -- Giữ nguyên GiaPhongMoiDem của phiếu thuê (QT49); dịch vụ đã ghi vẫn gắn với phiếu.
+        UPDATE dbo.PhieuThue SET MaPhong=@MaPhongMoi WHERE MaPhieuThue=@MaPhieuThue;
+        UPDATE dbo.Phong SET TrangThai=N'Dọn dẹp' WHERE MaPhong=@MaPhongCu;
+        UPDATE dbo.Phong SET TrangThai=N'Đang ở' WHERE MaPhong=@MaPhongMoi;
+        INSERT dbo.LichSuDoiPhong(MaPhieuThue,MaPhongCu,MaPhongMoi,GiaCu,GiaMoi,LyDo,MaNguoiDung)
+        VALUES(@MaPhieuThue,@MaPhongCu,@MaPhongMoi,@GiaCu,@GiaMoi,NULLIF(LTRIM(RTRIM(@LyDo)),N''),@MaNguoiDung);
+        COMMIT;
     END TRY BEGIN CATCH
         IF @@TRANCOUNT>0 ROLLBACK; THROW;
     END CATCH

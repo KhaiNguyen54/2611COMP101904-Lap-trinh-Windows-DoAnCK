@@ -36,6 +36,34 @@ namespace QuanLyKhachSan.Web
                 + "</body></html>";
         }
 
+        private static readonly int[] SacThai = { 28, 150, 12, 200, 40 };
+
+        /// <summary>Hình minh họa phòng (SVG vẽ bằng mã): số giường theo sức chứa, tông màu theo tên loại phòng.</summary>
+        public static string MinhHoa(string tenLoai, int sucChua)
+        {
+            int h = 0;
+            foreach (char c in tenLoai ?? "") h = (h * 31 + c) & 0x7fffffff;
+            int sac = SacThai[h % SacThai.Length];
+            int n = sucChua <= 2 ? 1 : (sucChua <= 4 ? 2 : 3);
+            int w = n == 1 ? 150 : (n == 2 ? 80 : 54);
+            int cach = n == 1 ? 40 : (n == 2 ? 30 : 28);
+            int buoc = w + (n == 2 ? 10 : 8);
+            var sb = new StringBuilder();
+            sb.Append("<svg class=\"anh\" viewBox=\"0 0 320 140\" role=\"img\" aria-label=\"Minh họa phòng ").Append(E(tenLoai)).Append("\" style=\"--tong:hsl(")
+              .Append(sac).Append(" 42% 46%)\">");
+            sb.Append("<rect class=\"tuong\" width=\"320\" height=\"140\"/><rect class=\"san\" y=\"104\" width=\"320\" height=\"36\"/>");
+            sb.Append("<rect class=\"cua\" x=\"236\" y=\"18\" width=\"62\" height=\"56\" rx=\"4\"/><path class=\"khung\" d=\"M267 18v56M236 46h62\"/>");
+            for (int i = 0; i < n; i++)
+            {
+                int x = cach + i * buoc;
+                sb.Append("<rect class=\"khungg\" x=\"").Append(x).Append("\" y=\"56\" width=\"").Append(w).Append("\" height=\"50\" rx=\"6\"/>");
+                sb.Append("<rect class=\"chan\" x=\"").Append(x + 4).Append("\" y=\"82\" width=\"").Append(w - 8).Append("\" height=\"26\" rx=\"7\"/>");
+                sb.Append("<rect class=\"goi\" x=\"").Append(x + 10).Append("\" y=\"70\" width=\"").Append(w / 3).Append("\" height=\"14\" rx=\"6\"/>");
+            }
+            sb.Append("<path class=\"khung\" d=\"M222 104V74\"/><path class=\"den\" d=\"M212 74h20l-4-16h-12z\"/></svg>");
+            return sb.ToString();
+        }
+
         public static string Loi(string thongBao)
         {
             return "<div class=\"canhbao\">" + E(thongBao) + "</div>";
@@ -47,7 +75,7 @@ namespace QuanLyKhachSan.Web
             if (ds.Count == 0) return sb.Append("<p>Chưa có dữ liệu giá.</p>").ToString();
             sb.Append("<div class=\"luoi\">");
             foreach (GiaLoaiPhong g in ds)
-                sb.Append("<section class=\"the\"><h2>").Append(E(g.TenLoai)).Append("</h2>")
+                sb.Append("<section class=\"the\">").Append(MinhHoa(g.TenLoai, g.SucChua)).Append("<h2>").Append(E(g.TenLoai)).Append("</h2>")
                   .Append("<p class=\"gia\">").Append(Gia(g.GiaMoiDem)).Append("<small> / đêm</small></p>")
                   .Append("<p>Sức chứa: ").Append(g.SucChua).Append(" khách</p>")
                   .Append(string.IsNullOrWhiteSpace(g.MoTa) ? "" : "<p class=\"phu\">" + E(g.MoTa) + "</p>")
@@ -58,7 +86,7 @@ namespace QuanLyKhachSan.Web
         public static string ChiTietPhong(ThongTinPhong p, DateTime? den, DateTime? di, bool? conTrong)
         {
             var sb = new StringBuilder();
-            sb.Append("<h1>Phòng ").Append(E(p.SoPhong)).Append("</h1><section class=\"the\">");
+            sb.Append("<h1>Phòng ").Append(E(p.SoPhong)).Append("</h1><section class=\"the\">").Append(MinhHoa(p.TenLoai, p.SucChua));
             sb.Append("<h2>").Append(E(p.TenLoai)).Append("</h2>");
             sb.Append("<p class=\"gia\">").Append(Gia(p.GiaMoiDem)).Append("<small> / đêm</small></p>");
             sb.Append("<p>Tầng ").Append(p.Tang).Append(" · Sức chứa ").Append(p.SucChua).Append(" khách</p>");
@@ -82,16 +110,33 @@ namespace QuanLyKhachSan.Web
             return sb.ToString();
         }
 
-        public static string TimPhong(DateTime den, DateTime di, IList<ThongTinPhong> ds, string loi)
+        public static string TimPhong(DateTime den, DateTime di, IList<ThongTinPhong> ds, string loi,
+            IList<GiaLoaiPhong> loaiPhong = null, string loaiChon = null, decimal? giaToiDa = null, int tongTruocLoc = -1)
         {
             int dem = Math.Max(1, (int)(di.Date - den.Date).TotalDays);
             var sb = new StringBuilder("<h1>Tìm phòng trống</h1><form method=\"get\" class=\"bieumau\">")
-              .Append("<label>Ngày đến<input type=\"date\" name=\"den\" value=\"").Append(den.ToString("yyyy-MM-dd")).Append("\"></label>")
-              .Append("<label>Ngày đi<input type=\"date\" name=\"di\" value=\"").Append(di.ToString("yyyy-MM-dd")).Append("\"></label>")
-              .Append("<button>Tìm phòng</button></form>");
+              .Append("<label>Ngày đến<input type=\"date\" id=\"den\" name=\"den\" value=\"").Append(den.ToString("yyyy-MM-dd")).Append("\"></label>")
+              .Append("<label>Ngày đi<input type=\"date\" id=\"di\" name=\"di\" value=\"").Append(di.ToString("yyyy-MM-dd")).Append("\"></label>");
+            if (loaiPhong != null)
+            {
+                sb.Append("<label>Loại phòng<select id=\"loai\" name=\"loai\"><option value=\"\">Tất cả loại</option>");
+                foreach (GiaLoaiPhong g in loaiPhong)
+                    sb.Append("<option value=\"").Append(E(g.TenLoai)).Append("\"")
+                      .Append(string.Equals(g.TenLoai, loaiChon, StringComparison.OrdinalIgnoreCase) ? " selected" : "")
+                      .Append(">").Append(E(g.TenLoai)).Append(" · ").Append(Gia(g.GiaMoiDem)).Append("</option>");
+                sb.Append("</select></label>")
+                  .Append("<label>Giá tối đa mỗi đêm (đ)<input type=\"number\" id=\"gia\" name=\"gia\" min=\"1\" step=\"50000\" inputmode=\"numeric\" placeholder=\"Không giới hạn\"")
+                  .Append(giaToiDa.HasValue ? " value=\"" + giaToiDa.Value.ToString("0", CultureInfo.InvariantCulture) + "\"" : "").Append("></label>");
+            }
+            sb.Append("<button>Tìm phòng</button></form>");
             if (loi != null) return sb.Append(Loi(loi)).ToString();
-            sb.Append("<p>").Append(ds.Count).Append(" phòng trống từ ").Append(den.ToString("dd/MM/yyyy"))
-              .Append(" đến ").Append(di.ToString("dd/MM/yyyy")).Append(" (").Append(dem).Append(" đêm)</p>");
+            bool coLoc = !string.IsNullOrEmpty(loaiChon) || giaToiDa.HasValue;
+            sb.Append("<p>").Append(ds.Count).Append(coLoc ? " phòng phù hợp" : " phòng trống").Append(" từ ").Append(den.ToString("dd/MM/yyyy"))
+              .Append(" đến ").Append(di.ToString("dd/MM/yyyy")).Append(" (").Append(dem).Append(" đêm)");
+            if (coLoc && tongTruocLoc >= 0) sb.Append(", trong tổng ").Append(tongTruocLoc).Append(" phòng trống");
+            sb.Append("</p>");
+            if (ds.Count == 0 && coLoc)
+                sb.Append("<p class=\"phu\">Không có phòng phù hợp bộ lọc. Hãy chọn loại khác hoặc tăng giá tối đa.</p>");
             if (ds.Count > 0)
             {
                 sb.Append("<table><thead><tr><th>Phòng</th><th>Tầng</th><th>Loại</th><th class=\"s\">Giá/đêm</th><th class=\"s\">Tổng</th></tr></thead><tbody>");
@@ -120,9 +165,11 @@ namespace QuanLyKhachSan.Web
             + ".the{background:var(--be);border:1px solid var(--vien);border-radius:14px;padding:16px 18px;margin:12px 0;box-shadow:var(--bong);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.luoi .the{margin:0}.the:hover{transform:translateY(-2px);box-shadow:var(--bongcao);border-color:var(--la)}"
             + ".gia{font-size:1.65rem;font-weight:700;color:var(--nhan);margin:.15em 0;font-variant-numeric:tabular-nums}.gia small{font-size:.9rem;font-weight:400;color:var(--phu)}.phu{color:var(--phu)}"
             + ".bieumau{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin:12px 0 16px}.bieumau label{display:flex;flex-direction:column;gap:4px;font-size:.9rem;color:var(--phu)}"
-            + "input,button{font:inherit;min-height:44px;padding:8px 12px;border-radius:10px;border:1px solid var(--vien);background:var(--be);color:var(--chu);transition:border-color .18s ease,box-shadow .18s ease,background-color .18s ease,transform .12s ease}"
-            + "input:hover{border-color:var(--phu)}button{background:var(--nut);color:var(--nutchu);border-color:var(--nut);font-weight:600;padding:8px 20px;cursor:pointer}button:hover{box-shadow:var(--bongcao);transform:translateY(-1px)}button:active{transform:none}"
-            + "a:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid var(--la);outline-offset:2px}"
+            + "input,select,button{font:inherit;min-height:44px;padding:8px 12px;border-radius:10px;border:1px solid var(--vien);background:var(--be);color:var(--chu);transition:border-color .18s ease,box-shadow .18s ease,background-color .18s ease,transform .12s ease}"
+            + "input:hover,select:hover{border-color:var(--phu)}button{background:var(--nut);color:var(--nutchu);border-color:var(--nut);font-weight:600;padding:8px 20px;cursor:pointer}button:hover{box-shadow:var(--bongcao);transform:translateY(-1px)}button:active{transform:none}"
+            + "a:focus-visible,input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--la);outline-offset:2px}"
+            + ".anh{display:block;width:100%;height:auto;border-radius:10px;margin:0 0 12px}.anh .tuong{fill:color-mix(in srgb,var(--tong) 16%,var(--be))}.anh .san{fill:color-mix(in srgb,var(--tong) 32%,var(--be))}.anh .cua{fill:color-mix(in srgb,var(--la) 40%,var(--be))}.anh .khung{stroke:var(--be);stroke-width:3;fill:none}"
+            + ".anh .khungg{fill:color-mix(in srgb,var(--tong) 75%,var(--chu))}.anh .chan{fill:color-mix(in srgb,var(--tong) 55%,var(--be))}.anh .goi{fill:var(--be)}.anh .den{fill:var(--la)}"
             + "table{width:100%;border-collapse:separate;border-spacing:0;background:var(--be);border:1px solid var(--vien);border-radius:14px;overflow:hidden;box-shadow:var(--bong);font-variant-numeric:tabular-nums}"
             + "th,td{padding:11px 12px;border-bottom:1px solid var(--vien);text-align:left}th{font-size:.85rem;color:var(--phu);font-weight:600;background:color-mix(in srgb,var(--vien) 35%,var(--be))}tbody tr{transition:background-color .15s ease}tbody tr:hover{background:color-mix(in srgb,var(--la) 12%,var(--be))}tr:last-child td{border-bottom:0}th.s,td.s{text-align:right;white-space:nowrap}"
             + "a{color:var(--nhan);text-underline-offset:3px}td a{font-weight:650}"

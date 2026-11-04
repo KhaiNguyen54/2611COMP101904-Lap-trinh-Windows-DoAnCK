@@ -37,16 +37,18 @@ Các kịch bản UI trong bảng là các bước cần thực hiện thủ cô
 
 Project `QuanLyKhachSan.Tests` kiểm tra số đêm tối thiểu (QT40), phụ thu trả muộn theo mốc 1/3/6 giờ, tổng thanh toán không âm (QT45), cọc tối đa (QT15), gom doanh thu theo ngày/tháng/loại phòng (kể cả ngày trống), tỷ lệ công suất trung bình và xuất CSV (thoát dấu phẩy, nháy kép, chặn công thức). Chạy: `dotnet run --project QuanLyKhachSan.Tests` (mã thoát 1 nếu có ca lỗi).
 
-Bộ kiểm thử cũng bao phủ chức năng mở rộng: bộ mã hóa QR và đường dẫn tra cứu (`QrCode`, `TraCuuUrl`, QT65–QT68: kích thước theo phiên bản, mẫu định vị/thời gian, ô tối cố định, thông tin định dạng BCH, mức sửa lỗi, tính xác định, đầu vào không hợp lệ) và phần logic thuần của cổng web (`KhoangNgay`, `TraCuuService`, `TrangHtml`: đọc/kiểm tra khoảng ngày, nhãn tình trạng phòng, giới hạn 60 đêm, mã hóa HTML, định dạng giá, liên kết phòng; QT65–QT69). Kết quả: 90/90 ca đạt. Các kiểm tra này không thay thế các kịch bản UI-01…UI-12.
+Bộ kiểm thử cũng bao phủ chức năng mở rộng: bộ mã hóa QR và đường dẫn tra cứu (`QrCode`, `TraCuuUrl`, QT65–QT68: kích thước theo phiên bản, mẫu định vị/thời gian, ô tối cố định, thông tin định dạng BCH, mức sửa lỗi, tính xác định, đầu vào không hợp lệ) và phần logic thuần của cổng web (`KhoangNgay`, `TraCuuService`, `TrangHtml`: đọc/kiểm tra khoảng ngày, nhãn tình trạng phòng, giới hạn 60 đêm, mã hóa HTML, định dạng giá, liên kết phòng; QT65–QT69). Kết quả: 129/129 ca đạt. Các kiểm tra này không thay thế các kịch bản UI-01…UI-12.
 
 | ID | Kịch bản bổ sung | Kết quả mong đợi |
 |---|---|---|
 | UI-11 | Đánh dấu "Khách không đến" / hủy đặt rồi đặt lại cùng phòng và ngày | Phòng được giải phóng, đặt được lại |
 | UI-12 | Lễ tân mở Loại phòng/Phòng/Dịch vụ; Quản lý mở Báo cáo công suất | Lễ tân chỉ xem; Quản lý thấy biểu đồ, in và xuất CSV |
+| UI-18 | Mở Đổi phòng (F8), chọn phòng đang ở, chọn phòng trống khác loại giá, nhập lý do, xác nhận | Có lời nhắc giá; phòng cũ → Dọn dẹp, phòng mới → Đang ở trên sơ đồ; lịch sử hiện đúng một dòng; dịch vụ đã ghi còn nguyên; trả phòng sau đó tính theo đơn giá cũ |
+| UI-19 | Đổi phòng khi phòng mới vừa bị đặt ở máy khác; đổi khi không còn phòng trống | Báo lỗi rõ, dữ liệu không đổi; thông báo "không có phòng trống" khi danh sách rỗng |
 
 ## Kiểm thử chức năng mở rộng (mã QR, cổng web, giao diện tối)
 
-Gồm các kịch bản giao diện (UI-13…UI-17) và kịch bản cho cổng web (WEB-01…WEB-06); bộ mã hóa QR được đối chiếu bằng cách giải mã lại 23/23 mã mẫu (nhiều độ dài/phiên bản, có chuỗi tiếng Việt) với `QRCodeDetector` của OpenCV.
+Gồm các kịch bản giao diện (UI-13…UI-19) và kịch bản cho cổng web (WEB-01…WEB-08); bộ mã hóa QR được đối chiếu bằng cách giải mã lại 23/23 mã mẫu (nhiều độ dài/phiên bản, có chuỗi tiếng Việt) với `QRCodeDetector` của OpenCV.
 
 | ID | Kịch bản | Kết quả mong đợi |
 |---|---|---|
@@ -60,4 +62,6 @@ Gồm các kịch bản giao diện (UI-13…UI-17) và kịch bản cho cổng 
 | WEB-04 | Giả lập lỗi mở kết nối | 503, chuỗi kết nối chỉ có trong nhật ký máy chủ |
 | WEB-05 | Phòng đang có khách | Chỉ hiện "Hiện đang có khách", không có tên khách |
 | WEB-06 | Tải `/logo.svg` và mở một trang bất kỳ | 200, `image/svg+xml`; logo và favicon hiển thị; CSP vẫn chỉ cho ảnh cùng nguồn |
+| WEB-07 | `/?loai=Deluxe&gia=800000`, `/?gia=abc`, `/?gia=-5`, `/?loai=` (quá 50 ký tự) | Lọc đúng; giá/loại sai hiện thông báo lỗi, vẫn còn form; không lỗi 500 |
+| WEB-08 | Mở `/gia` và `/phong/101` ở chế độ sáng, tối và màn hình hẹp | Hình minh họa hiển thị đủ, số giường theo sức chứa, màu theo loại phòng, chữ tên loại được mã hóa |
 | UI-17 | Mở ứng dụng, xem biểu tượng cửa sổ, thanh tác vụ và màn hình chính | Logo hiển thị ở biểu tượng exe/cửa sổ và cạnh lời chào; vẫn chạy bình thường nếu thiếu `Resources/logo.*` |

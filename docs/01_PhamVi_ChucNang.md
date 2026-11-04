@@ -99,8 +99,8 @@ Bảng chức năng phía trên mô tả phạm vi yêu cầu, không phải xá
 |---|---|---|
 | Hệ thống | Đăng nhập (khóa 30 giây sau 5 lần sai), đăng xuất, đổi mật khẩu; Quản lý tạo, khóa, đặt lại mật khẩu; luôn còn ít nhất một Quản lý hoạt động | Chưa có sửa thông tin tài khoản, xóa tài khoản |
 | Danh mục | Khách hàng, loại phòng, phòng, dịch vụ: thêm, sửa, tìm kiếm, ngừng sử dụng; Lễ tân chỉ xem ba danh mục sau | Chưa có lọc theo tầng/loại trong màn hình Phòng (có ở sơ đồ phòng) |
-| Nghiệp vụ | Tạo/hủy đặt phòng, đánh dấu khách không đến, cọc tối đa 1 đêm × số đêm; nhận phòng từ đặt trước hoặc vãng lai; ghi và xóa dịch vụ; trả phòng có transaction và hóa đơn; sơ đồ phòng theo tầng; bảo trì/dọn dẹp | Chưa có sửa đặt phòng và đổi phòng |
+| Nghiệp vụ | Tạo/hủy đặt phòng, đánh dấu khách không đến, cọc tối đa 1 đêm × số đêm; nhận phòng từ đặt trước hoặc vãng lai; ghi và xóa dịch vụ; đổi phòng khi đang ở (F8, có lịch sử); trả phòng có transaction và hóa đơn; sơ đồ phòng theo tầng; bảo trì/dọn dẹp | Chưa có sửa đặt phòng; đổi phòng giữ nguyên đơn giá phiếu thuê, chưa tách tiền phòng theo từng chặng giá |
 | Tra cứu/báo cáo | Tra cứu hóa đơn, khách đang ở; doanh thu theo ngày/tháng/loại phòng; công suất phòng; biểu đồ; xem trước/in; xuất CSV | Chưa có xuất Excel (.xlsx) |
-| Mở rộng | Giao diện sáng/tối (Ctrl+D, ghi nhớ); mã QR phòng/giá (lưu PNG, in, xuất tất cả); cổng web `QuanLyKhachSan.Web` (tìm phòng trống, bảng giá, chi tiết phòng, API JSON) | Web chưa cho đặt phòng, chưa có xác thực/HTTPS |
+| Mở rộng | Giao diện sáng/tối (Ctrl+D, ghi nhớ); mã QR phòng/giá (lưu PNG, in, xuất tất cả); cổng web `QuanLyKhachSan.Web` (tìm phòng trống có lọc theo loại và giá tối đa, bảng giá, chi tiết phòng có hình minh họa, API JSON) | Web chưa cho đặt phòng, chưa có xác thực/HTTPS |
 
-Phòng ở trạng thái Dọn dẹp có thể được xác nhận hoàn tất trên sơ đồ; đây là thao tác cập nhật trạng thái, không phải chức năng đổi phòng. Ma trận này cần được cập nhật cùng kịch bản kiểm thử khi source thay đổi.
+Phòng ở trạng thái Dọn dẹp có thể được xác nhận hoàn tất trên sơ đồ; đây là thao tác cập nhật trạng thái, khác với chức năng Đổi phòng (NV08). Ma trận này cần được cập nhật cùng kịch bản kiểm thử khi source thay đổi.

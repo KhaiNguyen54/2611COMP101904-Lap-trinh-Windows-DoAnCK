@@ -29,6 +29,7 @@ flowchart LR
         UC11((Nhận phòng))
         UC12((Ghi dịch vụ))
         UC13((Trả phòng và lập hóa đơn))
+        UC23((Đổi phòng khi đang ở))
         UC14((In hóa đơn))
         UC15((Tra cứu))
     end
@@ -44,7 +45,7 @@ flowchart LR
         UC22((Chuyển giao diện sáng/tối))
     end
 
-    LT --- UC1 & UC2 & UC4 & UC5 & UC8 & UC9 & UC10 & UC11 & UC12 & UC13 & UC14 & UC15 & UC19
+    LT --- UC1 & UC2 & UC4 & UC5 & UC8 & UC9 & UC10 & UC11 & UC12 & UC13 & UC14 & UC15 & UC19 & UC23
     LT --- UC20 & UC22
     KH --- UC21
     QL --- UC3 & UC6 & UC7 & UC16 & UC17 & UC18
@@ -82,8 +83,9 @@ Quan hệ giữa các use case (mô hình mục tiêu):
 | UC20 | Tạo mã QR phòng và giá | LT, QL | MR02 | MR |
 | UC21 | Tra cứu giá và phòng trống qua cổng web (quét QR) | Khách | MR03 | MR |
 | UC22 | Chuyển giao diện sáng/tối | LT, QL | MR01 | MR |
+| UC23 | Đổi phòng khi đang lưu trú | LT, QL | NV08 | NC |
 
-**Tình trạng theo source:** UC20–UC22 (mở rộng) có luồng chính trong source. UC01–UC08 và UC10–UC19 có luồng chính tương ứng ở mức ứng dụng (UC17 doanh thu và công suất, UC18 xem trước/in báo cáo, UC19 xuất CSV danh sách khách đang ở và các báo cáo); UC09 hiện hỗ trợ hủy và đánh dấu không đến, chưa hỗ trợ sửa. Các luồng ngoại lệ và quyền cần được xác nhận bằng kiểm thử giao diện trên máy có SQL Server.
+**Tình trạng theo source:** UC20–UC22 (mở rộng) có luồng chính trong source. UC23 (đổi phòng) có luồng chính trong source. UC01–UC08 và UC10–UC19 có luồng chính tương ứng ở mức ứng dụng (UC17 doanh thu và công suất, UC18 xem trước/in báo cáo, UC19 xuất CSV danh sách khách đang ở và các báo cáo); UC09 hiện hỗ trợ hủy và đánh dấu không đến, chưa hỗ trợ sửa. Các luồng ngoại lệ và quyền cần được xác nhận bằng kiểm thử giao diện trên máy có SQL Server.
 
 ## 3. Đặc tả các use case chính
 
@@ -116,6 +118,12 @@ Quan hệ giữa các use case (mô hình mục tiêu):
 - **Luồng chính:** (1) Chọn phòng cần trả. (2) Hệ thống hiển thị tiền phòng, dịch vụ, phụ thu, cọc. (3) Nhập giảm giá (nếu có), chọn hình thức thanh toán. (4) Xác nhận. (5) Hệ thống chạy **Transaction** (QT50). (6) Hỏi in hóa đơn.
 - **Luồng ngoại lệ:** Lỗi bất kỳ bước nào → rollback, thông báo, dữ liệu như cũ. Giảm giá > 10% với Lễ tân → yêu cầu Quản lý duyệt.
 - **Hậu điều kiện:** Có HoaDon; PhieuThue Đã trả; phòng Dọn dẹp.
+
+### UC23 – Đổi phòng khi đang lưu trú
+- **Tiền điều kiện:** Có phiếu thuê Đang ở; có phòng khác trống trọn thời gian còn lại của kỳ lưu trú.
+- **Luồng chính:** (1) Mở Nghiệp vụ → Đổi phòng (F8). (2) Chọn phòng đang ở. (3) Chọn phòng mới trong danh sách phòng trống (kèm tầng, loại, giá); hệ thống nhắc nếu giá khác. (4) Nhập lý do (tùy chọn) và xác nhận. (5) Hệ thống đổi phòng, ghi lịch sử.
+- **Luồng ngoại lệ:** Phòng mới vừa bị đặt hoặc có khách → từ chối (QT47), danh sách tải lại. Lý do quá 200 ký tự → báo lỗi. Lỗi bất kỳ bước nào → rollback, dữ liệu như cũ (QT48).
+- **Hậu điều kiện:** Phiếu thuê gắn phòng mới; phòng cũ Dọn dẹp; phòng mới Đang ở; có dòng LichSuDoiPhong; đơn giá phiếu thuê không đổi (QT49).
 
 ### UC16 – Báo cáo doanh thu
 - **Tiền điều kiện:** Đăng nhập với vai trò Quản lý.

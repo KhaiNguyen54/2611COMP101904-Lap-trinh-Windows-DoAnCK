@@ -36,5 +36,30 @@ namespace QuanLyKhachSan.DAL
                 ORDER BY p.Tang, p.SoPhong";
             return Database.TruyVan(sql);
         }
+
+        /// <summary>Đổi phiếu thuê đang ở sang phòng khác (sp_DoiPhong, một transaction, ghi lịch sử).</summary>
+        public void DoiPhong(int maPhieuThue, int maPhongMoi, int maNguoiDung, string lyDo)
+        {
+            Database.ThucThi("dbo.sp_DoiPhong", new[]
+            {
+                new SqlParameter("@MaPhieuThue", SqlDbType.Int) { Value = maPhieuThue },
+                new SqlParameter("@MaPhongMoi", SqlDbType.Int) { Value = maPhongMoi },
+                new SqlParameter("@MaNguoiDung", SqlDbType.Int) { Value = maNguoiDung },
+                new SqlParameter("@LyDo", SqlDbType.NVarChar, 200) { Value = (object)lyDo ?? DBNull.Value }
+            }, null, CommandType.StoredProcedure);
+        }
+
+        public DataTable LayLichSuDoiPhong(int maPhieuThue)
+        {
+            const string sql = @"
+                SELECT ls.ThoiDiemDoi, pc.SoPhong AS PhongCu, pm.SoPhong AS PhongMoi, ls.GiaCu, ls.GiaMoi, ls.LyDo, nd.HoTen AS NguoiThucHien
+                FROM dbo.LichSuDoiPhong ls
+                JOIN dbo.Phong pc ON ls.MaPhongCu = pc.MaPhong
+                JOIN dbo.Phong pm ON ls.MaPhongMoi = pm.MaPhong
+                JOIN dbo.NguoiDung nd ON ls.MaNguoiDung = nd.MaNguoiDung
+                WHERE ls.MaPhieuThue = @Ma
+                ORDER BY ls.ThoiDiemDoi DESC, ls.MaDoiPhong DESC";
+            return Database.TruyVan(sql, new[] { new SqlParameter("@Ma", SqlDbType.Int) { Value = maPhieuThue } });
+        }
     }
 }

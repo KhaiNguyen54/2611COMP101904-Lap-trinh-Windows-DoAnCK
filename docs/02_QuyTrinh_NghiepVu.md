@@ -52,7 +52,8 @@ flowchart TD
 | Khách hủy đặt phòng | Đặt phòng → Đã hủy, phòng được giải phóng cho khoảng ngày đó |
 | Khách không đến | Yêu cầu nghiệp vụ: đặt phòng → Không đến sau giờ quy định. Đã có thao tác "Khách không đến" trong màn hình Đặt phòng. |
 | Khách trả phòng sớm | Tính tiền theo số đêm thực tế, ngày đi thực tế ghi vào phiếu thuê |
-| Khách ở lâu hơn dự kiến | Kiểm tra phòng còn trống không; nếu có đặt phòng sau đó thì đổi phòng hoặc từ chối gia hạn |
+| Khách ở lâu hơn dự kiến | Kiểm tra phòng còn trống không; nếu có đặt phòng sau đó thì đổi phòng (F8) hoặc từ chối gia hạn |
+| Khách đang ở yêu cầu đổi phòng | Chọn phòng trống trọn thời gian còn lại của kỳ lưu trú; phòng cũ chuyển Dọn dẹp, phòng mới chuyển Đang ở, dịch vụ đã ghi giữ nguyên, ghi lịch sử đổi phòng; lỗi thì rollback |
 | Lỗi khi lưu hóa đơn lúc trả phòng | Transaction rollback, phiếu thuê và phòng giữ nguyên trạng thái cũ |
 
 ## 4. Vòng đời trạng thái

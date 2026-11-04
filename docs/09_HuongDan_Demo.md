@@ -9,7 +9,7 @@
 5. (Tùy chọn, cho mã QR) Chạy `dotnet run --project QuanLyKhachSan.Web --urls http://localhost:5080`; muốn điện thoại quét được, đặt `Web:BaseUrl` trong `QuanLyKhachSan/appsettings.json` thành IP nội bộ của máy chạy web và mở cổng 5080 trên tường lửa.
 
 ## Phím tắt
-F2 Đặt phòng · F3 Nhận phòng · F4 Ghi dịch vụ · F5 Sơ đồ phòng · F6 Trả phòng · F7 Hóa đơn · Ctrl+D Giao diện sáng/tối.
+F2 Đặt phòng · F3 Nhận phòng · F4 Ghi dịch vụ · F5 Sơ đồ phòng · F6 Trả phòng · F7 Hóa đơn · F8 Đổi phòng · Ctrl+D Giao diện sáng/tối.
 
 ## Kịch bản demo (khoảng 10 phút)
 1. Đăng nhập Lễ tân: xem màn hình chính (thẻ thống kê, sơ đồ theo tầng, "Vận hành hôm nay").
