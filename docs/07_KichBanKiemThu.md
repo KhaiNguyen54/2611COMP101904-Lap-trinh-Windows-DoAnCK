@@ -37,7 +37,7 @@ Các kịch bản UI trong bảng là các bước cần thực hiện thủ cô
 
 Project `QuanLyKhachSan.Tests` kiểm tra số đêm tối thiểu (QT40), phụ thu trả muộn theo mốc 1/3/6 giờ, tổng thanh toán không âm (QT45), cọc tối đa (QT15), gom doanh thu theo ngày/tháng/loại phòng (kể cả ngày trống), tỷ lệ công suất trung bình và xuất CSV (thoát dấu phẩy, nháy kép, chặn công thức). Chạy: `dotnet run --project QuanLyKhachSan.Tests` (mã thoát 1 nếu có ca lỗi).
 
-Kết quả trong phiên hoàn thiện này: 26/26 ca đạt khi biên dịch bằng Mono. Sau khi thêm bộ mã hóa QR và lớp đường dẫn tra cứu (`QrCode`, `TraCuuUrl`, QT65–QT68), bộ kiểm thử có thêm các ca kiểm tra kích thước theo phiên bản, mẫu định vị/thời gian, ô tối cố định, thông tin định dạng BCH, mức sửa lỗi, tính xác định, đầu vào không hợp lệ và đường dẫn; tổng cộng 47/47 ca đạt (cũng bằng Mono); chưa chạy bằng `dotnet` vì môi trường không có .NET SDK. Giao diện được chụp bằng dữ liệu giả để kiểm tra chồng chéo/cắt chữ, không thay thế các kịch bản UI-01…UI-12.
+Bộ kiểm thử cũng bao phủ chức năng mở rộng: bộ mã hóa QR và đường dẫn tra cứu (`QrCode`, `TraCuuUrl`, QT65–QT68: kích thước theo phiên bản, mẫu định vị/thời gian, ô tối cố định, thông tin định dạng BCH, mức sửa lỗi, tính xác định, đầu vào không hợp lệ) và phần logic thuần của cổng web (`KhoangNgay`, `TraCuuService`, `TrangHtml`: đọc/kiểm tra khoảng ngày, nhãn tình trạng phòng, giới hạn 60 đêm, mã hóa HTML, định dạng giá, liên kết phòng; QT65–QT69). Kết quả trong phiên hoàn thiện này: 90/90 ca đạt khi biên dịch bằng Mono; chưa chạy bằng `dotnet` vì môi trường không có .NET SDK. Giao diện được chụp bằng dữ liệu giả để kiểm tra chồng chéo/cắt chữ, không thay thế các kịch bản UI-01…UI-12.
 
 | ID | Kịch bản bổ sung | Kết quả mong đợi |
 |---|---|---|
