@@ -46,7 +46,7 @@ Bộ kiểm thử cũng bao phủ chức năng mở rộng: bộ mã hóa QR và
 
 ## Kiểm thử chức năng mở rộng (mã QR, cổng web, giao diện tối)
 
-Gồm các kịch bản giao diện (UI-13…UI-16) và kịch bản cho cổng web (WEB-01…WEB-05); bộ mã hóa QR được đối chiếu bằng cách giải mã lại 23/23 mã mẫu (nhiều độ dài/phiên bản, có chuỗi tiếng Việt) với `QRCodeDetector` của OpenCV.
+Gồm các kịch bản giao diện (UI-13…UI-17) và kịch bản cho cổng web (WEB-01…WEB-06); bộ mã hóa QR được đối chiếu bằng cách giải mã lại 23/23 mã mẫu (nhiều độ dài/phiên bản, có chuỗi tiếng Việt) với `QRCodeDetector` của OpenCV.
 
 | ID | Kịch bản | Kết quả mong đợi |
 |---|---|---|
@@ -59,3 +59,5 @@ Gồm các kịch bản giao diện (UI-13…UI-16) và kịch bản cho cổng 
 | WEB-03 | `?den=` sai định dạng, ngày quá khứ, `den ≥ di` | Thông báo lỗi tiếng Việt, mã 200 |
 | WEB-04 | Giả lập lỗi mở kết nối | 503, chuỗi kết nối chỉ có trong nhật ký máy chủ |
 | WEB-05 | Phòng đang có khách | Chỉ hiện "Hiện đang có khách", không có tên khách |
+| WEB-06 | Tải `/logo.svg` và mở một trang bất kỳ | 200, `image/svg+xml`; logo và favicon hiển thị; CSP vẫn chỉ cho ảnh cùng nguồn |
+| UI-17 | Mở ứng dụng, xem biểu tượng cửa sổ, thanh tác vụ và màn hình chính | Logo hiển thị ở biểu tượng exe/cửa sổ và cạnh lời chào; vẫn chạy bình thường nếu thiếu `Resources/logo.*` |

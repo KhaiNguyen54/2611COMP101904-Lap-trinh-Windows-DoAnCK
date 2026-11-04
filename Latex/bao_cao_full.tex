@@ -1433,6 +1433,19 @@ Lớp \texttt{TraCuuUrl} ghép địa chỉ gốc (đọc bởi \texttt{CauHinhW
 \subsection{Kiểm chứng}
 Các mã sinh ra được giải mã lại bằng \texttt{QRCodeDetector} của OpenCV: 23/23 mã thử nghiệm (nhiều độ dài và phiên bản, gồm chuỗi tiếng Việt) cho đúng nội dung. Project kiểm thử bổ sung các ca kiểm tra kích thước theo phiên bản, mẫu định vị và mẫu thời gian, ô tối cố định, tính hợp lệ BCH của thông tin định dạng và bản sao của nó, mức sửa lỗi, tính xác định của kết quả và việc từ chối đầu vào không hợp lệ.
 
+\section{Nhận diện thương hiệu: logo Autumn Hotel}
+
+Logo do nhóm tự thiết kế theo hướng tối giản nhưng có nghĩa (Hình~\ref{fig:logo}): một chiếc \emph{lá thu} gợi tên ``Autumn'', bên trong lá là nét \emph{mái nhà} và một \emph{ô cửa} gợi nơi lưu trú. Logo chỉ dùng hai màu (hổ phách và xanh thông) và các hình học đơn giản nên vẫn đọc được ở kích thước nhỏ như biểu tượng 16~px. Mã nguồn vector được lưu tại \texttt{Resources/logo.svg}, kèm bản \texttt{logo.png} và \texttt{logo.ico} (16--256~px).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.22\textwidth]{LogoAutumn.png}
+\caption{Logo Autumn Hotel}
+\label{fig:logo}
+\end{figure}
+
+Logo được dùng thống nhất ở hai nơi: trong ứng dụng WinForms, \texttt{logo.ico} là biểu tượng của tệp thực thi (\texttt{ApplicationIcon}) và của mọi cửa sổ (\texttt{GiaoDien.ApDung}), còn \texttt{logo.png} hiển thị cạnh lời chào trên màn hình chính; trên cổng web, logo nằm ở đầu mọi trang và làm biểu tượng thẻ trình duyệt qua điểm truy cập \texttt{/logo.svg}.
+
 \section{Cổng web tra cứu cho khách}
 
 Dự án \texttt{QuanLyKhachSan.Web} (ASP.NET Core, minimal API) lắng nghe mặc định cổng 5080 và cung cấp các điểm truy cập trong Bảng~\ref{tab:web-routes}.
@@ -1448,6 +1461,7 @@ Dự án \texttt{QuanLyKhachSan.Web} (ASP.NET Core, minimal API) lắng nghe m�
 \texttt{/gia} & Bảng giá theo loại phòng (loại đang hoạt động) \\\hline
 \texttt{/phong/\{số\}} & Chi tiết phòng và kiểm tra theo ngày (\texttt{?den=\&di=}); đích của mã QR \\\hline
 \texttt{/api/gia}, \texttt{/api/phong/\{số\}}, \texttt{/api/phong-trong} & Dữ liệu JSON cho ứng dụng khác \\\hline
+\texttt{/logo.svg} & Logo dùng ở đầu trang và làm biểu tượng thẻ trình duyệt \\\hline
 \end{tabularx}
 \end{table}
 
@@ -1455,9 +1469,9 @@ Các biện pháp an toàn áp dụng cho trang công khai:
 \begin{itemize}
   \item \textbf{Chỉ đọc và tối thiểu dữ liệu}: dùng lại truy vấn tham số hóa của DAL; không sử dụng truy vấn sơ đồ phòng vì có chứa tên khách; tình trạng phòng được chuyển thành nhãn rút gọn (QT69).
   \item \textbf{Chống chèn mã}: mọi dữ liệu đưa vào HTML đều được mã hóa (\texttt{HtmlEncode}); tham số ngày được phân tích nghiêm ngặt theo định dạng \texttt{yyyy-MM-dd}; số phòng bị giới hạn độ dài.
-  \item \textbf{Tiêu đề bảo mật}: \texttt{Content-Security-Policy} chỉ cho phép kiểu dáng nội tuyến (không chạy script), \texttt{X-Frame-Options: DENY}, \texttt{X-Content-Type-Options: nosniff}, \texttt{Referrer-Policy: no-referrer}.
+  \item \textbf{Tiêu đề bảo mật}: \texttt{Content-Security-Policy} chỉ cho phép kiểu dáng nội tuyến và ảnh cùng nguồn (không chạy script), \texttt{X-Frame-Options: DENY}, \texttt{X-Content-Type-Options: nosniff}, \texttt{Referrer-Policy: no-referrer}.
   \item \textbf{Thông báo lỗi}: lỗi truy cập CSDL chỉ được ghi nhật ký nội bộ; khách chỉ thấy trang 503 chung, không lộ chuỗi kết nối hay chi tiết kỹ thuật.
-  \item \textbf{Giao diện di động}: bố cục đáp ứng màn hình hẹp và tự chuyển nền tối theo thiết lập của thiết bị.
+  \item \textbf{Giao diện di động}: bố cục đáp ứng màn hình hẹp, tự chuyển nền tối theo thiết lập của thiết bị; thiết kế chi tiết ở Chương~7.
 \end{itemize}
 
 Để điện thoại truy cập được, máy chạy cổng web phải nằm cùng mạng với điện thoại, \texttt{Web:BaseUrl} trong cấu hình ứng dụng phải là địa chỉ IP nội bộ (ví dụ \texttt{http://192.168.1.20:5080}) và cổng 5080 phải được mở trên tường lửa.
@@ -1679,7 +1693,7 @@ Chế độ tối được bật tại \textit{Hệ thống $\rightarrow$ Giao d
 
 \section{Trang web tra cứu trên điện thoại}
 
-Trang web có bố cục một cột, cỡ chữ lớn, nút bấm dễ chạm và tự theo nền sáng/tối của thiết bị. Trang chi tiết phòng (Hình~\ref{fig:web-phong}) hiển thị loại phòng, giá, tầng, sức chứa, tình trạng hiện tại và biểu mẫu kiểm tra theo ngày kèm tổng tiền; trang bảng giá (Hình~\ref{fig:web-gia}) liệt kê các loại phòng đang hoạt động.
+Giao diện web dùng bảng màu xanh thông đậm làm màu chủ đạo, hổ phách cho giá, nút và viền focus, nền trang xám phớt xanh; bản tối có bảng màu riêng với nút hổ phách. Các thẻ nổi nhẹ khi rê chuột, dòng bảng đổi màu khi rê, nội dung hiện dần khi vào trang và toàn bộ hiệu ứng được tắt khi thiết bị bật chế độ giảm chuyển động; hiệu ứng chỉ dùng CSS nên không vi phạm chính sách không chạy script. Bố cục một cột, thẻ bảng giá tự xếp lưới, ô nhập và nút đủ lớn để chạm, số tiền không bị ngắt dòng. Trang chi tiết phòng (Hình~\ref{fig:web-phong}) hiển thị loại phòng, giá, tầng, sức chứa, tình trạng hiện tại và biểu mẫu kiểm tra theo ngày kèm tổng tiền; trang bảng giá (Hình~\ref{fig:web-gia}) liệt kê các loại phòng đang hoạt động.
 
 \begin{figure}[H]
 \centering
@@ -1787,6 +1801,7 @@ UI-13 & Mở \textit{Mã QR phòng và giá}, chọn phòng, lưu PNG rồi qué
 UI-14 & Bật/tắt giao diện tối bằng Ctrl+D khi đang mở nhiều cửa sổ, đóng và mở lại ứng dụng & Mọi cửa sổ đổi màu ngay, chữ đọc được; lựa chọn được ghi nhớ; báo cáo in vẫn nền sáng \\\hline
 UI-15 & Mở trang web với số phòng không tồn tại, ngày sai định dạng, ngày đến trước hôm nay, khoảng quá 60 đêm & Thông báo lỗi thân thiện, không lộ thông tin kỹ thuật \\\hline
 UI-16 & Ngắt kết nối CSDL rồi tải trang web & Trang 503 chung; không lộ chuỗi kết nối; không thấy tên khách ở bất kỳ trang nào \\\hline
+UI-17 & Mở ứng dụng, xem biểu tượng cửa sổ, thanh tác vụ và màn hình chính & Logo hiển thị ở biểu tượng và cạnh lời chào; vẫn chạy bình thường nếu thiếu tệp logo \\\hline
 \end{longtable}
 
 Các kịch bản UI là bước kiểm thử thủ công, thực hiện để kiểm tra bố cục (không bị chồng chéo, không bị cắt chữ) và đúng luồng nghiệp vụ; đây chưa phải kiểm thử tự động và kết quả UI không được suy diễn chỉ từ việc script SQL hay build thành công.
@@ -1841,7 +1856,7 @@ Thông báo lỗi & Đạt & Chỉ hiển thị lỗi nghiệp vụ, không lộ
 
 \section{Đánh giá kết quả đạt được}
 
-Đối chiếu với danh sách 23 chức năng đã đặc tả ở Chương~1 (19 bắt buộc, 4 nâng cao) và các kịch bản kiểm thử ở trên, nhóm đánh giá: toàn bộ 19 chức năng bắt buộc đã được cài đặt và kiểm thử thủ công theo kịch bản UI-01 đến UI-12; 3/4 chức năng nâng cao (thống kê công suất, sơ đồ phòng theo tầng, xuất CSV) đã hoàn thành, 1 chức năng nâng cao (đổi phòng trong lúc lưu trú, NV08) chưa được triển khai. Ba chức năng mở rộng (giao diện sáng/tối, mã QR, cổng web tra cứu) được kiểm tra theo các kịch bản UI-13 đến UI-16 và WEB-01 đến WEB-05. Bộ kiểm thử logic tự động đạt 90/90 ca.
+Đối chiếu với danh sách 23 chức năng đã đặc tả ở Chương~1 (19 bắt buộc, 4 nâng cao) và các kịch bản kiểm thử ở trên, nhóm đánh giá: toàn bộ 19 chức năng bắt buộc đã được cài đặt và kiểm thử thủ công theo kịch bản UI-01 đến UI-12; 3/4 chức năng nâng cao (thống kê công suất, sơ đồ phòng theo tầng, xuất CSV) đã hoàn thành, 1 chức năng nâng cao (đổi phòng trong lúc lưu trú, NV08) chưa được triển khai. Ba chức năng mở rộng (giao diện sáng/tối, mã QR, cổng web tra cứu) được kiểm tra theo các kịch bản UI-13 đến UI-17 và WEB-01 đến WEB-06. Bộ kiểm thử logic tự động đạt 90/90 ca.
 
 % ===== end chuong/chuong8.tex =====
 
