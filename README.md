@@ -41,6 +41,8 @@ Có thể mở `QuanLyKhachSan/Scripts/Database.sql` bằng SQL Server Managemen
 
 Nếu đã tạo CSDL từ phiên bản trước, chạy lại `Database.sql` để bổ sung bảng `LichSuDoiPhong` và `sp_DoiPhong` (đổi phòng khi đang ở); script không xóa dữ liệu hiện có.
 
+Kiểm thử tự động trên GitHub Actions (`.github/workflows/kiem-thu.yml`): chạy `Database.sql` hai lần trên SQL Server 2022, 28 ca trong `Scripts/KiemThu.sql`, build toàn bộ solution trên Windows và bộ test 129 ca.
+
 ### 2. Cấu hình kết nối
 
 Chuỗi mặc định trong [`QuanLyKhachSan/appsettings.json`](QuanLyKhachSan/appsettings.json) dùng SQL Server instance mặc định trên máy (`localhost`) và Windows Authentication. Nếu instance khác, thay giá trị `ConnectionStrings:KhachSan`, ví dụ:

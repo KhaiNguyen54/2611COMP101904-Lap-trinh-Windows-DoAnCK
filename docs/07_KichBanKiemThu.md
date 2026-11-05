@@ -8,7 +8,7 @@ Các thao tác tạo dữ liệu kiểm thử được bao trong transaction và
 
 | ID | Kịch bản | Kết quả |
 |---|---|---|
-| DB-01 | Chạy `Scripts/Database.sql` trên database thử nghiệm chưa tồn tại | Script hiện tại tạo database, 10 bảng, 6 stored procedure và dữ liệu mẫu; cần chạy lại để xác nhận |
+| DB-01 | Chạy `Scripts/Database.sql` trên database thử nghiệm chưa tồn tại | Tạo database, 10 bảng, 6 stored procedure và dữ liệu mẫu; chạy lại lần hai không lỗi |
 | DB-02 | Chạy lại script trên database thử nghiệm | Ghi nhận trước đây: chạy lại không tạo trùng object/seed; cần chạy lại để xác nhận |
 | DB-03 | Kiểm tra lịch của phiếu thuê đang ở | Ghi nhận trước đây: `sp_KiemTraTrungLich` phát hiện giao nhau; cần chạy lại để xác nhận |
 | DB-04 | Thêm dịch vụ và trả phòng trong transaction thử nghiệm | Ghi nhận trước đây: hóa đơn 400.000 tiền phòng + 30.000 dịch vụ = 430.000; cần chạy lại để xác nhận |
@@ -61,6 +61,29 @@ Project `QuanLyKhachSan.Tests` gồm **129 ca** chia thành 13 nhóm (bảng dư
 | `TrangWeb` | 16 | QT69 | Sinh HTML: mã hóa chống chèn mã, định dạng giá, liên kết phòng, trang lỗi và trang bảng giá |
 | `LocPhongWeb` | 26 | QT71 | Đọc bộ lọc (rỗng, hợp lệ, giá chữ/âm/0/quá lớn/thập phân, loại quá dài); lọc theo loại không phân biệt hoa thường, theo giá tối đa, kết hợp; form lọc chọn đúng loại, giữ giá đã nhập, gợi ý khi không có kết quả, mã hóa tên loại; hình minh họa (1/2/3 giường theo sức chứa, ổn định, mã hóa tên, chịu tên rỗng) |
 | `DoiPhong` | 13 | QT47–QT49 | Khoảng phòng cần trống (đi dự kiến là hôm nay hoặc đã quá hạn vẫn tối thiểu 1 đêm); chuẩn hóa lý do (rỗng, cắt khoảng trắng, đúng 200 và 201 ký tự); lời nhắc khi giá phòng mới cao hơn/thấp hơn/bằng; từ chối thiếu mã phiếu, thiếu phòng mới, lý do quá dài |
+
+## Kiểm thử SQL và build tự động (GitHub Actions)
+
+Workflow `.github/workflows/kiem-thu.yml` chạy mỗi lần push lên `main`, khi có pull request hoặc chạy tay:
+
+| Job | Môi trường | Nội dung |
+|---|---|---|
+| Kiểm thử SQL Server | Ubuntu, SQL Server 2022 (container) | Chạy `Database.sql` hai lần (tạo mới, chạy lại), rồi `Scripts/KiemThu.sql` |
+| Build và kiểm thử logic (.NET) | Windows, .NET 10 | `dotnet build` toàn bộ solution (WinForms, Web, Tests), chạy bộ test 129 ca |
+
+`Scripts/KiemThu.sql` gồm **28 ca**, in ĐẠT/LỖI từng ca và thoát với mã lỗi nếu có ca lỗi; script tự dọn dữ liệu thử và trả các phòng thử về Trống.
+
+| Nhóm | Ca | Nội dung |
+|---|---|---|
+| Môi trường | DB-00 | Phòng 101, 102, 103, 201, 202 có sẵn và đang Trống |
+| Đối tượng (DB-01, DB-06) | 4 | Đủ 10 bảng, 6 stored procedure, dữ liệu mẫu, 6 index (gồm index lọc) |
+| Ràng buộc (DB-07) | 2 | CHECK từ chối số giấy tờ sai định dạng và đặt phòng có ngày đến không trước ngày đi |
+| Trùng lịch (DB-03, DB-05) | 4 | Khoảng giao nhau bị báo trùng, khoảng liền sau không trùng, ngày đảo bị từ chối (50001), đặt phòng đã hủy giải phóng lịch |
+| Nhận và trả phòng (DB-04) | 6 | Phiếu thuê và trạng thái phòng, snapshot giá, không nhận phòng đang có khách, hóa đơn 2 đêm + dịch vụ, phòng sang Dọn dẹp, trả lần hai bị từ chối |
+| Đổi phòng (DB-08) | 10 | Từ chối đổi sang chính phòng đó (50013), phòng bảo trì (50014), phòng có đặt chỗ giao nhau (50015), phiếu đã trả (50012); đổi thành công, trạng thái hai phòng, lịch sử, dịch vụ giữ nguyên, trả phòng theo đơn giá ban đầu (QT49) |
+| Thống kê (DB-09) | 1 | `sp_ThongKeDoanhThu` chạy không lỗi |
+
+Chạy thủ công trên database thử nghiệm: `sqlcmd -S . -E -C -b -f 65001 -i QuanLyKhachSan\Scripts\Database.sql`, rồi `-i QuanLyKhachSan\Scripts\KiemThu.sql`.
 
 ## Kiểm thử chức năng mở rộng (mã QR, cổng web, giao diện tối)
 

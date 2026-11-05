@@ -32,6 +32,7 @@ erDiagram
 
 - Thêm `DatPhong` ngoài tám thực thể được nêu để tách đặt trước khỏi lưu trú; đặt phòng chuyển thành phiếu thuê khi nhận phòng, còn khách vãng lai tạo phiếu thuê trực tiếp.
 - Đặt phòng dùng `date` và khoảng nửa mở `[NgàyDen, NgàyDi)`; phiếu thuê ghi thời điểm nhận/trả và giá phòng snapshot.
+- `PhieuThue.MaDatPhong` có unique index lọc (`WHERE MaDatPhong IS NOT NULL`): mỗi đặt phòng chỉ có một phiếu thuê và vẫn cho nhiều phiếu vãng lai (không có đặt phòng).
 - Đổi phòng giữ một phiếu thuê duy nhất và ghi mỗi lần đổi vào `LichSuDoiPhong` (`CHECK MaPhongCu <> MaPhongMoi`); `sp_DoiPhong` thực hiện trong một transaction.
 - Giá dịch vụ cũng được snapshot ở `ChiTietDichVu`; hóa đơn giữ snapshot các khoản tiền và có `UNIQUE(MaPhieuThue)` để chặn hóa đơn thứ hai.
 - Loại phòng, phòng và dịch vụ được ngừng hoạt động bằng cờ `HoatDong`, không xóa lịch sử được tham chiếu bởi khóa ngoại.
