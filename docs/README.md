@@ -38,7 +38,6 @@ Kế hoạch và timeline gốc nằm tại [`../KeHoach_QuanLyKhachSan.xlsx`](.
 | Có trong source | Đăng nhập/đăng xuất, đổi mật khẩu, quản lý tài khoản; danh mục; đặt, hủy, không đến; nhận/trả phòng; dịch vụ; hóa đơn; sơ đồ phòng theo tầng; bảo trì và dọn phòng; báo cáo doanh thu và công suất; biểu đồ; in; xuất CSV; khách đang ở |
 | Mở rộng | Giao diện sáng/tối (Ctrl+D); mã QR phòng/giá; cổng web tra cứu chỉ đọc (xem tình trạng xác minh ở tài liệu 07) |
 | Chưa có hoặc chưa hoàn tất trong source hiện được rà soát | Sửa đặt phòng; tách tiền phòng theo từng chặng giá khi đổi phòng; xuất .xlsx; hóa đơn điều chỉnh; khách tự đặt phòng qua web; xác thực/HTTPS cho cổng web |
-| Giả định nghiệp vụ cần nhóm xác nhận | Giờ nhận/trả chuẩn, mức cọc tối đa và các ngoại lệ theo thời gian |
 
 Đây là đối chiếu mã nguồn, không thay thế kiểm thử giao diện. Trạng thái xác minh theo lần chạy được ghi riêng trong [kịch bản kiểm thử](07_KichBanKiemThu.md); không đánh dấu chức năng đạt chỉ vì có yêu cầu hoặc mục menu.
 

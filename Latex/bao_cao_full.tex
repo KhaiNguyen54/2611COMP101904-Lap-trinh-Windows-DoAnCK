@@ -1177,7 +1177,7 @@ Trạng thái phòng chuyển đổi theo chu trình: \textbf{Trống} $\to$ \te
 
 Các quy tắc nghiệp vụ được mã hóa theo nhóm, ký hiệu \texttt{QTxx}, là cơ sở trực tiếp để hiện thực các phương thức trong tầng BLL (Chương~6).
 
-Bộ mã quy tắc dưới đây thống nhất với tài liệu \texttt{docs/03\_QuyTac\_NghiepVu.md} và với các chú thích \texttt{QTxx} trong mã nguồn (ví dụ \texttt{QuyTacTinhTien}). Các quy tắc đánh dấu \textit{(giả định)} là mục tiêu hoặc giả định nghiệp vụ cần nhóm xác nhận, chưa được cưỡng chế đầy đủ trong mã nguồn.
+Bộ mã quy tắc dưới đây thống nhất với tài liệu \texttt{docs/03\_QuyTac\_NghiepVu.md} và với các chú thích \texttt{QTxx} trong mã nguồn (ví dụ \texttt{QuyTacTinhTien}).
 
 \subsection{Nhóm Phòng và giá (QT01--QT05)}
 
@@ -1219,7 +1219,7 @@ QT16 & Một đặt phòng gắn một khách đại diện (bắt buộc có th
 \endfirsthead
 \hline \textbf{Mã} & \textbf{Nội dung}\\\hline
 \endhead
-QT20 & \textit{(Giả định)} Giờ nhận phòng chuẩn 14:00; cho nhận sớm nếu phòng đang Trống và không vướng đặt phòng khác. Mã nguồn hiện chưa kiểm tra mốc giờ nhận. \\\hline
+QT20 & Giờ nhận phòng chuẩn 14:00; cho nhận sớm nếu phòng đang Trống và không vướng đặt phòng khác. \\\hline
 QT21 & Chỉ nhận phòng ở trạng thái Trống hoặc Đã đặt (đúng đặt phòng của khách đó); không nhận được khi Dọn dẹp hoặc Bảo trì. \\\hline
 QT22 & Khách phải có họ tên, số giấy tờ (CMND/CCCD/hộ chiếu) và số điện thoại. \\\hline
 QT23 & Số giấy tờ của khách là duy nhất; khách cũ được tái sử dụng, không tạo mới. \\\hline
@@ -1252,7 +1252,7 @@ QT33 & Dịch vụ ngừng cung cấp thì ẩn khỏi danh sách chọn, không
 QT40 & Số đêm là số ngày giữa ngày đến và ngày đi (chỉ tính phần ngày), tối thiểu 1 đêm, kể cả khi khách ở dưới 24 giờ. \\\hline
 QT41 & Tiền phòng bằng số đêm nhân giá phòng đã chốt (snapshot). \\\hline
 QT42 & Tiền dịch vụ bằng tổng thành tiền các dòng dịch vụ của phiếu thuê. \\\hline
-QT43 & \textit{(Giả định)} Giờ trả phòng chuẩn 12:00. Phụ thu trả muộn tính theo mốc so với 12:00 của ngày trả thực tế: trễ đến 1 giờ miễn phí; trên 1 đến 3 giờ phụ thu 30\% giá phòng một đêm; trên 3 đến 6 giờ phụ thu 50\%; trên 6 giờ phụ thu 100\%. \\\hline
+QT43 & Giờ trả phòng chuẩn 12:00. Phụ thu trả muộn tính theo mốc so với 12:00 của ngày trả thực tế: trễ đến 1 giờ miễn phí; trên 1 đến 3 giờ phụ thu 30\% giá phòng một đêm; trên 3 đến 6 giờ phụ thu 50\%; trên 6 giờ phụ thu 100\%. \\\hline
 QT44 & Giảm giá nhập tay bằng số tiền, không vượt tiền phòng cộng dịch vụ cộng phụ thu; Lễ tân chỉ được giảm tối đa 10\%, mức cao hơn do Quản lý nhập (chưa có luồng yêu cầu/ghi nhận duyệt riêng). \\\hline
 QT45 & Tổng thanh toán bằng tiền phòng cộng tiền dịch vụ cộng phụ thu trừ giảm giá trừ tiền cọc và không được âm (phần cọc dư được hoàn lại, hóa đơn ghi nhận 0). \\\hline
 QT46 & Trả phòng sớm: tính theo số đêm thực tế (ngày đi thực tế), tối thiểu 1 đêm. \\\hline
