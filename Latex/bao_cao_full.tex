@@ -871,7 +871,7 @@ Giữa các thực thể có \textbf{14 mối liên kết} sau:
   \item \textbf{KhachHang -- DatPhong} (1--N): một khách có thể đặt phòng nhiều lần; mỗi phiếu đặt thuộc về một khách.
   \item \textbf{Phong -- DatPhong} (1--N): một phòng có thể được đặt nhiều lần (vào các khoảng thời gian khác nhau); mỗi phiếu đặt chỉ đặt một phòng.
   \item \textbf{NguoiDung -- DatPhong} (1--N): một nhân viên có thể lập nhiều phiếu đặt phòng; mỗi phiếu đặt do một nhân viên lập.
-  \item \textbf{DatPhong -- PhieuThue} (0..1--0..1): một phiếu đặt phòng có thể được chuyển thành tối đa một phiếu thuê; một phiếu thuê có thể phát sinh từ một phiếu đặt hoặc không (khách đến trực tiếp, không đặt trước).
+  \item \textbf{DatPhong -- PhieuThue} (0..1--0..1): một phiếu đặt phòng có thể được chuyển thành tối đa một phiếu thuê (bảo đảm bằng unique index có điều kiện trên \texttt{MaDatPhong}); một phiếu thuê có thể phát sinh từ một phiếu đặt hoặc không (khách đến trực tiếp, không đặt trước).
   \item \textbf{KhachHang -- PhieuThue} (1--N): một khách có thể lưu trú nhiều lần; mỗi phiếu thuê thuộc về một khách.
   \item \textbf{Phong -- PhieuThue} (1--N): một phòng có thể được thuê nhiều lần; mỗi phiếu thuê ứng với một phòng.
   \item \textbf{NguoiDung -- PhieuThue} (1--N): một nhân viên có thể tiếp nhận nhiều lượt thuê; mỗi phiếu thuê do một nhân viên tiếp nhận.
@@ -1057,7 +1057,7 @@ Danh mục loại phòng: \texttt{MaLoaiPhong} (khóa chính), \texttt{TenLoaiPh
 \texttt{MaDatPhong} (khóa chính), \texttt{MaPhong}, \texttt{MaKhachHang} (khóa ngoại), \texttt{NgayNhanDuKien}, \texttt{NgayTraDuKien} (CHECK ngày trả $>$ ngày nhận), \texttt{TienCoc} (CHECK $\ge 0$ và $\le$ giá 1 đêm $\times$ số đêm, kiểm tra ở BLL), \texttt{TrangThai} (CHECK trong tập \{Đã đặt, Đã nhận phòng, Đã hủy, Không đến\}).
 
 \subsection{Bảng PhieuThue}
-\texttt{MaPhieuThue} (khóa chính), \texttt{MaDatPhong} (khóa ngoại, NULL nếu khách vãng lai), \texttt{MaPhong}, \texttt{MaKhachHang}, \texttt{ThoiDiemNhanPhong}, \texttt{NgayTraDuKien}, \texttt{GiaApDung} (snapshot giá tại thời điểm nhận phòng), \texttt{TrangThai} (CHECK trong tập \{Đang ở, Đã trả phòng\}).
+\texttt{MaPhieuThue} (khóa chính), \texttt{MaDatPhong} (khóa ngoại, NULL nếu khách vãng lai, unique index có điều kiện), \texttt{MaPhong}, \texttt{MaKhachHang}, \texttt{ThoiDiemNhanPhong}, \texttt{NgayTraDuKien}, \texttt{GiaApDung} (snapshot giá tại thời điểm nhận phòng), \texttt{TrangThai} (CHECK trong tập \{Đang ở, Đã trả phòng\}).
 
 \subsection{Bảng ChiTietDichVu}
 \texttt{MaChiTiet} (khóa chính), \texttt{MaPhieuThue} (khóa ngoại), \texttt{MaDichVu} (khóa ngoại), \texttt{SoLuong} (CHECK $>0$), \texttt{DonGiaApDung} (snapshot), \texttt{ThoiDiemGhiNhan}.
@@ -1067,7 +1067,7 @@ Danh mục loại phòng: \texttt{MaLoaiPhong} (khóa chính), \texttt{TenLoaiPh
 
 \section{Chỉ mục và ràng buộc bổ sung}
 
-Ngoài các khóa chính và khóa ngoại, script tạo thêm chỉ mục lọc (filtered index) và chỉ mục tra cứu trên các cột thường dùng để tìm kiếm và gom nhóm: \texttt{Phong.TrangThai}, \texttt{DatPhong(MaPhong, NgayNhanDuKien, NgayTraDuKien)} phục vụ truy vấn kiểm tra trùng lịch, \texttt{PhieuThue.TrangThai}, \texttt{HoaDon.ThoiDiemLap} phục vụ truy vấn báo cáo doanh thu theo khoảng thời gian.
+Ngoài các khóa chính và khóa ngoại, script tạo thêm bảy chỉ mục: \texttt{UX\_KhachHang\_SoDienThoai} (duy nhất theo số điện thoại); \texttt{IX\_DatPhong\_DatDangDat\_Phong\_NgayDen} và \texttt{IX\_PhieuThue\_DangO\_Phong\_NgayNhan} (chỉ mục lọc phục vụ kiểm tra trùng lịch); \texttt{UX\_PhieuThue\_DatPhong} (unique có điều kiện \texttt{WHERE MaDatPhong IS NOT NULL}: mỗi đặt phòng chỉ có một phiếu thuê, đồng thời cho phép nhiều phiếu của khách vãng lai); \texttt{IX\_ChiTietDichVu\_PhieuThue\_ThoiDiem}, \texttt{IX\_LichSuDoiPhong\_PhieuThue} và \texttt{IX\_HoaDon\_NgayLap} phục vụ tra cứu chi tiết, lịch sử đổi phòng và báo cáo doanh thu.
 
 \section{Các thủ tục lưu trữ (Stored Procedure)}
 
@@ -1786,13 +1786,13 @@ Bảng~\ref{tab:db-test} tóm tắt các kịch bản kiểm thử ở tầng CS
 \begin{tabularx}{\textwidth}{|c|X|X|}
 \hline
 \textbf{ID} & \textbf{Kịch bản} & \textbf{Kết quả ghi nhận} \\\hline
-DB-01 & Chạy script trên database thử nghiệm chưa tồn tại & Tạo database, 10 bảng, 6 stored procedure và dữ liệu mẫu \\\hline
-DB-02 & Chạy lại script trên cùng database & Không tạo trùng object hay dữ liệu seed \\\hline
-DB-03 & Kiểm tra lịch của phiếu thuê đang ở & \texttt{sp\_KiemTraTrungLich} phát hiện đúng trường hợp giao nhau \\\hline
-DB-04 & Thêm dịch vụ và trả phòng trong transaction thử nghiệm & Hóa đơn 400.000đ tiền phòng + 30.000đ dịch vụ = 430.000đ \\\hline
-DB-05 & Đặt phòng có khoảng ngày giao với đặt phòng đang hiệu lực & Bị từ chối do trùng lịch \\\hline
-DB-06 & Chạy lại script và kiểm tra chỉ mục & Script chạy ổn định hai lần, index lọc và index tra cứu được tạo đúng \\\hline
-BUILD-01 & \texttt{dotnet build} toàn bộ solution & 0 cảnh báo, 0 lỗi \\\hline
+DB-01 & Chạy script trên database thử nghiệm chưa tồn tại & Tạo database, 10 bảng, 6 stored procedure và dữ liệu mẫu; đạt \\\hline
+DB-02 & Chạy lại script trên cùng database & Không tạo trùng object hay dữ liệu seed; đạt \\\hline
+DB-03 & Kiểm tra lịch của phiếu thuê đang ở & \texttt{sp\_KiemTraTrungLich} phát hiện đúng trường hợp giao nhau, không báo khi liền kề; đạt \\\hline
+DB-04 & Thêm dịch vụ và trả phòng trong transaction thử nghiệm & Hóa đơn 400.000đ tiền phòng + 30.000đ dịch vụ = 430.000đ; đạt \\\hline
+DB-05 & Đặt phòng có khoảng ngày giao với đặt phòng đang hiệu lực & Bị từ chối do trùng lịch; đạt \\\hline
+DB-06 & Chạy lại script và kiểm tra chỉ mục & Script chạy ổn định hai lần, đủ 6 index kiểm tra, gồm index lọc; đạt \\\hline
+BUILD-01 & \texttt{dotnet build} toàn bộ solution & build thành công trên Windows, .NET 10; đạt \\\hline
 \end{tabularx}
 \end{table}
 
@@ -1802,7 +1802,7 @@ Tệp \texttt{.github/workflows/kiem-thu.yml} cấu hình GitHub Actions chạy 
 
 Quá trình này phát hiện và khắc phục một lỗi thiết kế: ràng buộc \texttt{UNIQUE} trên cột \texttt{MaDatPhong} (cho phép NULL) chỉ cho phép một phiếu thuê không có đặt phòng, làm khách vãng lai thứ hai không nhận được phòng. Ràng buộc được thay bằng unique index có điều kiện \texttt{WHERE MaDatPhong IS NOT NULL}; script tự chuyển đổi cơ sở dữ liệu cũ.
 
-Các kết quả DB-01 đến BUILD-01 là ghi nhận trong tài liệu kiểm thử trước lần hoàn thiện gần nhất; để đảm bảo tính trung thực của báo cáo, nhóm không khẳng định các kết quả này đã được chạy lại độc lập trong lần cập nhật hiện tại mà giữ nguyên trạng ghi nhận trước đó, kèm khuyến nghị chạy lại khi triển khai trên môi trường có SQL Server đầy đủ.
+Các kết quả DB-01 đến BUILD-01 lấy từ lần chạy GitHub Actions gần nhất (SQL Server 2022, Windows với .NET 10). Kết quả giao diện vẫn do nhóm kiểm tra thủ công và không suy ra từ việc script hoặc build thành công.
 
 \subsection{Kiểm thử giao diện thủ công}
 

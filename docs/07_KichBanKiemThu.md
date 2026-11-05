@@ -9,12 +9,12 @@ Các thao tác tạo dữ liệu kiểm thử được bao trong transaction và
 | ID | Kịch bản | Kết quả |
 |---|---|---|
 | DB-01 | Chạy `Scripts/Database.sql` trên database thử nghiệm chưa tồn tại | Tạo database, 10 bảng, 6 stored procedure và dữ liệu mẫu; chạy lại lần hai không lỗi |
-| DB-02 | Chạy lại script trên database thử nghiệm | Ghi nhận trước đây: chạy lại không tạo trùng object/seed; cần chạy lại để xác nhận |
-| DB-03 | Kiểm tra lịch của phiếu thuê đang ở | Ghi nhận trước đây: `sp_KiemTraTrungLich` phát hiện giao nhau; cần chạy lại để xác nhận |
-| DB-04 | Thêm dịch vụ và trả phòng trong transaction thử nghiệm | Ghi nhận trước đây: hóa đơn 400.000 tiền phòng + 30.000 dịch vụ = 430.000; cần chạy lại để xác nhận |
-| DB-05 | Đặt phòng có khoảng ngày giao với đặt phòng đang hiệu lực | Ghi nhận trước đây: bị từ chối do trùng; cần chạy lại để xác nhận |
-| DB-06 | Chạy lại script và kiểm tra index | Ghi nhận trước đây: script chạy hai lần; cần chạy lại để xác nhận index lọc và index tra cứu |
-| BUILD-01 | `dotnet build QuanLyKhachSan.sln --no-restore` (target `net10.0-windows`) | Ghi nhận trước đây: 0 cảnh báo, 0 lỗi; cần build lại trên môi trường có .NET 10 SDK để xác nhận |
+| DB-02 | Chạy lại script trên database thử nghiệm | Đạt (GitHub Actions): chạy lại lần hai không lỗi, không tạo trùng object/seed |
+| DB-03 | Kiểm tra lịch của phiếu thuê đang ở | Đạt (DB-03a/b/c): `sp_KiemTraTrungLich` báo trùng khi giao nhau, không báo khi liền kề |
+| DB-04 | Thêm dịch vụ và trả phòng trong transaction thử nghiệm | Đạt (DB-04a–f): hóa đơn tính đủ tiền phòng theo số đêm và dịch vụ, phòng sang Dọn dẹp |
+| DB-05 | Đặt phòng có khoảng ngày giao với đặt phòng đang hiệu lực | Đạt (DB-05): đặt phòng giao nhau bị từ chối; đặt phòng đã hủy giải phóng lịch |
+| DB-06 | Chạy lại script và kiểm tra index | Đạt: script chạy hai lần, đủ 6 index kiểm tra (gồm `UX_PhieuThue_DatPhong` lọc) |
+| BUILD-01 | `dotnet build QuanLyKhachSan.sln --no-restore` (target `net10.0-windows`) | Đạt (GitHub Actions, Windows, .NET 10): build toàn bộ solution thành công, 129/129 test logic |
 
 ## Kiểm thử GUI cần thực hiện trên máy có SQL Server cấu hình đúng
 
