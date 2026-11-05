@@ -1600,6 +1600,16 @@ Danh sách phòng chỉ hiển thị các phòng thỏa điều kiện khả d�
 \label{fig:gui-datphong-2}
 \end{figure}
 
+Khi Lễ tân nhập mức giảm vượt 10\% tiền hàng (phòng, dịch vụ, phụ thu) và bấm trả phòng, hệ thống mở hộp thoại \textit{Quản lý duyệt giảm giá}. Quản lý nhập tên đăng nhập và mật khẩu của mình; chỉ tài khoản đang hoạt động có vai trò Quản lý mới được chấp nhận, nếu không thao tác trả phòng bị hủy. Khi người dùng đang đăng nhập đã là Quản lý thì không hiện hộp thoại và người đó được ghi là người duyệt. Hóa đơn lưu mã người duyệt, đồng thời bản in có dòng \textit{Quản lý duyệt giảm giá}.
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{DuyetGiamGia.png}{\fbox{\includegraphics[width=0.7\textwidth]{DuyetGiamGia.png}}}{\fbox{\parbox{0.7\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: DuyetGiamGia.png)}\vspace{3cm}}}}}
+\caption{Hộp thoại Quản lý duyệt giảm giá}
+\label{fig:gui-duyetgiamgia}
+\end{figure}
+
 \section{Màn hình Nhận phòng (F3) và Ghi dịch vụ (F4)}
 
 \begin{figure}[H]
@@ -1636,6 +1646,18 @@ Bảng chi tiết tính tiền được tính lại tức thời mỗi khi ngư�
 \IfFileExists{Bill.png}{\fbox{\includegraphics[width=1\textwidth]{Bill.png}}}{\fbox{\parbox{1\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: Bill.png)}\vspace{3cm}}}}}
 \caption{Màn hình in hóa đơn}
 \label{fig:gui-traphong-2}
+\end{figure}
+
+\section{Màn hình Đổi phòng (F8)}
+
+Màn hình cho phép đổi phòng khi khách đang lưu trú (UC23). Lễ tân chọn phòng đang có khách, chọn phòng mới trong danh sách các phòng còn trống trọn thời gian còn lại của kỳ lưu trú (kèm tầng, loại phòng và giá), có thể nhập lý do (tối đa 200 ký tự) rồi bấm \textit{Đổi phòng}. Dòng nhắc bên dưới cho biết phòng mới cùng mức giá hay khác giá; đơn giá của phiếu thuê được giữ nguyên (QT49) và chênh lệch xử lý khi trả phòng. Bảng phía dưới liệt kê lịch sử đổi phòng của phiếu thuê đang chọn (thời điểm, phòng cũ, phòng mới, giá, lý do).
+
+\begin{figure}[H]
+\centering
+{\setlength{\fboxsep}{0pt}%
+\IfFileExists{F8.png}{\fbox{\includegraphics[width=1\textwidth]{F8.png}}}{\fbox{\parbox{1\textwidth}{\centering\vspace{3cm}\textit{(Chèn ảnh chụp màn hình: F8.png)}\vspace{3cm}}}}}
+\caption{Màn hình đổi phòng}
+\label{fig:gui-doiphong}
 \end{figure}
 
 \section{Màn hình Báo cáo doanh thu và công suất phòng}
