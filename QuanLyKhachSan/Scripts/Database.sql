@@ -117,7 +117,7 @@ GO
 IF OBJECT_ID(N'dbo.PhieuThue', N'U') IS NULL
 CREATE TABLE dbo.PhieuThue (
     MaPhieuThue int IDENTITY(1,1) CONSTRAINT PK_PhieuThue PRIMARY KEY,
-    MaDatPhong int NULL CONSTRAINT UQ_PhieuThue_DatPhong UNIQUE,
+    MaDatPhong int NULL,
     MaKhachHang int NOT NULL,
     MaPhong int NOT NULL,
     MaNguoiDung int NOT NULL,
@@ -138,6 +138,14 @@ IF EXISTS(SELECT 1 FROM sys.indexes WHERE object_id=OBJECT_ID(N'dbo.PhieuThue') 
 IF NOT EXISTS(SELECT 1 FROM sys.indexes WHERE object_id=OBJECT_ID(N'dbo.PhieuThue') AND name=N'IX_PhieuThue_DangO_Phong_NgayNhan')
     CREATE INDEX IX_PhieuThue_DangO_Phong_NgayNhan ON dbo.PhieuThue(MaPhong, NgayNhan)
         INCLUDE (NgayDiDuKien, NgayDiThucTe) WHERE TrangThai=N'Đang ở';
+GO
+
+-- Mỗi đặt phòng chỉ có một phiếu thuê; nhiều phiếu vãng lai (MaDatPhong NULL) được phép.
+IF EXISTS(SELECT 1 FROM sys.key_constraints WHERE name=N'UQ_PhieuThue_DatPhong' AND parent_object_id=OBJECT_ID(N'dbo.PhieuThue'))
+    ALTER TABLE dbo.PhieuThue DROP CONSTRAINT UQ_PhieuThue_DatPhong;
+GO
+IF NOT EXISTS(SELECT 1 FROM sys.indexes WHERE object_id=OBJECT_ID(N'dbo.PhieuThue') AND name=N'UX_PhieuThue_DatPhong')
+    CREATE UNIQUE INDEX UX_PhieuThue_DatPhong ON dbo.PhieuThue(MaDatPhong) WHERE MaDatPhong IS NOT NULL;
 GO
 
 IF OBJECT_ID(N'dbo.ChiTietDichVu', N'U') IS NULL

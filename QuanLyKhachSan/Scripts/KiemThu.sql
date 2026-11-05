@@ -53,8 +53,8 @@ SELECT @n = COUNT(*) FROM dbo.LoaiPhong;
 INSERT #KQ VALUES ('DB-01c', N'Có dữ liệu mẫu loại phòng và tài khoản admin', CASE WHEN @n >= 3 AND @nd IS NOT NULL THEN 1 ELSE 0 END, CONCAT(N'Số loại phòng: ', @n));
 
 -- ===== DB-06: index =====
-SELECT @n = COUNT(*) FROM sys.indexes WHERE name IN (N'UX_KhachHang_SoDienThoai', N'IX_DatPhong_DatDangDat_Phong_NgayDen', N'IX_LichSuDoiPhong_PhieuThue', N'IX_HoaDon_NgayLap', N'IX_ChiTietDichVu_PhieuThue_ThoiDiem');
-INSERT #KQ VALUES ('DB-06', N'Có các index lọc và tra cứu', CASE WHEN @n = 5 THEN 1 ELSE 0 END, CONCAT(N'Số index tìm thấy: ', @n));
+SELECT @n = COUNT(*) FROM sys.indexes WHERE name IN (N'UX_KhachHang_SoDienThoai', N'IX_DatPhong_DatDangDat_Phong_NgayDen', N'IX_LichSuDoiPhong_PhieuThue', N'IX_HoaDon_NgayLap', N'IX_ChiTietDichVu_PhieuThue_ThoiDiem', N'UX_PhieuThue_DatPhong');
+INSERT #KQ VALUES ('DB-06', N'Có các index lọc và tra cứu', CASE WHEN @n = 6 THEN 1 ELSE 0 END, CONCAT(N'Số index tìm thấy: ', @n));
 
 -- ===== Dữ liệu thử =====
 INSERT dbo.KhachHang(HoTen, SoGiayTo, SoDienThoai) VALUES (N'Khách thử một', '099999999991', '0999999991');
