@@ -396,18 +396,32 @@ BEGIN
     DECLARE @Homnay date=CONVERT(date,SYSDATETIME());
     -- Mỗi phiếu thuê chiếm phòng trong khoảng [ngày nhận, ngày đi); tối thiểu 1 đêm.
     -- Phiếu đang ở quá hạn dự kiến vẫn tính đến hết hôm nay.
+    -- Phiếu có đổi phòng được tách thành các đoạn theo LichSuDoiPhong: các đêm trước ngày đổi
+    -- tính cho phòng cũ, từ ngày đổi trở đi tính cho phòng mới.
     ;WITH Ngay AS (
         SELECT TOP (DATEDIFF(day,@TuNgay,@DenNgay)+1)
                DATEADD(day,ROW_NUMBER() OVER (ORDER BY (SELECT NULL))-1,@TuNgay) AS Ngay
         FROM sys.all_objects a CROSS JOIN sys.all_objects b
-    ), Luu AS (
-        SELECT pt.MaPhong, CONVERT(date,pt.NgayNhan) AS TuNgay,
+    ), Luu0 AS (
+        SELECT pt.MaPhieuThue, pt.MaPhong, CONVERT(date,pt.NgayNhan) AS TuNgay,
                CASE WHEN x.NgayDi > CONVERT(date,pt.NgayNhan) THEN x.NgayDi
                     ELSE DATEADD(day,1,CONVERT(date,pt.NgayNhan)) END AS DenNgay
         FROM dbo.PhieuThue pt
         CROSS APPLY (SELECT COALESCE(CONVERT(date,pt.NgayDiThucTe),
                                      CASE WHEN pt.NgayDiDuKien > @Homnay THEN pt.NgayDiDuKien
                                           ELSE DATEADD(day,1,@Homnay) END) AS NgayDi) x
+    ), Doi AS (
+        SELECT MaPhieuThue, MaPhongCu, MaPhongMoi, CONVERT(date,ThoiDiemDoi) AS NgayDoi,
+               ROW_NUMBER() OVER (PARTITION BY MaPhieuThue ORDER BY ThoiDiemDoi, MaDoiPhong) AS Stt,
+               LEAD(CONVERT(date,ThoiDiemDoi)) OVER (PARTITION BY MaPhieuThue ORDER BY ThoiDiemDoi, MaDoiPhong) AS NgayDoiSau
+        FROM dbo.LichSuDoiPhong
+    ), Luu AS (
+        SELECT l.MaPhong, l.TuNgay, l.DenNgay FROM Luu0 l
+        WHERE NOT EXISTS (SELECT 1 FROM Doi d WHERE d.MaPhieuThue=l.MaPhieuThue)
+        UNION ALL
+        SELECT d.MaPhongCu, l.TuNgay, d.NgayDoi FROM Doi d JOIN Luu0 l ON l.MaPhieuThue=d.MaPhieuThue WHERE d.Stt=1
+        UNION ALL
+        SELECT d.MaPhongMoi, d.NgayDoi, COALESCE(d.NgayDoiSau,l.DenNgay) FROM Doi d JOIN Luu0 l ON l.MaPhieuThue=d.MaPhieuThue
     )
     SELECT n.Ngay, COUNT(DISTINCT l.MaPhong) AS SoPhongCoKhach, @TongPhong AS TongPhong,
            CAST(CASE WHEN @TongPhong=0 THEN 0

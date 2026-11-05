@@ -170,6 +170,31 @@ BEGIN TRY
 END TRY BEGIN CATCH SET @err = ERROR_NUMBER(); END CATCH
 INSERT #KQ VALUES ('DB-09a', N'sp_ThongKeDoanhThu chạy không lỗi', CASE WHEN @err IS NULL THEN 1 ELSE 0 END, CONCAT(N'Mã lỗi: ', ISNULL(CONVERT(varchar(10), @err), N'không lỗi')));
 
+-- ===== DB-10: công suất theo phòng khi có đổi phòng =====
+IF OBJECT_ID(N'tempdb..#CS0') IS NOT NULL DROP TABLE #CS0;
+IF OBJECT_ID(N'tempdb..#CS1') IS NOT NULL DROP TABLE #CS1;
+CREATE TABLE #CS0 (Ngay date, SoPhongCoKhach int, TongPhong int, TyLe decimal(5,2));
+CREATE TABLE #CS1 (Ngay date, SoPhongCoKhach int, TongPhong int, TyLe decimal(5,2));
+DECLARE @m6 date = DATEADD(day,-6,@h), @m5 date = DATEADD(day,-5,@h), @m3 date = DATEADD(day,-3,@h), @m1 date = DATEADD(day,-1,@h);
+INSERT #CS0 EXEC dbo.sp_ThongKeCongSuat @TuNgay = @m6, @DenNgay = @m1;
+-- A: phòng 202 từ h-5 đến h-3. B: phòng 201 từ h-5, đổi sang 202 vào h-3, trả h-1.
+INSERT dbo.PhieuThue(MaKhachHang, MaPhong, MaNguoiDung, NgayNhan, NgayDiDuKien, NgayDiThucTe, GiaPhongMoiDem, TrangThai)
+VALUES (@kh1, @p202, @nd, @m5, @m3, @m3, 400000, N'Đã trả');
+INSERT dbo.PhieuThue(MaKhachHang, MaPhong, MaNguoiDung, NgayNhan, NgayDiDuKien, NgayDiThucTe, GiaPhongMoiDem, TrangThai)
+VALUES (@kh1, @p202, @nd, @m5, @m1, @m1, 400000, N'Đã trả');
+SET @pt2 = SCOPE_IDENTITY();
+INSERT dbo.LichSuDoiPhong(MaPhieuThue, MaPhongCu, MaPhongMoi, GiaCu, GiaMoi, ThoiDiemDoi, MaNguoiDung)
+VALUES (@pt2, @p201, @p202, 400000, 400000, @m3, @nd);
+INSERT #CS1 EXEC dbo.sp_ThongKeCongSuat @TuNgay = @m6, @DenNgay = @m1;
+SELECT @n = COUNT(*) FROM #CS1 b JOIN #CS0 a ON a.Ngay = b.Ngay
+WHERE b.SoPhongCoKhach - a.SoPhongCoKhach = CASE WHEN b.Ngay IN (@m5, DATEADD(day,1,@m5)) THEN 2 ELSE 0 END
+  AND b.Ngay IN (@m6, @m5, DATEADD(day,1,@m5));
+INSERT #KQ VALUES ('DB-10a', N'Các đêm trước ngày đổi tính cho phòng cũ (hai phòng cùng có khách)', CASE WHEN @n = 3 THEN 1 ELSE 0 END, CONCAT(N'Số ngày khớp: ', @n, N'/3'));
+SELECT @n = COUNT(*) FROM #CS1 b JOIN #CS0 a ON a.Ngay = b.Ngay
+WHERE b.SoPhongCoKhach - a.SoPhongCoKhach = CASE WHEN b.Ngay IN (@m3, DATEADD(day,1,@m3)) THEN 1 ELSE 0 END
+  AND b.Ngay IN (@m3, DATEADD(day,1,@m3), @m1);
+INSERT #KQ VALUES ('DB-10b', N'Từ ngày đổi chỉ tính phòng mới; ngày trả phòng không tính', CASE WHEN @n = 3 THEN 1 ELSE 0 END, CONCAT(N'Số ngày khớp: ', @n, N'/3'));
+
 -- ===== Dọn dẹp =====
 Ket:
 DELETE h FROM dbo.HoaDon h JOIN dbo.PhieuThue p ON h.MaPhieuThue = p.MaPhieuThue WHERE p.MaKhachHang IN (SELECT MaKhachHang FROM dbo.KhachHang WHERE SoGiayTo IN ('099999999991','099999999992'));
