@@ -1,0 +1,57 @@
+name: Kiểm thử
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  sql:
+    name: Kiểm thử SQL Server
+    runs-on: ubuntu-latest
+    env:
+      SA_PASSWORD: Kt@Test2026-Mssql
+      SQLCMD: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Kt@Test2026-Mssql -C -b -f 65001
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Khởi động SQL Server 2022
+        run: |
+          docker run -d --name mssql -e ACCEPT_EULA=Y -e "MSSQL_SA_PASSWORD=$SA_PASSWORD" -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+          for i in $(seq 1 60); do
+            if docker exec mssql $SQLCMD -Q "SELECT 1" >/dev/null 2>&1; then echo "SQL Server sẵn sàng sau $i lần thử"; exit 0; fi
+            sleep 2
+          done
+          docker logs mssql | tail -30
+          exit 1
+
+      - name: Chép script vào container
+        run: |
+          docker cp QuanLyKhachSan/Scripts/Database.sql mssql:/tmp/Database.sql
+          docker cp QuanLyKhachSan/Scripts/KiemThu.sql mssql:/tmp/KiemThu.sql
+
+      - name: Chạy Database.sql lần 1 (tạo mới)
+        run: docker exec mssql $SQLCMD -i /tmp/Database.sql
+
+      - name: Chạy Database.sql lần 2 (chạy lại không lỗi)
+        run: docker exec mssql $SQLCMD -i /tmp/Database.sql
+
+      - name: Kiểm thử SQL (KiemThu.sql)
+        run: docker exec mssql $SQLCMD -W -s " | " -i /tmp/KiemThu.sql
+
+  build:
+    name: Build và kiểm thử logic (.NET)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build toàn bộ solution
+        run: dotnet build QuanLyKhachSan.sln -c Release
+
+      - name: Chạy bộ kiểm thử logic
+        run: dotnet run --project QuanLyKhachSan.Tests -c Release --no-build
