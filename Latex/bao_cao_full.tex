@@ -47,6 +47,18 @@
 \fancyfoot[C]{\thepage}
 \renewcommand{\headrulewidth}{0.4pt}
 
+% --- Tiêu đề mục lục và danh mục thống nhất với các phần đầu khác ---
+\gappto\captionsvietnamese{\renewcommand{\contentsname}{MỤC LỤC}\renewcommand{\listfigurename}{DANH MỤC HÌNH ẢNH}\renewcommand{\listtablename}{DANH MỤC BẢNG}}
+\renewcommand{\cfttoctitlefont}{\normalfont\bfseries\Large}
+\renewcommand{\cftloftitlefont}{\normalfont\bfseries\Large}
+\renewcommand{\cftlottitlefont}{\normalfont\bfseries\Large}
+\renewcommand{\cftaftertoctitle}{\par}
+\renewcommand{\cftafterloftitle}{\par\phantomsection\addcontentsline{toc}{chapter}{DANH MỤC HÌNH ẢNH}}
+\renewcommand{\cftafterlottitle}{\par\phantomsection\addcontentsline{toc}{chapter}{DANH MỤC BẢNG}}
+\setlength{\cftbeforetoctitleskip}{0pt}\setlength{\cftbeforeloftitleskip}{0pt}\setlength{\cftbeforelottitleskip}{0pt}
+\setlength{\cftaftertoctitleskip}{1.2cm}\setlength{\cftafterloftitleskip}{1.2cm}\setlength{\cftafterlottitleskip}{1.2cm}
+\newcommand{\TieuDeDau}[1]{\markboth{#1}{#1}}
+
 % --- Trình bày code (C#, SQL) ---
 \lstdefinelanguage{csharp}{
   morekeywords={class,public,private,protected,static,void,int,string,bool,decimal,DateTime,
@@ -109,6 +121,7 @@
 
 % ================= LỜI CẢM ƠN =================
 \chapter*{LỜI CẢM ƠN}
+\TieuDeDau{LỜI CẢM ƠN}
 \addcontentsline{toc}{chapter}{LỜI CẢM ƠN}
 Trước hết, nhóm em xin gửi lời cảm ơn chân thành và sâu sắc đến Thầy Lê Thanh Thoại vì đã tận tình giảng dạy, hướng dẫn và truyền đạt những kiến thức mới trong suốt quá trình học tập và thực hiện bài tập này.
 
@@ -120,6 +133,7 @@ Cuối cùng, cả nhóm xin kính chúc Thầy luôn mạnh khỏe, hạnh phú
 
 % ================= NHẬN XÉT GVHD =================
 \chapter*{NHẬN XÉT CỦA GIẢNG VIÊN HƯỚNG DẪN}
+\TieuDeDau{NHẬN XÉT CỦA GIẢNG VIÊN HƯỚNG DẪN}
 \addcontentsline{toc}{chapter}{NHẬN XÉT CỦA GIẢNG VIÊN HƯỚNG DẪN}
 \noindent\rule{\textwidth}{0.4pt}\\[0.3cm]
 \noindent\rule{\textwidth}{0.4pt}\\[0.3cm]
@@ -130,18 +144,21 @@ Cuối cùng, cả nhóm xin kính chúc Thầy luôn mạnh khỏe, hạnh phú
 \noindent\rule{\textwidth}{0.4pt}
 
 % ================= MỤC LỤC =================
+\clearpage
 \tableofcontents
 
 % ================= DANH MỤC HÌNH =================
+\clearpage
 \listoffigures
-\addcontentsline{toc}{chapter}{DANH MỤC HÌNH ẢNH}
 
 % ================= DANH MỤC BẢNG =================
+\clearpage
 \listoftables
-\addcontentsline{toc}{chapter}{DANH MỤC BẢNG}
+\clearpage
 
 % ================= DANH MỤC TỪ VIẾT TẮT =================
 \chapter*{DANH MỤC TỪ VIẾT TẮT}
+\TieuDeDau{DANH MỤC TỪ VIẾT TẮT}
 \addcontentsline{toc}{chapter}{DANH MỤC TỪ VIẾT TẮT}
 \begin{longtable}{p{3cm}p{10cm}}
 \toprule
@@ -166,6 +183,7 @@ PBKDF2 & Password-Based Key Derivation Function 2 \\
 
 % ================= MỞ ĐẦU =================
 \chapter*{MỞ ĐẦU}
+\TieuDeDau{MỞ ĐẦU}
 \addcontentsline{toc}{chapter}{MỞ ĐẦU}
 % ===== begin chuong/mo_dau.tex =====
 \section*{1. Lý do chọn đề tài}
@@ -1928,6 +1946,7 @@ Thông báo lỗi & Đạt & Chỉ hiển thị lỗi nghiệp vụ, không lộ
 
 % ================= KẾT LUẬN =================
 \chapter*{KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN}
+\TieuDeDau{KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN}
 \addcontentsline{toc}{chapter}{KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN}
 % ===== begin chuong/ket_luan.tex =====
 \section*{1. Kết quả đạt được}
@@ -1967,6 +1986,7 @@ Ngoài phạm vi đặc tả ban đầu, nhóm đã bổ sung ba tính năng m�
 
 % ================= TÀI LIỆU THAM KHẢO =================
 \chapter*{TÀI LIỆU THAM KHẢO}
+\TieuDeDau{TÀI LIỆU THAM KHẢO}
 \addcontentsline{toc}{chapter}{TÀI LIỆU THAM KHẢO}
 % ===== begin chuong/tai_lieu_tham_khao.tex =====
 \begin{enumerate}[label={[\arabic*]}]
