@@ -1079,7 +1079,7 @@ Năm thủ tục lưu trữ chính hiện thực các nghiệp vụ đòi hỏi 
   \item[\texttt{sp\_TraPhong}] Thực hiện trong một transaction: tính tổng tiền phòng theo số đêm và giá snapshot, cộng tổng tiền dịch vụ từ \texttt{ChiTietDichVu}, tính phụ thu trả muộn theo mốc giờ, trừ tiền cọc, áp giảm giá, tạo bản ghi \texttt{HoaDon}, đóng \texttt{PhieuThue} (chuyển "Đã trả phòng"), cập nhật \texttt{Phong} sang "Dọn dẹp". Toàn bộ các bước trên cùng thành công hoặc cùng bị rollback nếu có lỗi ở bất kỳ bước nào.
   \item[\texttt{sp\_DoiPhong}] Đổi phòng cho phiếu thuê đang ở (QT47--QT49): khóa dòng phiếu thuê và phòng mới, kiểm tra phòng mới hoạt động, không có khách và không có đặt chỗ giao nhau từ hôm nay đến ngày đi dự kiến; cập nhật phiếu thuê, đặt phòng cũ sang "Dọn dẹp", phòng mới sang "Đang ở" và ghi bảng \texttt{LichSuDoiPhong} trong cùng một giao dịch. Phần quy tắc thuần (khoảng cần trống, chuẩn hóa lý do, lời nhắc giá) nằm ở lớp \texttt{QuyTacDoiPhong} trong BLL để kiểm thử không cần CSDL.
   \item[\texttt{sp\_ThongKeDoanhThu}] Nhận tham số khoảng thời gian và tiêu chí gom nhóm (ngày/tháng/loại phòng); trả về tập kết quả tổng doanh thu theo từng nhóm, bao gồm cả các mốc thời gian không phát sinh doanh thu (giá trị 0), phục vụ vẽ biểu đồ liên tục.
-  \item[\texttt{sp\_ThongKeCongSuat}] Tính tỷ lệ phần trăm số phòng được sử dụng trên tổng số phòng khả dụng theo từng ngày trong khoảng thời gian truyền vào, hỗ trợ báo cáo công suất phòng (BC04).
+  \item[\texttt{sp\_ThongKeCongSuat}] Tính tỷ lệ phần trăm số phòng được sử dụng trên tổng số phòng khả dụng theo từng ngày trong khoảng thời gian truyền vào, hỗ trợ báo cáo công suất phòng (BC04). Với phiếu thuê có đổi phòng, thủ tục tách thành các đoạn theo \texttt{LichSuDoiPhong}: các đêm trước ngày đổi tính cho phòng cũ, từ ngày đổi trở đi tính cho phòng mới.
 \end{description}
 
 Đoạn mã minh họa cấu trúc của \texttt{sp\_KiemTraTrungLich}, thể hiện cách kiểm tra giao nhau giữa hai khoảng ngày theo nguyên tắc nửa mở:
@@ -1798,7 +1798,7 @@ BUILD-01 & \texttt{dotnet build} toàn bộ solution & build thành công trên 
 
 \subsection{Kiểm thử SQL và build tự động}
 
-Tệp \texttt{.github/workflows/kiem-thu.yml} cấu hình GitHub Actions chạy mỗi lần đẩy mã lên nhánh chính với hai công việc. Công việc thứ nhất dùng SQL Server 2022 trong container, chạy \texttt{Database.sql} hai lần (tạo mới và chạy lại) rồi chạy \texttt{Scripts/KiemThu.sql}. Script này gồm 28 ca: đủ 10 bảng, 6 thủ tục và các index; ràng buộc CHECK; kiểm tra trùng lịch; nhận phòng, ghi dịch vụ, trả phòng và hóa đơn; đổi phòng (các mã lỗi 50012 đến 50015, trạng thái phòng, lịch sử, dịch vụ giữ nguyên, tính tiền theo đơn giá ban đầu); thống kê doanh thu. Công việc thứ hai trên Windows với .NET 10 biên dịch toàn bộ solution và chạy bộ kiểm thử logic 129 ca. Kết quả: cả hai công việc đạt, 28/28 ca SQL và 129/129 ca logic.
+Tệp \texttt{.github/workflows/kiem-thu.yml} cấu hình GitHub Actions chạy mỗi lần đẩy mã lên nhánh chính với hai công việc. Công việc thứ nhất dùng SQL Server 2022 trong container, chạy \texttt{Database.sql} hai lần (tạo mới và chạy lại) rồi chạy \texttt{Scripts/KiemThu.sql}. Script này gồm 30 ca: đủ 10 bảng, 6 thủ tục và các index; ràng buộc CHECK; kiểm tra trùng lịch; nhận phòng, ghi dịch vụ, trả phòng và hóa đơn; đổi phòng (các mã lỗi 50012 đến 50015, trạng thái phòng, lịch sử, dịch vụ giữ nguyên, tính tiền theo đơn giá ban đầu); thống kê doanh thu và công suất theo từng chặng phòng khi có đổi phòng. Công việc thứ hai trên Windows với .NET 10 biên dịch toàn bộ solution và chạy bộ kiểm thử logic 129 ca. Kết quả: cả hai công việc đạt, 30/30 ca SQL và 129/129 ca logic.
 
 Quá trình này phát hiện và khắc phục một lỗi thiết kế: ràng buộc \texttt{UNIQUE} trên cột \texttt{MaDatPhong} (cho phép NULL) chỉ cho phép một phiếu thuê không có đặt phòng, làm khách vãng lai thứ hai không nhận được phòng. Ràng buộc được thay bằng unique index có điều kiện \texttt{WHERE MaDatPhong IS NOT NULL}; script tự chuyển đổi cơ sở dữ liệu cũ.
 
@@ -1910,7 +1910,7 @@ Ngoài phạm vi đặc tả ban đầu, nhóm đã bổ sung ba tính năng m�
 \addcontentsline{toc}{section}{2. Hạn chế}
 
 \begin{itemize}
-  \item Khi đổi phòng giữa hai loại phòng khác giá, đơn giá phiếu thuê được giữ nguyên và chênh lệch xử lý thủ công khi trả phòng; thống kê công suất tính theo phòng cuối cùng của phiếu thuê.
+  \item Khi đổi phòng giữa hai loại phòng khác giá, đơn giá phiếu thuê được giữ nguyên và chênh lệch xử lý thủ công khi trả phòng.
   \item Các kịch bản kiểm thử giao diện (UI-01 đến UI-12) là kiểm thử thủ công, chưa được tự động hóa bằng công cụ kiểm thử giao diện chuyên dụng.
   \item Ứng dụng hiện chỉ hỗ trợ một máy trạm kết nối trực tiếp tới một CSDL tập trung, chưa tính tới kịch bản nhiều chi nhánh hoặc truy cập đồng thời ở quy mô lớn.
   \item Chưa có chức năng xuất báo cáo ra định dạng Excel (.xlsx), hiện chỉ hỗ trợ xuất CSV.
@@ -1921,7 +1921,7 @@ Ngoài phạm vi đặc tả ban đầu, nhóm đã bổ sung ba tính năng m�
 \addcontentsline{toc}{section}{3. Hướng phát triển}
 
 \begin{enumerate}
-  \item Tách tiền phòng theo từng chặng giá khi đổi phòng giữa hai loại phòng khác giá và tính công suất theo từng chặng.
+  \item Tách tiền phòng theo từng chặng giá khi đổi phòng giữa hai loại phòng khác giá.
   \item Mở rộng bộ kiểm thử tự động, bổ sung kiểm thử tích hợp có kết nối CSDL thử nghiệm.
   \item Bổ sung xuất báo cáo ra Excel, hỗ trợ định dạng và công thức tính sẵn cho người dùng tùy biến thêm.
   \item Nghiên cứu khả năng mở rộng thành mô hình nhiều chi nhánh, đồng bộ dữ liệu qua một CSDL trung tâm hoặc kiến trúc client-server mở rộng.

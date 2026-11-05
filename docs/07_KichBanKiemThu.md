@@ -71,7 +71,7 @@ Workflow `.github/workflows/kiem-thu.yml` chạy mỗi lần push lên `main`, k
 | Kiểm thử SQL Server | Ubuntu, SQL Server 2022 (container) | Chạy `Database.sql` hai lần (tạo mới, chạy lại), rồi `Scripts/KiemThu.sql` |
 | Build và kiểm thử logic (.NET) | Windows, .NET 10 | `dotnet build` toàn bộ solution (WinForms, Web, Tests), chạy bộ test 129 ca |
 
-`Scripts/KiemThu.sql` gồm **28 ca**, in ĐẠT/LỖI từng ca và thoát với mã lỗi nếu có ca lỗi; script tự dọn dữ liệu thử và trả các phòng thử về Trống.
+`Scripts/KiemThu.sql` gồm **30 ca**, in ĐẠT/LỖI từng ca và thoát với mã lỗi nếu có ca lỗi; script tự dọn dữ liệu thử và trả các phòng thử về Trống.
 
 | Nhóm | Ca | Nội dung |
 |---|---|---|
@@ -82,6 +82,7 @@ Workflow `.github/workflows/kiem-thu.yml` chạy mỗi lần push lên `main`, k
 | Nhận và trả phòng (DB-04) | 6 | Phiếu thuê và trạng thái phòng, snapshot giá, không nhận phòng đang có khách, hóa đơn 2 đêm + dịch vụ, phòng sang Dọn dẹp, trả lần hai bị từ chối |
 | Đổi phòng (DB-08) | 10 | Từ chối đổi sang chính phòng đó (50013), phòng bảo trì (50014), phòng có đặt chỗ giao nhau (50015), phiếu đã trả (50012); đổi thành công, trạng thái hai phòng, lịch sử, dịch vụ giữ nguyên, trả phòng theo đơn giá ban đầu (QT49) |
 | Thống kê (DB-09) | 1 | `sp_ThongKeDoanhThu` chạy không lỗi |
+| Công suất khi đổi phòng (DB-10) | 2 | Phiếu đổi phòng được tách đoạn: các đêm trước ngày đổi tính cho phòng cũ (hai phòng cùng có khách), từ ngày đổi chỉ tính phòng mới, ngày trả phòng không tính |
 
 Chạy thủ công trên database thử nghiệm: `sqlcmd -S . -E -C -b -f 65001 -i QuanLyKhachSan\Scripts\Database.sql`, rồi `-i QuanLyKhachSan\Scripts\KiemThu.sql`.
 
