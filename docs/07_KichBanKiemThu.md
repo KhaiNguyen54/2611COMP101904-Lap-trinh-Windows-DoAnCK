@@ -8,7 +8,7 @@ Các thao tác tạo dữ liệu kiểm thử được bao trong transaction và
 
 | ID | Kịch bản | Kết quả |
 |---|---|---|
-| DB-01 | Chạy `Scripts/Database.sql` trên database thử nghiệm chưa tồn tại | Ghi nhận trước đây: tạo database, 9 bảng, 4 stored procedure và dữ liệu mẫu; cần chạy lại để xác nhận |
+| DB-01 | Chạy `Scripts/Database.sql` trên database thử nghiệm chưa tồn tại | Script hiện tại tạo database, 10 bảng, 6 stored procedure và dữ liệu mẫu; cần chạy lại để xác nhận |
 | DB-02 | Chạy lại script trên database thử nghiệm | Ghi nhận trước đây: chạy lại không tạo trùng object/seed; cần chạy lại để xác nhận |
 | DB-03 | Kiểm tra lịch của phiếu thuê đang ở | Ghi nhận trước đây: `sp_KiemTraTrungLich` phát hiện giao nhau; cần chạy lại để xác nhận |
 | DB-04 | Thêm dịch vụ và trả phòng trong transaction thử nghiệm | Ghi nhận trước đây: hóa đơn 400.000 tiền phòng + 30.000 dịch vụ = 430.000; cần chạy lại để xác nhận |

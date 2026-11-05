@@ -71,7 +71,7 @@ namespace QuanLyKhachSan.BLL
             QuyTacDoiPhong.KhoangCanTrong(DateTime.Today, ngayDiDuKien, out den, out di);
             DataTable t = new PhongBLL().TimKiemTrongKhoang(den, di);
             for (int i = t.Rows.Count - 1; i >= 0; i--)
-                if (Convert.ToInt32(t.Rows[i]["MaPhong"]) == maPhongHienTai) t.Rows.RemoveAt(i);
+                if (Convert.ToInt32(t.Rows[i]["MaPhong"]) == maPhongHienTai || Convert.ToString(t.Rows[i]["TrangThai"]) == "Đang ở") t.Rows.RemoveAt(i);
             return t;
         }
 

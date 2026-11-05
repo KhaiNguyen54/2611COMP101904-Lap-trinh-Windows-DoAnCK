@@ -67,7 +67,7 @@ namespace QuanLyKhachSan.DAL
         public DataTable TimKiemTrongKhoang(DateTime ngayDen, DateTime ngayDi)
         {
             const string sql = @"
-                SELECT p.MaPhong, p.SoPhong, p.Tang, p.MaLoaiPhong, l.TenLoaiPhong, l.GiaMoiDem
+                SELECT p.MaPhong, p.SoPhong, p.Tang, p.MaLoaiPhong, l.TenLoaiPhong, l.GiaMoiDem, p.TrangThai
                 FROM dbo.Phong p JOIN dbo.LoaiPhong l ON p.MaLoaiPhong = l.MaLoaiPhong
                 WHERE p.HoatDong = 1 AND p.TrangThai NOT IN (N'Bảo trì', N'Dọn dẹp')
                   AND NOT EXISTS (

@@ -461,7 +461,7 @@ Nhóm đánh giá khả thi kỹ thuật theo các tiêu chí rủi ro thường
 \begin{tabularx}{\textwidth}{|l|X|c|}
 \hline
 \textbf{Tiêu chí} & \textbf{Nhận định} & \textbf{Mức rủi ro} \\\hline
-Quy mô dự án & Vừa phải: 9 bảng CSDL, khoảng 23 chức năng, phù hợp năng lực nhóm 3 người trong thời gian một học kỳ & Thấp \\\hline
+Quy mô dự án & Vừa phải: 10 bảng CSDL, khoảng 23 chức năng, phù hợp năng lực nhóm 3 người trong thời gian một học kỳ & Thấp \\\hline
 Độ quen thuộc công nghệ & Nhóm đã học C\#, WinForms và SQL Server trong chương trình học, có thực hành trước đó & Thấp \\\hline
 Độ phức tạp nghiệp vụ & Có một số ràng buộc đồng thời (kiểm tra trùng lịch, giao dịch nhiều bước) đòi hỏi hiểu đúng về transaction và mức cô lập & Trung bình \\\hline
 Phụ thuộc bên thứ ba & Không tích hợp cổng thanh toán, API bên ngoài; giảm rủi ro tích hợp & Thấp \\\hline
@@ -844,10 +844,10 @@ Việc kiểm tra quyền được thực hiện ở hai lớp: giao diện ẩn
 
 \section{Mô hình thực thể -- kết hợp (ERD)}
 
-Cơ sở dữ liệu gồm 9 bảng, phản ánh đúng các thực thể nghiệp vụ: người dùng hệ thống, loại phòng, phòng, khách hàng, dịch vụ, đặt phòng, phiếu thuê, chi tiết dịch vụ và hóa đơn. Hình~\ref{fig:erd} trình bày sơ đồ ERD tổng quát.
+Cơ sở dữ liệu gồm 10 bảng, phản ánh đúng các thực thể nghiệp vụ: người dùng hệ thống, loại phòng, phòng, khách hàng, dịch vụ, đặt phòng, phiếu thuê, chi tiết dịch vụ, hóa đơn và lịch sử đổi phòng. Hình~\ref{fig:erd} trình bày sơ đồ ERD tổng quát của chín thực thể nghiệp vụ chính; bảng lịch sử đổi phòng được mô tả ở mục các thực thể.
 \subsection{Các thực thể}
 
-Cơ sở dữ liệu gồm \textbf{9 thực thể} sau:
+Cơ sở dữ liệu gồm \textbf{10 thực thể} sau:
 
 \begin{enumerate}
   \item \textbf{LoaiPhong}: lưu các loại phòng (tên loại, mô tả, giá mỗi đêm, sức chứa, trạng thái hoạt động).
@@ -859,11 +859,12 @@ Cơ sở dữ liệu gồm \textbf{9 thực thể} sau:
   \item \textbf{PhieuThue}: lưu lượt thuê phòng thực tế (ngày nhận, ngày đi dự kiến, ngày đi thực tế, giá phòng mỗi đêm tại thời điểm thuê, trạng thái).
   \item \textbf{ChiTietDichVu}: lưu từng lần sử dụng dịch vụ trong một lượt thuê (số lượng, đơn giá, thời điểm sử dụng).
   \item \textbf{HoaDon}: lưu hoá đơn thanh toán (số đêm, tiền phòng, tiền dịch vụ, phụ thu, giảm giá, tiền cọc, tổng thanh toán, hình thức thanh toán).
+  \item \textbf{LichSuDoiPhong}: lưu mỗi lần đổi phòng khi khách đang ở (phiếu thuê, phòng cũ, phòng mới, giá cũ, giá mới, thời điểm, lý do, người thực hiện).
 \end{enumerate}
 
 \subsection{Các mối liên kết}
 
-Giữa các thực thể có \textbf{12 mối liên kết} sau:
+Giữa các thực thể có \textbf{14 mối liên kết} sau:
 
 \begin{enumerate}
   \item \textbf{LoaiPhong -- Phong} (1--N): một loại phòng có nhiều phòng; mỗi phòng thuộc đúng một loại phòng.
@@ -878,6 +879,8 @@ Giữa các thực thể có \textbf{12 mối liên kết} sau:
   \item \textbf{DichVu -- ChiTietDichVu} (1--N): một dịch vụ có thể xuất hiện trong nhiều dòng chi tiết; mỗi dòng chi tiết ứng với một dịch vụ.
   \item \textbf{PhieuThue -- HoaDon} (1--0..1): một phiếu thuê được thanh toán bằng tối đa một hoá đơn (chưa trả phòng thì chưa có hoá đơn); mỗi hoá đơn thuộc đúng một phiếu thuê.
   \item \textbf{NguoiDung -- HoaDon} (1--N): một nhân viên có thể lập nhiều hoá đơn; mỗi hoá đơn do một nhân viên lập.
+  \item \textbf{PhieuThue -- LichSuDoiPhong} (1--N): một lượt thuê có thể được đổi phòng nhiều lần.
+  \item \textbf{Phong -- LichSuDoiPhong} (1--N): một phòng có thể là phòng cũ hoặc phòng mới của nhiều lần đổi.
 \end{enumerate}
 
 Ngoài ra, \textbf{ChiTietDichVu} đóng vai trò bảng trung gian, giải quyết quan hệ nhiều--nhiều giữa \textbf{PhieuThue} và \textbf{DichVu}.
@@ -1783,7 +1786,7 @@ Bảng~\ref{tab:db-test} tóm tắt các kịch bản kiểm thử ở tầng CS
 \begin{tabularx}{\textwidth}{|c|X|X|}
 \hline
 \textbf{ID} & \textbf{Kịch bản} & \textbf{Kết quả ghi nhận} \\\hline
-DB-01 & Chạy script trên database thử nghiệm chưa tồn tại & Tạo database, 9 bảng, 5 stored procedure và dữ liệu mẫu \\\hline
+DB-01 & Chạy script trên database thử nghiệm chưa tồn tại & Tạo database, 10 bảng, 6 stored procedure và dữ liệu mẫu \\\hline
 DB-02 & Chạy lại script trên cùng database & Không tạo trùng object hay dữ liệu seed \\\hline
 DB-03 & Kiểm tra lịch của phiếu thuê đang ở & \texttt{sp\_KiemTraTrungLich} phát hiện đúng trường hợp giao nhau \\\hline
 DB-04 & Thêm dịch vụ và trả phòng trong transaction thử nghiệm & Hóa đơn 400.000đ tiền phòng + 30.000đ dịch vụ = 430.000đ \\\hline
