@@ -35,9 +35,7 @@ Các kịch bản UI trong bảng là các bước cần thực hiện thủ cô
 
 ## Kiểm thử logic tự động (không cần CSDL)
 
-Project `QuanLyKhachSan.Tests` kiểm tra số đêm tối thiểu (QT40), phụ thu trả muộn theo mốc 1/3/6 giờ, tổng thanh toán không âm (QT45), cọc tối đa (QT15), gom doanh thu theo ngày/tháng/loại phòng (kể cả ngày trống), tỷ lệ công suất trung bình và xuất CSV (thoát dấu phẩy, nháy kép, chặn công thức). Chạy: `dotnet run --project QuanLyKhachSan.Tests` (mã thoát 1 nếu có ca lỗi).
-
-Bộ kiểm thử cũng bao phủ chức năng mở rộng: bộ mã hóa QR và đường dẫn tra cứu (`QrCode`, `TraCuuUrl`, QT65–QT68: kích thước theo phiên bản, mẫu định vị/thời gian, ô tối cố định, thông tin định dạng BCH, mức sửa lỗi, tính xác định, đầu vào không hợp lệ) và phần logic thuần của cổng web (`KhoangNgay`, `TraCuuService`, `TrangHtml`: đọc/kiểm tra khoảng ngày, nhãn tình trạng phòng, giới hạn 60 đêm, mã hóa HTML, định dạng giá, liên kết phòng; QT65–QT69). Kết quả: 129/129 ca đạt. Các kiểm tra này không thay thế các kịch bản UI-01…UI-12.
+Project `QuanLyKhachSan.Tests` gồm **129 ca** chia thành 13 nhóm (bảng dưới). Chạy: `dotnet run --project QuanLyKhachSan.Tests` (mã thoát 1 nếu có ca lỗi). Kết quả: 129/129 ca đạt. Các kiểm tra này không thay thế các kịch bản UI-01…UI-12.
 
 | ID | Kịch bản bổ sung | Kết quả mong đợi |
 |---|---|---|
@@ -45,6 +43,24 @@ Bộ kiểm thử cũng bao phủ chức năng mở rộng: bộ mã hóa QR và
 | UI-12 | Lễ tân mở Loại phòng/Phòng/Dịch vụ; Quản lý mở Báo cáo công suất | Lễ tân chỉ xem; Quản lý thấy biểu đồ, in và xuất CSV |
 | UI-18 | Mở Đổi phòng (F8), chọn phòng đang ở, chọn phòng trống khác loại giá, nhập lý do, xác nhận | Có lời nhắc giá; phòng cũ → Dọn dẹp, phòng mới → Đang ở trên sơ đồ; lịch sử hiện đúng một dòng; dịch vụ đã ghi còn nguyên; trả phòng sau đó tính theo đơn giá cũ |
 | UI-19 | Đổi phòng khi phòng mới vừa bị đặt ở máy khác; đổi khi không còn phòng trống | Báo lỗi rõ, dữ liệu không đổi; thông báo "không có phòng trống" khi danh sách rỗng |
+
+### Chi tiết 129 ca theo nhóm
+
+| Nhóm (hàm kiểm thử) | Số ca | Quy tắc | Nội dung kiểm tra |
+|---|---|---|---|
+| `SoDem` | 3 | QT40 | Số đêm tối thiểu 1; cách làm tròn theo ngày |
+| `PhuThuTraMuon` | 5 | QT43 | Mốc phụ thu 1/3/6 giờ so với 12:00 (≤1 giờ miễn phí, 30%, 50%, 100%) |
+| `TongThanhToan` | 4 | QT45 | Tổng = tiền phòng + dịch vụ + phụ thu − giảm giá − cọc; không âm |
+| `Coc` | 1 | QT15 | Cọc tối đa bằng giá 1 đêm × số đêm |
+| `GomDoanhThu` | 9 | – | Gom doanh thu theo ngày/tháng/loại phòng, kể cả ngày không phát sinh; tỷ lệ công suất trung bình |
+| `Csv` | 4 | – | Thoát dấu phẩy và nháy kép; chặn chèn công thức |
+| `Qr` | 14 | QT65–QT67 | Kích thước theo phiên bản, mẫu định vị/thời gian, ô tối cố định, thông tin định dạng BCH, mức sửa lỗi, tính xác định, chuỗi tiếng Việt, giới hạn 213 byte, đầu vào rỗng/quá dài |
+| `DuongDanTraCuu` | 7 | QT66, QT68 | Địa chỉ gốc `Web:BaseUrl`, bỏ dấu `/` thừa, mã hóa URL số phòng, đường dẫn `/phong/{số}` và `/gia` |
+| `KhoangNgayWeb` | 15 | QT69 | Mặc định hôm nay → ngày mai; ngày sai định dạng; ngày đến trước hôm nay; ngày đi không sau ngày đến; giới hạn 60 đêm |
+| `DichVuTraCuu` | 12 | QT69 | Nhãn tình trạng phòng rút gọn, giới hạn số đêm, dữ liệu trả về không chứa tên khách |
+| `TrangWeb` | 16 | QT69 | Sinh HTML: mã hóa chống chèn mã, định dạng giá, liên kết phòng, trang lỗi và trang bảng giá |
+| `LocPhongWeb` | 26 | QT71 | Đọc bộ lọc (rỗng, hợp lệ, giá chữ/âm/0/quá lớn/thập phân, loại quá dài); lọc theo loại không phân biệt hoa thường, theo giá tối đa, kết hợp; form lọc chọn đúng loại, giữ giá đã nhập, gợi ý khi không có kết quả, mã hóa tên loại; hình minh họa (1/2/3 giường theo sức chứa, ổn định, mã hóa tên, chịu tên rỗng) |
+| `DoiPhong` | 13 | QT47–QT49 | Khoảng phòng cần trống (đi dự kiến là hôm nay hoặc đã quá hạn vẫn tối thiểu 1 đêm); chuẩn hóa lý do (rỗng, cắt khoảng trắng, đúng 200 và 201 ký tự); lời nhắc khi giá phòng mới cao hơn/thấp hơn/bằng; từ chối thiếu mã phiếu, thiếu phòng mới, lý do quá dài |
 
 ## Kiểm thử chức năng mở rộng (mã QR, cổng web, giao diện tối)
 
