@@ -41,7 +41,7 @@ Có thể mở `QuanLyKhachSan/Scripts/Database.sql` bằng SQL Server Managemen
 
 Nếu đã tạo CSDL từ phiên bản trước, chạy lại `Database.sql` để bổ sung bảng `LichSuDoiPhong` và `sp_DoiPhong` (đổi phòng khi đang ở); script không xóa dữ liệu hiện có.
 
-Kiểm thử tự động trên GitHub Actions (`.github/workflows/kiem-thu.yml`): chạy `Database.sql` hai lần trên SQL Server 2022, 30 ca trong `Scripts/KiemThu.sql`, build toàn bộ solution trên Windows và bộ test 129 ca.
+Kiểm thử tự động trên GitHub Actions (`.github/workflows/kiem-thu.yml`): chạy `Database.sql` hai lần trên SQL Server 2022, 34 ca trong `Scripts/KiemThu.sql`, build toàn bộ solution trên Windows và bộ test 129 ca.
 
 ### 2. Cấu hình kết nối
 
@@ -142,7 +142,7 @@ Sau khi build thành công và database đã kết nối được:
 6. Nhấn Ctrl+D để đổi giao diện sáng/tối; mở thêm vài cửa sổ và xác nhận chữ vẫn đọc được, đóng/mở lại ứng dụng để xác nhận lựa chọn được nhớ.
 7. Tra cứu → Mã QR phòng và giá: tạo QR cho một phòng, quét bằng điện thoại cùng mạng và xác nhận mở đúng trang phòng của cổng web.
 
-Kiểm thử logic tự động: `dotnet run --project QuanLyKhachSan.Tests` (quy tắc tính tiền, gom báo cáo, CSV, bộ mã hóa QR, đường dẫn tra cứu và logic cổng web; 129 ca).
+Kiểm thử logic tự động: `dotnet run --project QuanLyKhachSan.Tests` (quy tắc tính tiền, gom báo cáo, CSV, bộ mã hóa QR, đường dẫn tra cứu và logic cổng web; 132 ca).
 
 Kịch bản chi tiết và trạng thái xác minh được ghi tại [`docs/07_KichBanKiemThu.md`](docs/07_KichBanKiemThu.md). Các bước trên là hướng dẫn kiểm thử thủ công; chưa hàm ý rằng mọi kịch bản giao diện đã được chạy tự động.
 

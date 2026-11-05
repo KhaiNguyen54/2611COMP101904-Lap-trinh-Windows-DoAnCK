@@ -16,6 +16,7 @@ erDiagram
     Phong ||--o{ LichSuDoiPhong : phong_cu_moi
     PhieuThue ||--o| HoaDon : thanh_toan
     NguoiDung ||--o{ HoaDon : lap
+    NguoiDung |o--o{ HoaDon : duyet_giam_gia
     LoaiPhong { int MaLoaiPhong PK; nvarchar TenLoaiPhong UK; nvarchar MoTa; decimal GiaMoiDem; int SucChua; bit HoatDong }
     Phong { int MaPhong PK; nvarchar SoPhong UK; int Tang; int MaLoaiPhong FK; nvarchar TrangThai; nvarchar GhiChu; bit HoatDong }
     KhachHang { int MaKhachHang PK; nvarchar HoTen; varchar SoGiayTo UK; varchar SoDienThoai UK; nvarchar Email; nvarchar DiaChi; datetime2 NgayTao }
@@ -25,7 +26,7 @@ erDiagram
     PhieuThue { int MaPhieuThue PK; int MaDatPhong FK_UK; int MaKhachHang FK; int MaPhong FK; int MaNguoiDung FK; datetime2 NgayNhan; date NgayDiDuKien; datetime2 NgayDiThucTe; decimal GiaPhongMoiDem; nvarchar TrangThai }
     ChiTietDichVu { int MaChiTietDichVu PK; int MaPhieuThue FK; int MaDichVu FK; decimal SoLuong; decimal DonGia; datetime2 ThoiDiemSuDung }
     LichSuDoiPhong { int MaDoiPhong PK; int MaPhieuThue FK; int MaPhongCu FK; int MaPhongMoi FK; decimal GiaCu; decimal GiaMoi; datetime2 ThoiDiemDoi; nvarchar LyDo; int MaNguoiDung FK }
-    HoaDon { int MaHoaDon PK; int MaPhieuThue FK_UK; int MaNguoiDung FK; datetime2 NgayLap; int SoDem; decimal TienPhong; decimal TienDichVu; decimal PhuThu; decimal GiamGia; decimal TienCoc; decimal TongThanhToan; nvarchar HinhThucThanhToan }
+    HoaDon { int MaHoaDon PK; int MaPhieuThue FK_UK; int MaNguoiDung FK; datetime2 NgayLap; int SoDem; decimal TienPhong; decimal TienDichVu; decimal PhuThu; decimal GiamGia; decimal TienCoc; decimal TongThanhToan; nvarchar HinhThucThanhToan; int MaNguoiDuyetGiam FK_NULL }
 ```
 
 ## Quyết định thiết kế

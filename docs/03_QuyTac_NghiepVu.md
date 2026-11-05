@@ -49,7 +49,7 @@
 | QT41 | **Tiền phòng = số đêm × đơn giá phòng** |
 | QT42 | **Tiền dịch vụ = tổng thành tiền các dòng dịch vụ** |
 | QT43 | Giờ trả phòng chuẩn **12:00**. Phụ thu tính theo bảng bên dưới. |
-| QT44 | Giảm giá nhập tay bằng số tiền, không vượt tiền phòng + dịch vụ + phụ thu. Source giới hạn Lễ tân ở 10% và cho Quản lý nhập cao hơn; chưa có luồng yêu cầu/ghi nhận duyệt riêng. |
+| QT44 | Giảm giá nhập tay bằng số tiền, không vượt tiền phòng + dịch vụ + phụ thu. Giảm tối đa 10% tiền hàng thì Lễ tân tự quyết; vượt 10% cần một Quản lý duyệt bằng tài khoản của mình ngay khi trả phòng (Quản lý đang đăng nhập tự là người duyệt). Hóa đơn ghi người duyệt (`MaNguoiDuyetGiam`) và in trên hóa đơn; stored procedure từ chối bằng lỗi 50016 nếu thiếu Quản lý hợp lệ. |
 | QT45 | **Tổng thanh toán = tiền phòng + tiền dịch vụ + phụ thu − giảm giá − tiền cọc** |
 | QT46 | Trả phòng sớm: tính theo số đêm thực tế (ngày đi thực tế), tối thiểu 1 đêm |
 | QT47 | **Đổi phòng** chỉ áp dụng cho phiếu thuê Đang ở. Phòng mới phải khác phòng hiện tại, đang hoạt động, ở trạng thái Trống hoặc Đã đặt, không có khách và không vướng đặt chỗ nào từ hôm nay đến ngày đi dự kiến (tối thiểu 1 đêm) |
@@ -104,7 +104,7 @@ Phòng đơn 400.000 đ/đêm; nhận 10/11, trả 13/11 lúc 15:00 (muộn 3 gi
 | Thêm, sửa, xóa loại phòng, phòng, dịch vụ, cấu hình giá | ✘ | ✔ |
 | Quản lý tài khoản | ✘ | ✔ |
 | Báo cáo, biểu đồ, thống kê | ✘ | ✔ |
-| Giảm giá vượt 10% | ✘ | ✔ |
+| Giảm giá vượt 10% | Cần Quản lý duyệt | ✔ |
 | Đổi mật khẩu của chính mình | ✔ | ✔ |
 
 ## 9. Mẫu SQL kiểm tra giao nhau (để dùng ở bước 2.4)
@@ -130,7 +130,7 @@ WHERE MaPhong = @MaPhong
 | QT15 | Cọc ≤ giá 1 đêm × số đêm (`QuyTacTinhTien.TienCocToiDa`), cọc được trừ khi trả phòng; tổng phải trả không âm | – |
 | QT20–QT24 | Nhận phòng kiểm tra ngày đi dự kiến, phòng hoạt động/sẵn sàng, đặt phòng tương ứng, xung đột; lưu snapshot giá phòng | – |
 | QT30–QT33 | Số lượng dịch vụ dương; đơn giá lưu theo chi tiết; xóa dòng dịch vụ chỉ khi phiếu còn "Đang ở" | Chưa có sửa số lượng (xóa rồi ghi lại) |
-| QT40–QT46 | Số đêm tối thiểu 1; phụ thu muộn đo so với 12:00 của ngày trả thực tế (≤1 giờ miễn phí, 1–3 giờ 30%, 3–6 giờ 50%, trên 6 giờ 100%); Lễ tân giảm tối đa 10% | Chưa có quy trình duyệt giảm giá riêng |
+| QT40–QT46 | Số đêm tối thiểu 1; phụ thu muộn đo so với 12:00 của ngày trả thực tế (≤1 giờ miễn phí, 1–3 giờ 30%, 3–6 giờ 50%, trên 6 giờ 100%); giảm trên 10% cần Quản lý duyệt, ghi người duyệt vào hóa đơn | – |
 | QT47–QT49 | `sp_DoiPhong` (transaction, khóa dòng) kiểm tra phòng mới và đặt chỗ; `QuyTacDoiPhong` tính khoảng cần trống, chuẩn hóa lý do, lời nhắc giá; bảng `LichSuDoiPhong` | Chưa tách tiền phòng theo từng chặng giá. Báo cáo công suất tính theo từng chặng phòng: các đêm trước ngày đổi tính cho phòng cũ, từ ngày đổi tính cho phòng mới |
 | QT50–QT54 | Stored procedure trả phòng dùng transaction, một hóa đơn cho mỗi phiếu thuê, đóng phiếu, phòng chuyển Dọn dẹp | Chưa có hóa đơn điều chỉnh |
 | QT65–QT70 | Mã QR chỉ chứa đường dẫn; `Web:BaseUrl` có mặc định; giới hạn 213 byte; QR chỉ cho phòng hoạt động; trang web chỉ đọc, ẩn tên khách, kiểm tra ngày; giao diện sáng/tối lưu theo máy (`TraCuuUrl`, `QrCode`, `TraCuuService`, `GiaoDien`) | Web chưa có xác thực/HTTPS; chưa có giới hạn tần suất truy cập |

@@ -36,21 +36,35 @@ namespace QuanLyKhachSan.BLL
             };
         }
 
+        /// <summary>Xác thực tài khoản Quản lý duyệt giảm giá; trả về mã người duyệt.</summary>
+        public int XacThucNguoiDuyet(string tenDangNhap, string matKhau)
+        {
+            NguoiDung nguoi = new NguoiDungBLL().DangNhap(tenDangNhap, matKhau);
+            if (!NguoiDungBLL.CoQuyenQuanLy(nguoi))
+                throw new UnauthorizedAccessException("Tài khoản không đúng hoặc không phải Quản lý.");
+            return nguoi.MaNguoiDung;
+        }
+
         /// <summary>Trả phòng và lập hóa đơn (một transaction trong sp_TraPhong). Trả về mã hóa đơn.</summary>
         public int TraPhong(int maPhieuThue, int maNguoiDung, DateTime ngayTra, decimal giamGia,
-            string hinhThuc, bool laQuanLy)
+            string hinhThuc, bool laQuanLy, int? maNguoiDuyet = null)
         {
             BaoGiaHoaDon baoGia = TinhTamTinh(maPhieuThue, ngayTra);
             decimal coSoGiam = QuyTacTinhTien.CoSoGiamGia(baoGia.TienPhong, baoGia.TienDichVu, baoGia.PhuThu);
 
             if (giamGia < 0 || giamGia > coSoGiam)
                 throw new ArgumentException("Giảm giá không hợp lệ.");
-            if (!laQuanLy && giamGia > coSoGiam * QuyTacTinhTien.TyLeGiamToiDaLeTan)
-                throw new UnauthorizedAccessException("Lễ tân chỉ được giảm tối đa 10%; cần quản lý duyệt mức giảm này.");
+            int? nguoiDuyet = null;
+            if (QuyTacTinhTien.CanQuanLyDuyet(giamGia, coSoGiam))
+            {
+                if (laQuanLy) nguoiDuyet = maNguoiDung;
+                else if (maNguoiDuyet.HasValue) nguoiDuyet = maNguoiDuyet;
+                else throw new UnauthorizedAccessException("Giảm giá trên 10% cần Quản lý duyệt.");
+            }
             if (string.IsNullOrWhiteSpace(hinhThuc))
                 throw new ArgumentException("Chọn hình thức thanh toán.");
 
-            return _dal.TraPhong(maPhieuThue, maNguoiDung, ngayTra, baoGia.PhuThu, giamGia, hinhThuc);
+            return _dal.TraPhong(maPhieuThue, maNguoiDung, ngayTra, baoGia.PhuThu, giamGia, hinhThuc, nguoiDuyet);
         }
     }
 }

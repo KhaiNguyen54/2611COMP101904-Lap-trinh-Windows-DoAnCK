@@ -46,6 +46,12 @@ namespace QuanLyKhachSan.BLL
             return Math.Max(0m, tienPhong + tienDichVu + phuThu);
         }
 
+        /// <summary>Giảm giá vượt 10% tiền hàng cần Quản lý duyệt (QT44); đúng 10% thì không cần.</summary>
+        public static bool CanQuanLyDuyet(decimal giamGia, decimal coSoGiam)
+        {
+            return giamGia > coSoGiam * TyLeGiamToiDaLeTan;
+        }
+
         /// <summary>Tiền cọc tối đa = giá 1 đêm × số đêm đặt (QT15).</summary>
         public static decimal TienCocToiDa(decimal giaMoiDem, DateTime ngayDen, DateTime ngayDi)
         {

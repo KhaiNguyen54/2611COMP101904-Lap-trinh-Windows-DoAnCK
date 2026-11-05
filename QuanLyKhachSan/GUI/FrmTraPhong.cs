@@ -140,7 +140,8 @@ namespace QuanLyKhachSan.GUI
                 decimal co = QuyTacTinhTien.CoSoGiamGia(_baoGia.TienPhong, _baoGia.TienDichVu, _baoGia.PhuThu);
                 _giam.Maximum = Math.Max(0, co);
                 _ghiChu.Text = "Trả sau 12:00: ≤1 giờ miễn phí, 1–3 giờ 30%, 3–6 giờ 50%, trên 6 giờ 100% giá một đêm. " +
-                               "Lễ tân giảm tối đa 10%" + (_user.VaiTro == VaiTroNguoiDung.QuanLy ? " (Quản lý không giới hạn trong mức tiền hàng)." : ".");
+                               "Giảm giá tối đa 10% tiền hàng; vượt mức cần Quản lý duyệt" +
+                               (_user.VaiTro == VaiTroNguoiDung.QuanLy ? " (bạn là Quản lý nên được ghi là người duyệt)." : " (nhập tài khoản Quản lý khi trả phòng).");
                 _tra.Enabled = true;
                 HienTong();
             }
@@ -169,8 +170,19 @@ namespace QuanLyKhachSan.GUI
             try
             {
                 int maPhieu = Convert.ToInt32(_phieu.SelectedValue);
+                bool laQuanLy = _user.VaiTro == VaiTroNguoiDung.QuanLy;
+                int? nguoiDuyet = null;
+                if (_baoGia != null && !laQuanLy && QuyTacTinhTien.CanQuanLyDuyet(_giam.Value,
+                        QuyTacTinhTien.CoSoGiamGia(_baoGia.TienPhong, _baoGia.TienDichVu, _baoGia.PhuThu)))
+                {
+                    using (var duyet = new FrmDuyetGiamGia(_bll))
+                    {
+                        if (duyet.ShowDialog(this) != DialogResult.OK) return;
+                        nguoiDuyet = duyet.MaNguoiDuyet;
+                    }
+                }
                 int maHd = _bll.TraPhong(maPhieu, _user.MaNguoiDung, _ngayTra.Value, _giam.Value,
-                    Convert.ToString(_hinhThuc.SelectedItem), _user.VaiTro == VaiTroNguoiDung.QuanLy);
+                    Convert.ToString(_hinhThuc.SelectedItem), laQuanLy, nguoiDuyet);
 
                 if (UiHelper.XacNhan(this, "Đã lập hóa đơn số " + maHd + ". In hóa đơn ngay?"))
                     InHoaDon(maHd, maPhieu);

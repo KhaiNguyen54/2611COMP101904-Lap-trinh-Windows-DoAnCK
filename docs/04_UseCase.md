@@ -116,7 +116,7 @@ Quan hệ giữa các use case (mô hình mục tiêu):
 ### UC13 – Trả phòng và lập hóa đơn
 - **Tiền điều kiện:** Có phiếu thuê Đang ở.
 - **Luồng chính:** (1) Chọn phòng cần trả. (2) Hệ thống hiển thị tiền phòng, dịch vụ, phụ thu, cọc. (3) Nhập giảm giá (nếu có), chọn hình thức thanh toán. (4) Xác nhận. (5) Hệ thống chạy **Transaction** (QT50). (6) Hỏi in hóa đơn.
-- **Luồng ngoại lệ:** Lỗi bất kỳ bước nào → rollback, thông báo, dữ liệu như cũ. Giảm giá > 10% với Lễ tân → yêu cầu Quản lý duyệt.
+- **Luồng ngoại lệ:** Lỗi bất kỳ bước nào → rollback, thông báo, dữ liệu như cũ. Giảm giá > 10% với Lễ tân → hiện hộp thoại để Quản lý nhập tài khoản duyệt; sai tài khoản hoặc không phải Quản lý → không trả phòng; hóa đơn ghi người duyệt.
 - **Hậu điều kiện:** Có HoaDon; PhieuThue Đã trả; phòng Dọn dẹp.
 
 ### UC23 – Đổi phòng khi đang lưu trú

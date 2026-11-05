@@ -74,6 +74,9 @@ namespace QuanLyKhachSan.Tests
             Bang("QT45 không âm", QuyTacTinhTien.TinhTongThanhToan(100000m, 0m, 0m, 0m, 500000m), 0m);
             Bang("Cơ sở giảm giá", QuyTacTinhTien.CoSoGiamGia(800000m, 95000m, 105000m), 1000000m);
             Bang("Giảm tối đa lễ tân", QuyTacTinhTien.TyLeGiamToiDaLeTan, 0.10m);
+            Bang("QT44 đúng 10% không cần duyệt", QuyTacTinhTien.CanQuanLyDuyet(100000m, 1000000m), false);
+            Bang("QT44 vượt 10% cần Quản lý duyệt", QuyTacTinhTien.CanQuanLyDuyet(100001m, 1000000m), true);
+            Bang("QT44 không giảm không cần duyệt", QuyTacTinhTien.CanQuanLyDuyet(0m, 1000000m), false);
         }
 
         private static void Coc()

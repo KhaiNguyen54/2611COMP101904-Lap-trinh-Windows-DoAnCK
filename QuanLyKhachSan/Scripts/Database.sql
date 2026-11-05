@@ -209,6 +209,14 @@ CREATE TABLE dbo.HoaDon (
 );
 GO
 
+-- Người duyệt giảm giá (Quản lý) khi mức giảm vượt 10% tiền hàng; NULL nếu không cần duyệt.
+IF COL_LENGTH(N'dbo.HoaDon', N'MaNguoiDuyetGiam') IS NULL
+    ALTER TABLE dbo.HoaDon ADD MaNguoiDuyetGiam int NULL;
+GO
+IF NOT EXISTS(SELECT 1 FROM sys.foreign_keys WHERE name=N'FK_HoaDon_NguoiDuyetGiam')
+    ALTER TABLE dbo.HoaDon ADD CONSTRAINT FK_HoaDon_NguoiDuyetGiam FOREIGN KEY (MaNguoiDuyetGiam) REFERENCES dbo.NguoiDung(MaNguoiDung);
+GO
+
 IF NOT EXISTS(SELECT 1 FROM sys.indexes WHERE object_id=OBJECT_ID(N'dbo.HoaDon') AND name=N'IX_HoaDon_NgayLap')
     CREATE INDEX IX_HoaDon_NgayLap ON dbo.HoaDon(NgayLap DESC) INCLUDE (MaPhieuThue,TongThanhToan);
 GO
@@ -302,7 +310,7 @@ GO
 CREATE OR ALTER PROCEDURE dbo.sp_TraPhong
     @MaPhieuThue int, @MaNguoiDung int, @NgayTra datetime2(0),
     @PhuThu decimal(18,2)=0, @GiamGia decimal(18,2)=0,
-    @HinhThucThanhToan nvarchar(20)=N'Tiền mặt'
+    @HinhThucThanhToan nvarchar(20)=N'Tiền mặt', @MaNguoiDuyetGiam int=NULL
 AS
 BEGIN
     SET NOCOUNT ON; SET XACT_ABORT ON;
@@ -319,10 +327,15 @@ BEGIN
         SET @TienPhong=@SoDem*@Gia;
         SELECT @TienDichVu=COALESCE(SUM(SoLuong*DonGia),0) FROM dbo.ChiTietDichVu WHERE MaPhieuThue=@MaPhieuThue;
         IF @PhuThu<0 OR @GiamGia<0 OR @GiamGia>@TienPhong+@TienDichVu+@PhuThu THROW 50008,N'Phụ thu hoặc giảm giá không hợp lệ.',1;
+        -- Giảm giá trên 10% tiền hàng (phòng + dịch vụ + phụ thu) cần một Quản lý đang hoạt động duyệt.
+        DECLARE @CanDuyet bit=CASE WHEN @GiamGia>0.10*(@TienPhong+@TienDichVu+@PhuThu) THEN 1 ELSE 0 END;
+        IF @CanDuyet=1 AND NOT EXISTS(SELECT 1 FROM dbo.NguoiDung WHERE MaNguoiDung=@MaNguoiDuyetGiam AND VaiTro='QuanLy' AND HoatDong=1)
+            THROW 50016,N'Giảm giá trên 10% cần một Quản lý đang hoạt động duyệt.',1;
         SET @Tong=@TienPhong+@TienDichVu+@PhuThu-@GiamGia-@TienCoc;
         IF @Tong<0 SET @Tong=0;
-        INSERT dbo.HoaDon(MaPhieuThue,MaNguoiDung,SoDem,TienPhong,TienDichVu,PhuThu,GiamGia,TienCoc,TongThanhToan,HinhThucThanhToan)
-        VALUES(@MaPhieuThue,@MaNguoiDung,@SoDem,@TienPhong,@TienDichVu,@PhuThu,@GiamGia,@TienCoc,@Tong,@HinhThucThanhToan);
+        INSERT dbo.HoaDon(MaPhieuThue,MaNguoiDung,SoDem,TienPhong,TienDichVu,PhuThu,GiamGia,TienCoc,TongThanhToan,HinhThucThanhToan,MaNguoiDuyetGiam)
+        VALUES(@MaPhieuThue,@MaNguoiDung,@SoDem,@TienPhong,@TienDichVu,@PhuThu,@GiamGia,@TienCoc,@Tong,@HinhThucThanhToan,
+               CASE WHEN @CanDuyet=1 THEN @MaNguoiDuyetGiam ELSE NULL END);
         UPDATE dbo.PhieuThue SET TrangThai=N'Đã trả',NgayDiThucTe=@NgayTra WHERE MaPhieuThue=@MaPhieuThue;
         UPDATE dbo.Phong SET TrangThai=N'Dọn dẹp' WHERE MaPhong=@MaPhong;
         COMMIT;

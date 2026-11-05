@@ -96,9 +96,14 @@ namespace QuanLyKhachSan.BLL
         }
 
         public int TraPhong(int maPhieuThue, int maNguoiDung, DateTime ngayTra, decimal giamGia,
-            string hinhThuc, bool laQuanLy)
+            string hinhThuc, bool laQuanLy, int? maNguoiDuyet = null)
         {
-            return _hoaDonBll.TraPhong(maPhieuThue, maNguoiDung, ngayTra, giamGia, hinhThuc, laQuanLy);
+            return _hoaDonBll.TraPhong(maPhieuThue, maNguoiDung, ngayTra, giamGia, hinhThuc, laQuanLy, maNguoiDuyet);
+        }
+
+        public int XacThucNguoiDuyet(string tenDangNhap, string matKhau)
+        {
+            return _hoaDonBll.XacThucNguoiDuyet(tenDangNhap, matKhau);
         }
     }
 }

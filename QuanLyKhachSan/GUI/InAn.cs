@@ -111,6 +111,8 @@ namespace QuanLyKhachSan.GUI
                 y = DongTien(g, fThuong, phai, m, y, "Tiền dịch vụ", Tien(_hoaDon["TienDichVu"]));
                 y = DongTien(g, fThuong, phai, m, y, "Phụ thu trả muộn", Tien(_hoaDon["PhuThu"]));
                 y = DongTien(g, fThuong, phai, m, y, "Giảm giá", "- " + Tien(_hoaDon["GiamGia"]));
+                if (_hoaDon.Table.Columns.Contains("NguoiDuyetGiam") && !(_hoaDon["NguoiDuyetGiam"] is DBNull))
+                    y = DongTien(g, fThuong, phai, m, y, "Quản lý duyệt giảm giá", Convert.ToString(_hoaDon["NguoiDuyetGiam"]));
                 y = DongTien(g, fThuong, phai, m, y, "Tiền cọc đã nhận", "- " + Tien(_hoaDon["TienCoc"]));
                 y += 6;
                 g.DrawLine(but, m.Left, y, m.Right, y);

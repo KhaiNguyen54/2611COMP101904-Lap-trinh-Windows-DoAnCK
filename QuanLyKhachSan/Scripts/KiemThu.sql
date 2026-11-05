@@ -195,6 +195,32 @@ WHERE b.SoPhongCoKhach - a.SoPhongCoKhach = CASE WHEN b.Ngay IN (@m3, DATEADD(da
   AND b.Ngay IN (@m3, DATEADD(day,1,@m3), @m1);
 INSERT #KQ VALUES ('DB-10b', N'Từ ngày đổi chỉ tính phòng mới; ngày trả phòng không tính', CASE WHEN @n = 3 THEN 1 ELSE 0 END, CONCAT(N'Số ngày khớp: ', @n, N'/3'));
 
+-- ===== DB-11: giảm giá trên 10% cần Quản lý duyệt =====
+DECLARE @now datetime2(0) = SYSDATETIME(), @ptA int, @ptB int, @hdA int;
+INSERT dbo.PhieuThue(MaKhachHang, MaPhong, MaNguoiDung, NgayNhan, NgayDiDuKien, GiaPhongMoiDem, TrangThai)
+VALUES (@kh1, @p103, @nd, DATEADD(day,-2,@now), @h, 400000, N'Đang ở');
+SET @ptA = SCOPE_IDENTITY();
+INSERT dbo.PhieuThue(MaKhachHang, MaPhong, MaNguoiDung, NgayNhan, NgayDiDuKien, GiaPhongMoiDem, TrangThai)
+VALUES (@kh2, @p202, @nd, DATEADD(day,-2,@now), @h, 400000, N'Đang ở');
+SET @ptB = SCOPE_IDENTITY();
+SET @err = NULL;
+BEGIN TRY EXEC dbo.sp_TraPhong @MaPhieuThue = @ptA, @MaNguoiDung = @nd, @NgayTra = @now, @GiamGia = 160000; END TRY
+BEGIN CATCH SET @err = ERROR_NUMBER(); END CATCH
+SELECT @n = COUNT(*) FROM dbo.PhieuThue WHERE MaPhieuThue = @ptA AND TrangThai = N'Đang ở';
+INSERT #KQ VALUES ('DB-11a', N'Giảm 20% không có người duyệt bị từ chối (50016), phiếu vẫn Đang ở', CASE WHEN @err = 50016 AND @n = 1 THEN 1 ELSE 0 END, CONCAT(N'Mã lỗi: ', ISNULL(CONVERT(varchar(10), @err), N'không lỗi')));
+SET @err = NULL;
+BEGIN TRY EXEC dbo.sp_TraPhong @MaPhieuThue = @ptA, @MaNguoiDung = @nd, @NgayTra = @now, @GiamGia = 160000, @MaNguoiDuyetGiam = @p103; END TRY
+BEGIN CATCH SET @err = ERROR_NUMBER(); END CATCH
+INSERT #KQ VALUES ('DB-11b', N'Người duyệt không phải Quản lý hợp lệ bị từ chối (50016)', CASE WHEN @err = 50016 THEN 1 ELSE 0 END, CONCAT(N'Mã lỗi: ', ISNULL(CONVERT(varchar(10), @err), N'không lỗi')));
+DELETE #R;
+INSERT #R EXEC dbo.sp_TraPhong @MaPhieuThue = @ptA, @MaNguoiDung = @nd, @NgayTra = @now, @GiamGia = 160000, @MaNguoiDuyetGiam = @nd;
+SELECT @n = COUNT(*) FROM #R r JOIN dbo.HoaDon h ON h.MaHoaDon = r.MaHoaDon WHERE h.MaNguoiDuyetGiam = @nd AND h.GiamGia = 160000 AND r.TongThanhToan = r.TienPhong + r.TienDichVu + r.PhuThu - 160000;
+INSERT #KQ VALUES ('DB-11c', N'Có Quản lý duyệt thì lập hóa đơn và ghi người duyệt', CASE WHEN @n = 1 THEN 1 ELSE 0 END, CONCAT(N'Hóa đơn khớp: ', @n));
+DELETE #R;
+INSERT #R EXEC dbo.sp_TraPhong @MaPhieuThue = @ptB, @MaNguoiDung = @nd, @NgayTra = @now, @GiamGia = 80000;
+SELECT @n = COUNT(*) FROM #R r JOIN dbo.HoaDon h ON h.MaHoaDon = r.MaHoaDon WHERE h.MaNguoiDuyetGiam IS NULL AND h.GiamGia = 80000;
+INSERT #KQ VALUES ('DB-11d', N'Giảm đúng 10% không cần duyệt, không ghi người duyệt', CASE WHEN @n = 1 THEN 1 ELSE 0 END, CONCAT(N'Hóa đơn khớp: ', @n));
+
 -- ===== Dọn dẹp =====
 Ket:
 DELETE h FROM dbo.HoaDon h JOIN dbo.PhieuThue p ON h.MaPhieuThue = p.MaPhieuThue WHERE p.MaKhachHang IN (SELECT MaKhachHang FROM dbo.KhachHang WHERE SoGiayTo IN ('099999999991','099999999992'));

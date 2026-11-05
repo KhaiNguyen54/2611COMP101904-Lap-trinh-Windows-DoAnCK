@@ -16,7 +16,7 @@ F2 Đặt phòng · F3 Nhận phòng · F4 Ghi dịch vụ · F5 Sơ đồ phòn
 2. **Đặt phòng** (F2): chọn khách (hoặc "Khách mới…"), chọn ngày, phòng trống, cọc; thử đặt trùng lịch để thấy báo lỗi.
 3. **Nhận phòng** (F3): nhận từ đặt trước; thử thêm một khách vãng lai.
 4. **Ghi dịch vụ** (F4): ghi nước/giặt ủi, xóa một dòng.
-5. **Trả phòng** (F6): xem bảng tính tiền, thử giảm giá > 10% (Lễ tân bị từ chối), trả phòng và in hóa đơn.
+5. **Trả phòng** (F6): xem bảng tính tiền, thử giảm giá > 10% (Lễ tân phải nhờ Quản lý nhập tài khoản duyệt), trả phòng và in hóa đơn.
 6. **Sơ đồ phòng** (F5): phòng vừa trả ở "Dọn dẹp" → bấm "Đã dọn xong".
 7. **Giao diện tối**: nhấn Ctrl+D, mở thêm vài cửa sổ để thấy cả hai chế độ; đóng và mở lại ứng dụng để thấy lựa chọn được nhớ.
 8. **Mã QR**: Tra cứu → Mã QR phòng và giá, chọn một phòng, lưu PNG, quét bằng điện thoại và xem trang phòng; thử chọn ngày đến/đi.

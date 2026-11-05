@@ -14,7 +14,7 @@ Các thao tác tạo dữ liệu kiểm thử được bao trong transaction và
 | DB-04 | Thêm dịch vụ và trả phòng trong transaction thử nghiệm | Đạt (DB-04a–f): hóa đơn tính đủ tiền phòng theo số đêm và dịch vụ, phòng sang Dọn dẹp |
 | DB-05 | Đặt phòng có khoảng ngày giao với đặt phòng đang hiệu lực | Đạt (DB-05): đặt phòng giao nhau bị từ chối; đặt phòng đã hủy giải phóng lịch |
 | DB-06 | Chạy lại script và kiểm tra index | Đạt: script chạy hai lần, đủ 6 index kiểm tra (gồm `UX_PhieuThue_DatPhong` lọc) |
-| BUILD-01 | `dotnet build QuanLyKhachSan.sln --no-restore` (target `net10.0-windows`) | Đạt (GitHub Actions, Windows, .NET 10): build toàn bộ solution thành công, 129/129 test logic |
+| BUILD-01 | `dotnet build QuanLyKhachSan.sln --no-restore` (target `net10.0-windows`) | Đạt (GitHub Actions, Windows, .NET 10): build toàn bộ solution thành công, 132/132 test logic |
 
 ## Kiểm thử GUI cần thực hiện trên máy có SQL Server cấu hình đúng
 
@@ -35,7 +35,7 @@ Các kịch bản UI trong bảng là các bước cần thực hiện thủ cô
 
 ## Kiểm thử logic tự động (không cần CSDL)
 
-Project `QuanLyKhachSan.Tests` gồm **129 ca** chia thành 13 nhóm (bảng dưới). Chạy: `dotnet run --project QuanLyKhachSan.Tests` (mã thoát 1 nếu có ca lỗi). Kết quả: 129/129 ca đạt. Các kiểm tra này không thay thế các kịch bản UI-01…UI-12.
+Project `QuanLyKhachSan.Tests` gồm **132 ca** chia thành 13 nhóm (bảng dưới). Chạy: `dotnet run --project QuanLyKhachSan.Tests` (mã thoát 1 nếu có ca lỗi). Kết quả: 132/132 ca đạt. Các kiểm tra này không thay thế các kịch bản UI-01…UI-12.
 
 | ID | Kịch bản bổ sung | Kết quả mong đợi |
 |---|---|---|
@@ -44,12 +44,13 @@ Project `QuanLyKhachSan.Tests` gồm **129 ca** chia thành 13 nhóm (bảng dư
 | UI-18 | Mở Đổi phòng (F8), chọn phòng đang ở, chọn phòng trống khác loại giá, nhập lý do, xác nhận | Có lời nhắc giá; phòng cũ → Dọn dẹp, phòng mới → Đang ở trên sơ đồ; lịch sử hiện đúng một dòng; dịch vụ đã ghi còn nguyên; trả phòng sau đó tính theo đơn giá cũ |
 | UI-19 | Đổi phòng khi phòng mới vừa bị đặt ở máy khác; đổi khi không còn phòng trống | Báo lỗi rõ, dữ liệu không đổi; thông báo "không có phòng trống" khi danh sách rỗng |
 
-### Chi tiết 129 ca theo nhóm
+### Chi tiết 132 ca theo nhóm
 
 | Nhóm (hàm kiểm thử) | Số ca | Quy tắc | Nội dung kiểm tra |
 |---|---|---|---|
 | `SoDem` | 3 | QT40 | Số đêm tối thiểu 1; cách làm tròn theo ngày |
 | `PhuThuTraMuon` | 5 | QT43 | Mốc phụ thu 1/3/6 giờ so với 12:00 (≤1 giờ miễn phí, 30%, 50%, 100%) |
+| `GiamGia` | 3 | QT44 | Đúng 10% không cần duyệt; vượt 10% cần Quản lý duyệt; không giảm không cần duyệt |
 | `TongThanhToan` | 4 | QT45 | Tổng = tiền phòng + dịch vụ + phụ thu − giảm giá − cọc; không âm |
 | `Coc` | 1 | QT15 | Cọc tối đa bằng giá 1 đêm × số đêm |
 | `GomDoanhThu` | 9 | – | Gom doanh thu theo ngày/tháng/loại phòng, kể cả ngày không phát sinh; tỷ lệ công suất trung bình |
@@ -69,9 +70,9 @@ Workflow `.github/workflows/kiem-thu.yml` chạy mỗi lần push lên `main`, k
 | Job | Môi trường | Nội dung |
 |---|---|---|
 | Kiểm thử SQL Server | Ubuntu, SQL Server 2022 (container) | Chạy `Database.sql` hai lần (tạo mới, chạy lại), rồi `Scripts/KiemThu.sql` |
-| Build và kiểm thử logic (.NET) | Windows, .NET 10 | `dotnet build` toàn bộ solution (WinForms, Web, Tests), chạy bộ test 129 ca |
+| Build và kiểm thử logic (.NET) | Windows, .NET 10 | `dotnet build` toàn bộ solution (WinForms, Web, Tests), chạy bộ test 132 ca |
 
-`Scripts/KiemThu.sql` gồm **30 ca**, in ĐẠT/LỖI từng ca và thoát với mã lỗi nếu có ca lỗi; script tự dọn dữ liệu thử và trả các phòng thử về Trống.
+`Scripts/KiemThu.sql` gồm **34 ca**, in ĐẠT/LỖI từng ca và thoát với mã lỗi nếu có ca lỗi; script tự dọn dữ liệu thử và trả các phòng thử về Trống.
 
 | Nhóm | Ca | Nội dung |
 |---|---|---|
@@ -82,6 +83,7 @@ Workflow `.github/workflows/kiem-thu.yml` chạy mỗi lần push lên `main`, k
 | Nhận và trả phòng (DB-04) | 6 | Phiếu thuê và trạng thái phòng, snapshot giá, không nhận phòng đang có khách, hóa đơn 2 đêm + dịch vụ, phòng sang Dọn dẹp, trả lần hai bị từ chối |
 | Đổi phòng (DB-08) | 10 | Từ chối đổi sang chính phòng đó (50013), phòng bảo trì (50014), phòng có đặt chỗ giao nhau (50015), phiếu đã trả (50012); đổi thành công, trạng thái hai phòng, lịch sử, dịch vụ giữ nguyên, trả phòng theo đơn giá ban đầu (QT49) |
 | Thống kê (DB-09) | 1 | `sp_ThongKeDoanhThu` chạy không lỗi |
+| Giảm giá cần duyệt (DB-11) | 4 | Giảm 20% không người duyệt bị từ chối (50016) và phiếu vẫn Đang ở; người duyệt không hợp lệ bị từ chối; có Quản lý duyệt thì lập hóa đơn và ghi người duyệt; giảm đúng 10% không cần duyệt |
 | Công suất khi đổi phòng (DB-10) | 2 | Phiếu đổi phòng được tách đoạn: các đêm trước ngày đổi tính cho phòng cũ (hai phòng cùng có khách), từ ngày đổi chỉ tính phòng mới, ngày trả phòng không tính |
 
 Chạy thủ công trên database thử nghiệm: `sqlcmd -S . -E -C -b -f 65001 -i QuanLyKhachSan\Scripts\Database.sql`, rồi `-i QuanLyKhachSan\Scripts\KiemThu.sql`.
