@@ -1,6 +1,6 @@
 using System;
 using System.Windows.Forms;
-using QuanLyKhachSan.GUI;
+using QuanLyKhachSan.Views;
 
 namespace QuanLyKhachSan
 {

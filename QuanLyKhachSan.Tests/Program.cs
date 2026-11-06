@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using QuanLyKhachSan.BLL;
+using QuanLyKhachSan.Services;
 using QuanLyKhachSan.Web;
 
 namespace QuanLyKhachSan.Tests
@@ -95,25 +95,25 @@ namespace QuanLyKhachSan.Tests
             goc.Rows.Add(new DateTime(2026, 10, 1), "Cao cấp", 1, 500000m);
             goc.Rows.Add(new DateTime(2026, 10, 3), "Tiêu chuẩn", 1, 300000m);
 
-            DataTable ngay = BaoCaoBLL.GomDoanhThu(goc, new DateTime(2026, 10, 1), new DateTime(2026, 10, 3), KieuGomDoanhThu.Ngay);
+            DataTable ngay = BaoCaoService.GomDoanhThu(goc, new DateTime(2026, 10, 1), new DateTime(2026, 10, 3), KieuGomDoanhThu.Ngay);
             Bang("Gom ngày: đủ 3 ngày kể cả ngày trống", ngay.Rows.Count, 3);
             Bang("Gom ngày: ngày 1", Convert.ToDecimal(ngay.Rows[0]["DoanhThu"]), 1500000m);
             Bang("Gom ngày: ngày trống = 0", Convert.ToDecimal(ngay.Rows[1]["DoanhThu"]), 0m);
-            Bang("Tổng doanh thu", BaoCaoBLL.TongDoanhThu(ngay), 1800000m);
-            Bang("Tổng số hóa đơn", BaoCaoBLL.TongSoHoaDon(ngay), 4L);
+            Bang("Tổng doanh thu", BaoCaoService.TongDoanhThu(ngay), 1800000m);
+            Bang("Tổng số hóa đơn", BaoCaoService.TongSoHoaDon(ngay), 4L);
 
-            DataTable loai = BaoCaoBLL.GomDoanhThu(goc, new DateTime(2026, 10, 1), new DateTime(2026, 10, 3), KieuGomDoanhThu.LoaiPhong);
+            DataTable loai = BaoCaoService.GomDoanhThu(goc, new DateTime(2026, 10, 1), new DateTime(2026, 10, 3), KieuGomDoanhThu.LoaiPhong);
             Bang("Gom loại phòng: 2 loại", loai.Rows.Count, 2);
             Bang("Gom loại phòng: loại cao nhất đứng đầu", Convert.ToString(loai.Rows[0]["Nhan"]), "Tiêu chuẩn");
 
-            DataTable thang = BaoCaoBLL.GomDoanhThu(goc, new DateTime(2026, 10, 1), new DateTime(2026, 11, 15), KieuGomDoanhThu.Thang);
+            DataTable thang = BaoCaoService.GomDoanhThu(goc, new DateTime(2026, 10, 1), new DateTime(2026, 11, 15), KieuGomDoanhThu.Thang);
             Bang("Gom tháng: 2 tháng", thang.Rows.Count, 2);
 
             var cs = new DataTable();
             cs.Columns.Add("TyLe", typeof(decimal));
             cs.Rows.Add(50m);
             cs.Rows.Add(100m);
-            Bang("Tỷ lệ trung bình", BaoCaoBLL.TyLeTrungBinh(cs), 75m);
+            Bang("Tỷ lệ trung bình", BaoCaoService.TyLeTrungBinh(cs), 75m);
         }
 
         private static void Csv()
@@ -333,7 +333,7 @@ namespace QuanLyKhachSan.Tests
             Kiem("Lời nhắc giá: phòng mới đắt hơn", QuyTacDoiPhong.LoiNhacGia(450000m, 750000m).Contains("cao hơn"));
             Kiem("Lời nhắc giá: phòng mới rẻ hơn", QuyTacDoiPhong.LoiNhacGia(750000m, 450000m).Contains("thấp hơn"));
 
-            var bll = new LuuTruBLL();
+            var bll = new LuuTruService();
             Kiem("Đổi phòng: thiếu phiếu thuê bị từ chối", Nem(delegate { bll.DoiPhong(0, 5, 1, null); }));
             Kiem("Đổi phòng: thiếu phòng mới bị từ chối", Nem(delegate { bll.DoiPhong(5, 0, 1, null); }));
             Kiem("Đổi phòng: lý do quá dài bị từ chối trước khi vào CSDL", Nem(delegate { bll.DoiPhong(5, 6, 1, new string('a', 201)); }));

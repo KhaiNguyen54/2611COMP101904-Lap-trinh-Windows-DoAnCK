@@ -13,16 +13,16 @@
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
   </ItemGroup>
 
-  <!-- Dùng chung tầng DTO/DAL/BLL với ứng dụng WinForms (không chứa mã giao diện) thay vì viết lại nghiệp vụ.
+  <!-- Dùng chung tầng Models/Repositories/Services với ứng dụng WinForms (không chứa mã giao diện) thay vì viết lại nghiệp vụ.
        Chỉ lấy các lớp đọc dữ liệu cần cho trang tra cứu công khai. -->
   <ItemGroup>
-    <Compile Include="..\QuanLyKhachSan\DAL\Database.cs" Link="Shared\DAL\Database.cs" />
-    <Compile Include="..\QuanLyKhachSan\DAL\PhongDAL.cs" Link="Shared\DAL\PhongDAL.cs" />
-    <Compile Include="..\QuanLyKhachSan\DAL\LoaiPhongDAL.cs" Link="Shared\DAL\LoaiPhongDAL.cs" />
-    <Compile Include="..\QuanLyKhachSan\DTO\Phong.cs" Link="Shared\DTO\Phong.cs" />
-    <Compile Include="..\QuanLyKhachSan\DTO\LoaiPhong.cs" Link="Shared\DTO\LoaiPhong.cs" />
-    <Compile Include="..\QuanLyKhachSan\BLL\PhongBLL.cs" Link="Shared\BLL\PhongBLL.cs" />
-    <Compile Include="..\QuanLyKhachSan\BLL\LoaiPhongBLL.cs" Link="Shared\BLL\LoaiPhongBLL.cs" />
+    <Compile Include="..\QuanLyKhachSan\Repositories\Database.cs" Link="Shared\Repositories\Database.cs" />
+    <Compile Include="..\QuanLyKhachSan\Repositories\PhongRepository.cs" Link="Shared\Repositories\PhongRepository.cs" />
+    <Compile Include="..\QuanLyKhachSan\Repositories\LoaiPhongRepository.cs" Link="Shared\Repositories\LoaiPhongRepository.cs" />
+    <Compile Include="..\QuanLyKhachSan\Models\Phong.cs" Link="Shared\Models\Phong.cs" />
+    <Compile Include="..\QuanLyKhachSan\Models\LoaiPhong.cs" Link="Shared\Models\LoaiPhong.cs" />
+    <Compile Include="..\QuanLyKhachSan\Services\PhongService.cs" Link="Shared\Services\PhongService.cs" />
+    <Compile Include="..\QuanLyKhachSan\Services\LoaiPhongService.cs" Link="Shared\Services\LoaiPhongService.cs" />
   </ItemGroup>
 
   <ItemGroup>

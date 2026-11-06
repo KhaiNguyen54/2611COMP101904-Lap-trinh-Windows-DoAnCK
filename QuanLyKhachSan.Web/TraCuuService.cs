@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using QuanLyKhachSan.BLL;
+using QuanLyKhachSan.Services;
 
 namespace QuanLyKhachSan.Web
 {
@@ -35,7 +35,7 @@ namespace QuanLyKhachSan.Web
         public static List<GiaLoaiPhong> LayBangGia()
         {
             var kq = new List<GiaLoaiPhong>();
-            foreach (DataRow r in new LoaiPhongBLL().TimKiem().Rows)
+            foreach (DataRow r in new LoaiPhongService().TimKiem().Rows)
             {
                 if (!Convert.ToBoolean(r["HoatDong"])) continue;
                 kq.Add(new GiaLoaiPhong
@@ -55,10 +55,10 @@ namespace QuanLyKhachSan.Web
             string so = soPhong.Trim();
 
             var loai = new Dictionary<int, DataRow>();
-            foreach (DataRow r in new LoaiPhongBLL().TimKiem().Rows)
+            foreach (DataRow r in new LoaiPhongService().TimKiem().Rows)
                 loai[Convert.ToInt32(r["MaLoaiPhong"])] = r;
 
-            foreach (DataRow r in new PhongBLL().TimKiem(so).Rows)
+            foreach (DataRow r in new PhongService().TimKiem(so).Rows)
             {
                 if (!string.Equals(Convert.ToString(r["SoPhong"]).Trim(), so, StringComparison.OrdinalIgnoreCase)) continue;
                 if (!Convert.ToBoolean(r["HoatDong"])) return null;
@@ -84,7 +84,7 @@ namespace QuanLyKhachSan.Web
             if ((di.Date - den.Date).TotalDays > ToiDaDem)
                 throw new ArgumentException("Chỉ tra cứu tối đa " + ToiDaDem + " đêm một lần.");
             var kq = new List<ThongTinPhong>();
-            foreach (DataRow r in new PhongBLL().TimKiemTrongKhoang(den, di).Rows)
+            foreach (DataRow r in new PhongService().TimKiemTrongKhoang(den, di).Rows)
                 kq.Add(new ThongTinPhong
                 {
                     SoPhong = Convert.ToString(r["SoPhong"]).Trim(),
