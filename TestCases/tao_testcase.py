@@ -3,7 +3,7 @@
 
 Cách dùng (chạy tại thư mục gốc solution, cần python3 và openpyxl):
     dotnet run --project QuanLyKhachSan.Tests -c Release -- --xuat TestCases/ketqua_tudong.tsv
-    python3 TestCases/tao_testcase.py TestCases/ketqua_tudong.tsv
+    py TestCases/tao_testcase.py TestCases/ketqua_tudong.tsv
 
 Nguồn dữ liệu:
   - ketqua_tudong.tsv: từng ca của QuanLyKhachSan.Tests (do chính bộ test xuất ra, nên không bỏ sót ca nào).
@@ -13,6 +13,7 @@ Cột "Kết quả thực tế" của các ca thủ công do người thử đi�
 """
 import re
 import sys
+from copy import copy
 from pathlib import Path
 
 from openpyxl import Workbook, load_workbook
@@ -57,7 +58,8 @@ def giu_ket_qua_cu():
         if ws:
             for r in ws.iter_rows(min_row=2, values_only=True):
                 if r[0]:
-                    cu[r[0]] = r[3:7]
+                    ghi_chu = r[6] if len(r) > 6 else r[4] if len(r) > 4 else None
+                    cu[r[0]] = (r[3] if len(r) > 3 else None, ghi_chu)
     return cu
 
 
@@ -98,6 +100,7 @@ def main():
             ma = "%s-%02d" % (nhom, dem[nhom])
         qt = "Presenter MVP" if nhom.endswith("PresenterTests") else quy_tac.get(nhom, "")
         ta.append([ma, nhom, qt, mota, ("= " + kyvong) if kyvong != "" else "Điều kiện kiểm tra thỏa (đúng như mô tả)", thucte, ketqua])
+        ta.cell(row=ta.max_row, column=5).data_type = "s"
     dinh_dang(ta, (18, 26, 16, 70, 34, 18, 10))
 
     # ---- CSDL / build (tự động trên GitHub Actions)
@@ -114,10 +117,10 @@ def main():
 
     # ---- Giao diện / web (thủ công)
     tc = wb.create_sheet("GiaoDien_Web")
-    tc.append(["ID", "Chức năng / thao tác", "Kết quả mong đợi", "Kết quả thực tế (Đạt/Lỗi)", "Người thử", "Ngày thử", "Ghi chú"])
+    tc.append(["ID", "Chức năng / thao tác", "Kết quả mong đợi", "Kết quả thực tế (Đạt/Lỗi)", "Ghi chú"])
     for i, k, r in thu_cong:
-        tc.append([i, k, r] + list(cu.get(i, (None, None, None, None))))
-    dinh_dang(tc, (10, 60, 60, 20, 14, 12, 40))
+        tc.append([i, k, r] + list(cu.get(i, (None, None))))
+    dinh_dang(tc, (10, 60, 60, 22, 40))
 
     # ---- Tổng hợp
     th = wb.create_sheet("TongHop", 0)
@@ -136,7 +139,7 @@ def main():
         ["Cách dùng và cập nhật bảng test case"],
         ["Sheet KiemThuTuDong: liệt kê từng ca do QuanLyKhachSan.Tests xuất ra (mã MVP-xx lấy từ tên ca; ca khác đánh số theo nhóm, ví dụ SoDem-01)."],
         ["Sheet CSDL_Build: ca SQL trong Scripts/KiemThu.sql và build; kết quả ghi nhận từ lần chạy GitHub Actions gần nhất."],
-        ["Sheet GiaoDien_Web: kịch bản thủ công, điền cột 'Kết quả thực tế', 'Người thử', 'Ngày thử' sau khi chạy trên máy Windows; lập lại bảng không làm mất phần đã điền."],
+        ["Sheet GiaoDien_Web: kịch bản thủ công, điền cột 'Kết quả thực tế' và 'Ghi chú' sau khi chạy trên máy Windows; lập lại bảng không làm mất phần đã điền."],
         ["Thêm ca mới: viết ca trong QuanLyKhachSan.Tests (hoặc KiemThu.sql / docs/07), rồi chạy lại hai lệnh ở đầu tệp TestCases/tao_testcase.py."],
         ["Nếu thêm ca mà chưa lập lại bảng, số ca ở sheet TongHop sẽ thấp hơn thực tế; sau mỗi lần thêm ca cần lập lại bảng này."],
     ]:
@@ -145,6 +148,13 @@ def main():
     hd.column_dimensions["A"].width = 150
     for r in hd.iter_rows(min_row=2):
         r[0].alignment = Alignment(wrap_text=True, vertical="top")
+
+    for ws in wb.worksheets:
+        for row in ws.iter_rows():
+            for cell in row:
+                font = copy(cell.font)
+                font.name = "Times New Roman"
+                cell.font = font
 
     wb.save(XLSX)
     print("Đã lập", XLSX, "-", ta.max_row - 1, "ca tự động,", cs.max_row - 1, "ca CSDL/build,", tc.max_row - 1, "ca thủ công")
