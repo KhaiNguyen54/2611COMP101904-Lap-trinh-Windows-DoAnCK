@@ -44,6 +44,8 @@ Nếu đã tạo CSDL từ phiên bản trước, chạy lại `01_CreateDatabas
 
 Bộ test case dạng bảng tính, liệt kê từng ca (208 ca tự động, 39 ca CSDL/build, 27 kịch bản giao diện và web thủ công): [`TestCases/TestCase.xlsx`](TestCases/TestCase.xlsx). Khi thêm ca mới, lập lại bảng bằng `TestCases/tao_testcase.py` (hướng dẫn trong sheet HuongDan).
 
+Có thể khôi phục nhanh từ tệp sao lưu [`Database/QuanLyKhachSan.bak`](Database/QuanLyKhachSan.bak) thay cho hai script (cần SQL Server 2022 trở lên): trong SSMS chọn Restore Database → Device, hoặc `RESTORE DATABASE QuanLyKhachSan FROM DISK = N'<đường dẫn>\QuanLyKhachSan.bak' WITH REPLACE`. Tệp được tạo tự động từ hai script bằng job "Tạo và kiểm tra tệp sao lưu .bak" của GitHub Actions (chạy thủ công với tùy chọn `commit_bak`), đã khôi phục thử và chạy lại bộ kiểm thử SQL thành công.
+
 Kiểm thử tự động trên GitHub Actions (`.github/workflows/kiem-thu.yml`): chạy hai script 01 và 02 hai lần trên SQL Server 2022, 34 ca trong `Scripts/KiemThu.sql`, build toàn bộ solution trên Windows và bộ test 208 ca.
 
 ### 2. Cấu hình kết nối

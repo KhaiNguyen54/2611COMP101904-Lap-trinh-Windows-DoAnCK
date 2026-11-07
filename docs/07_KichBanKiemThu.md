@@ -117,3 +117,6 @@ Quy ước: mỗi khi thêm hoặc sửa một ca kiểm thử (test tự độn
 2. `python3 TestCases/tao_testcase.py TestCases/ketqua_tudong.tsv` (cần `openpyxl`).
 
 Script giữ nguyên phần đã điền ở sheet `GiaoDien_Web`. Tệp `.tsv` chỉ là trung gian, không đưa vào Git.
+
+## Tệp sao lưu `Database/QuanLyKhachSan.bak`
+Job `sao-luu` của GitHub Actions tạo database từ `01_CreateDatabase.sql` và `02_InsertSampleData.sql`, sao lưu bằng `BACKUP DATABASE ... WITH CHECKSUM`, xóa database, khôi phục từ chính tệp `.bak` rồi chạy `KiemThu.sql` (34 ca). Tệp chỉ dùng được trên SQL Server 2022 trở lên; muốn tương thích rộng hơn dùng hai script. Khi đổi cấu trúc hoặc dữ liệu mẫu, chạy lại workflow với tùy chọn `commit_bak` để cập nhật tệp.
