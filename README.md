@@ -1,6 +1,6 @@
 # Quản lý khách sạn
 
-Ứng dụng desktop quản lý hoạt động khách sạn, xây dựng bằng C# Windows Forms và SQL Server. Project dùng các lớp DTO, DAL và BLL để tách giao diện, nghiệp vụ và truy cập dữ liệu.
+Ứng dụng desktop quản lý hoạt động khách sạn, xây dựng bằng C# Windows Forms và SQL Server. Project theo mô hình MVP (Model – View – Presenter): View là các Form, Presenter điều phối luồng nghiệp vụ, Service và Repository xử lý nghiệp vụ và truy cập dữ liệu.
 
 ## Chức năng
 
@@ -25,7 +25,7 @@ Phạm vi đã triển khai có thể thay đổi theo phiên bản source hiệ
 - SQL Server Express, LocalDB hoặc SQL Server có quyền tạo database và bảng.
 - Kết nối Windows Authentication theo mặc định; máy chạy ứng dụng cần truy cập được SQL Server.
 
-NuGet dependency được khai báo trong project: `Microsoft.Data.SqlClient` 5.2.2 (cả ứng dụng desktop và cổng web). Cổng web dùng ASP.NET Core đi kèm .NET 10 SDK; mã QR do bộ mã hóa tự viết trong `BLL/QrCode.cs` nên không cần thư viện QR. Khi restore/build lần đầu cần có kết nối NuGet.
+NuGet dependency được khai báo trong project: `Microsoft.Data.SqlClient` 5.2.2 (cả ứng dụng desktop và cổng web). Cổng web dùng ASP.NET Core đi kèm .NET 10 SDK; mã QR do bộ mã hóa tự viết trong `Services/QrCode.cs` nên không cần thư viện QR. Khi restore/build lần đầu cần có kết nối NuGet.
 
 ## Cài đặt và chạy
 
@@ -41,7 +41,7 @@ Có thể mở `QuanLyKhachSan/Scripts/Database.sql` bằng SQL Server Managemen
 
 Nếu đã tạo CSDL từ phiên bản trước, chạy lại `Database.sql` để bổ sung bảng `LichSuDoiPhong` và `sp_DoiPhong` (đổi phòng khi đang ở); script không xóa dữ liệu hiện có.
 
-Kiểm thử tự động trên GitHub Actions (`.github/workflows/kiem-thu.yml`): chạy `Database.sql` hai lần trên SQL Server 2022, 34 ca trong `Scripts/KiemThu.sql`, build toàn bộ solution trên Windows và bộ test 129 ca.
+Kiểm thử tự động trên GitHub Actions (`.github/workflows/kiem-thu.yml`): chạy `Database.sql` hai lần trên SQL Server 2022, 34 ca trong `Scripts/KiemThu.sql`, build toàn bộ solution trên Windows và bộ test 173 ca.
 
 ### 2. Cấu hình kết nối
 
@@ -116,19 +116,20 @@ QuanLyKhachSan/
 ├── QuanLyKhachSan.Tests/         # Kiểm thử logic tự động (không cần CSDL)
 ├── QuanLyKhachSan.Web/           # Cổng web tra cứu (ASP.NET Core, chỉ đọc)
 └── QuanLyKhachSan/
-    ├── BLL/                      # Nghiệp vụ; QrCode.cs, TraCuuUrl.cs cho mã QR
-    ├── DAL/                      # Truy vấn SQL, stored procedure, transaction
-    ├── DTO/                      # Đối tượng truyền dữ liệu
-    ├── GUI/                      # WinForms và UserControl (GiaoDien.cs: bộ màu sáng/tối)
+    ├── Views/                    # Form WinForms và interface View (IXxxView); GiaoDien.cs: bộ màu sáng/tối
+    ├── Presenters/               # Presenter điều phối giao diện và nghiệp vụ, không dùng WinForms
+    ├── Services/                 # Nghiệp vụ và interface IXxxService; QrCode.cs, TraCuuUrl.cs cho mã QR
+    ├── Repositories/             # Truy vấn SQL, stored procedure, transaction
+    ├── Models/                   # Đối tượng dữ liệu
     ├── Scripts/Database.sql      # Schema, dữ liệu mẫu, index, stored procedure
     ├── appsettings.json          # Kết nối CSDL và Web:BaseUrl cho mã QR
     ├── Program.cs
     └── QuanLyKhachSan.csproj
 ```
 
-Cổng web biên dịch lại một số tệp DTO/DAL/BLL của ứng dụng desktop (khai báo trong `QuanLyKhachSan.Web.csproj`) nên không nhân đôi nghiệp vụ.
+Cổng web biên dịch lại một số tệp Models/Repositories/Services của ứng dụng desktop (khai báo trong `QuanLyKhachSan.Web.csproj`) nên không nhân đôi nghiệp vụ.
 
-Luồng gọi chính: **GUI → BLL → DAL → SQL Server**. DTO được dùng để trao đổi dữ liệu giữa các tầng. Các truy vấn DAL sử dụng tham số SQL.
+Luồng gọi chính: **View → Presenter → Service → Repository → SQL Server**. View chỉ hiển thị và chuyển sự kiện cho Presenter qua interface; Presenter không tham chiếu WinForms nên kiểm thử được bằng View giả. Model dùng để trao đổi dữ liệu giữa các lớp. Các truy vấn Repository sử dụng tham số SQL.
 
 ## Kiểm tra nhanh
 
@@ -142,7 +143,7 @@ Sau khi build thành công và database đã kết nối được:
 6. Nhấn Ctrl+D để đổi giao diện sáng/tối; mở thêm vài cửa sổ và xác nhận chữ vẫn đọc được, đóng/mở lại ứng dụng để xác nhận lựa chọn được nhớ.
 7. Tra cứu → Mã QR phòng và giá: tạo QR cho một phòng, quét bằng điện thoại cùng mạng và xác nhận mở đúng trang phòng của cổng web.
 
-Kiểm thử logic tự động: `dotnet run --project QuanLyKhachSan.Tests` (quy tắc tính tiền, gom báo cáo, CSV, bộ mã hóa QR, đường dẫn tra cứu và logic cổng web; 132 ca).
+Kiểm thử logic tự động: `dotnet run --project QuanLyKhachSan.Tests` (quy tắc tính tiền, gom báo cáo, CSV, bộ mã hóa QR, đường dẫn tra cứu và logic cổng web và các Presenter MVP chạy với View giả; 173 ca).
 
 Kịch bản chi tiết và trạng thái xác minh được ghi tại [`docs/07_KichBanKiemThu.md`](docs/07_KichBanKiemThu.md). Các bước trên là hướng dẫn kiểm thử thủ công; chưa hàm ý rằng mọi kịch bản giao diện đã được chạy tự động.
 

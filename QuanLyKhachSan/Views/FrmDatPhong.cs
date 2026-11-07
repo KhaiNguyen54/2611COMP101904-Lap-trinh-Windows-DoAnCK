@@ -2,16 +2,17 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using QuanLyKhachSan.Presenters;
 using QuanLyKhachSan.Services;
 using QuanLyKhachSan.Models;
 
 namespace QuanLyKhachSan.Views
 {
     /// <summary>Lập, tra cứu, hủy đặt phòng và đánh dấu khách không đến (NV01, NV02).</summary>
-    public sealed class FrmDatPhong : Form
+    public sealed class FrmDatPhong : Form, IDatPhongView
     {
         private readonly NguoiDung _user;
-        private readonly DatPhongService _bll = new DatPhongService();
+        private readonly DatPhongPresenter _presenter;
         private readonly ComboBox _khach = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList };
         private readonly ComboBox _phong = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList };
         private readonly DateTimePicker _den = new DateTimePicker { Format = DateTimePickerFormat.Short };
@@ -22,18 +23,18 @@ namespace QuanLyKhachSan.Views
         private readonly Button _taoDatPhong;
         private readonly Label _goiY = new Label { AutoSize = true, ForeColor = GiaoDien.Phu, Margin = new Padding(0, 6, 0, 0) };
         private bool _dangDieuChinhNgay;
-        private bool _dangTai;
 
         public FrmDatPhong(NguoiDung user)
         {
             _user = user;
+            _presenter = new DatPhongPresenter(this, new DatPhongService(), new KhachHangService(), new PhongService(), user);
             Text = "Đặt phòng";
             ClientSize = new Size(1040, 600);
             MinimumSize = new Size(760, 460);
             StartPosition = FormStartPosition.CenterParent;
             AutoScaleMode = AutoScaleMode.Dpi;
 
-            _taoDatPhong = GiaoDien.TaoNut("Tạo đặt phòng", Luu_Click, true);
+            _taoDatPhong = GiaoDien.TaoNut("Tạo đặt phòng", delegate { _presenter.TaoDatPhong(); }, true);
             _khach.DropDownWidth = 360;
 
             var khachGroup = new FlowLayoutPanel { AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, WrapContents = false, Margin = new Padding(0) };
@@ -57,14 +58,14 @@ namespace QuanLyKhachSan.Views
 
             _loc.Items.AddRange(new object[] { "Tất cả", "Đã đặt", "Đã nhận", "Đã hủy", "Không đến" });
             _loc.SelectedIndex = 1;
-            _loc.SelectedIndexChanged += delegate { TaiGrid(); };
+            _loc.SelectedIndexChanged += delegate { _presenter.TaiDanhSach(); };
             var tool = GiaoDien.ThanhNgang();
             tool.Controls.Add(GiaoDien.Nhom("Lọc trạng thái", _loc, 120));
             var nutHang = new FlowLayoutPanel { AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, WrapContents = false, Margin = new Padding(0, 16, 0, 6) };
-            nutHang.Controls.Add(GiaoDien.TaoNut("Nhận phòng từ đặt này", NhanPhong_Click));
-            nutHang.Controls.Add(GiaoDien.TaoNut("Hủy đặt phòng", Huy_Click));
-            nutHang.Controls.Add(GiaoDien.TaoNut("Khách không đến", KhongDen_Click));
-            nutHang.Controls.Add(GiaoDien.TaoNut("Làm mới", delegate { TaiGrid(); TaiPhongTrongKhoang(); }));
+            nutHang.Controls.Add(GiaoDien.TaoNut("Nhận phòng từ đặt này", delegate { _presenter.NhanPhongTuDatNay(); }));
+            nutHang.Controls.Add(GiaoDien.TaoNut("Hủy đặt phòng", delegate { _presenter.Huy(); }));
+            nutHang.Controls.Add(GiaoDien.TaoNut("Khách không đến", delegate { _presenter.KhachKhongDen(); }));
+            nutHang.Controls.Add(GiaoDien.TaoNut("Làm mới", delegate { _presenter.LamMoi(); }));
             tool.Controls.Add(nutHang);
 
             Controls.Add(_grid);
@@ -76,23 +77,12 @@ namespace QuanLyKhachSan.Views
             _di.MinDate = DateTime.Today.AddDays(1);
             _di.Value = DateTime.Today.AddDays(1);
             _den.ValueChanged += NgayDen_ValueChanged;
-            _di.ValueChanged += delegate { if (!_dangDieuChinhNgay) TaiPhongTrongKhoang(); };
-            _phong.SelectedIndexChanged += delegate { CapNhatGoiYCoc(); };
-            Load += delegate { TaiCombo(); TaiPhongTrongKhoang(); TaiGrid(); };
+            _di.ValueChanged += delegate { if (!_dangDieuChinhNgay) _presenter.TaiPhongTrong(); };
+            _phong.SelectedIndexChanged += delegate { _presenter.CapNhatGoiY(); };
+            _phong.DisplayMember = "SoPhong";
+            _phong.ValueMember = "MaPhong";
+            Load += delegate { _presenter.TaiBanDau(); };
             GiaoDien.ApDung(this);
-        }
-
-        private void TaiCombo()
-        {
-            try
-            {
-                _khach.DisplayMember = "HoTen";
-                _khach.ValueMember = "MaKhachHang";
-                _khach.DataSource = new KhachHangService().TimKiem();
-                _phong.DisplayMember = "SoPhong";
-                _phong.ValueMember = "MaPhong";
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không tải được danh sách khách", ex); }
         }
 
         private void KhachMoi_Click(object sender, EventArgs e)
@@ -100,8 +90,7 @@ namespace QuanLyKhachSan.Views
             using (var f = new FrmKhachNhanh())
             {
                 if (f.ShowDialog(this) != DialogResult.OK) return;
-                TaiCombo();
-                if (f.MaKhachMoi > 0) _khach.SelectedValue = f.MaKhachMoi;
+                _presenter.TaiKhach(f.MaKhachMoi > 0 ? f.MaKhachMoi : (int?)null);
             }
         }
 
@@ -115,119 +104,77 @@ namespace QuanLyKhachSan.Views
                 if (_di.Value.Date < toiThieu) _di.Value = toiThieu;
             }
             finally { _dangDieuChinhNgay = false; }
-            TaiPhongTrongKhoang();
+            _presenter.TaiPhongTrong();
         }
 
-        private void TaiPhongTrongKhoang()
+        // ----- IDatPhongView -----
+        public int? KhachChon { get { return _khach.SelectedValue == null ? (int?)null : Convert.ToInt32(_khach.SelectedValue); } }
+        public int? PhongChon { get { return _phong.SelectedValue == null ? (int?)null : Convert.ToInt32(_phong.SelectedValue); } }
+
+        public decimal? GiaPhongChon
         {
-            if (_di.Value.Date <= _den.Value.Date) return;
-            try
+            get
             {
-                object dangChon = _phong.SelectedValue;
-                DataTable phong = new PhongService().TimKiemTrongKhoang(_den.Value.Date, _di.Value.Date);
-                _phong.DataSource = phong;
-                if (dangChon != null)
-                    foreach (DataRow r in phong.Rows)
-                        if (Convert.ToInt32(r["MaPhong"]) == Convert.ToInt32(dangChon)) { _phong.SelectedValue = dangChon; break; }
-
-                bool co = phong.Rows.Count > 0;
-                _phong.Enabled = co;
-                _taoDatPhong.Enabled = co;
-                if (!co) _goiY.Text = "Không có phòng trống trong khoảng ngày này.";
-                else CapNhatGoiYCoc();
+                DataRowView r = _phong.SelectedItem as DataRowView;
+                if (r == null || !r.DataView.Table.Columns.Contains("GiaMoiDem")) return null;
+                return Convert.ToDecimal(r["GiaMoiDem"]);
             }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không tải được phòng trống", ex); }
         }
 
-        private void CapNhatGoiYCoc()
+        public DateTime NgayDen { get { return _den.Value; } }
+        public DateTime NgayDi { get { return _di.Value; } }
+        public decimal TienCoc { get { return _coc.Value; } }
+        public string LocTrangThai { get { return Convert.ToString(_loc.SelectedItem); } }
+
+        public int? MaDatPhongChon
         {
-            DataRowView r = _phong.SelectedItem as DataRowView;
-            if (r == null || !r.DataView.Table.Columns.Contains("GiaMoiDem")) return;
-            decimal gia = Convert.ToDecimal(r["GiaMoiDem"]);
-            decimal toiDa = QuyTacTinhTien.TienCocToiDa(gia, _den.Value.Date, _di.Value.Date);
-            _goiY.Text = string.Format("{0} phòng phù hợp · giá {1:N0} đ/đêm · cọc tối đa {2:N0} đ", _phong.Items.Count, gia, toiDa);
+            get { return _grid.CurrentRow == null ? (int?)null : Convert.ToInt32(_grid.CurrentRow.Cells["MaDatPhong"].Value); }
         }
 
-        private void TaiGrid()
+        public string TrangThaiDatChon
         {
-            if (_dangTai) return;
-            _dangTai = true;
-            try
-            {
-                string tt = Convert.ToString(_loc.SelectedItem);
-                DataTable t = _bll.TimKiem(null, null, tt == "Tất cả" || string.IsNullOrEmpty(tt) ? null : tt);
-                UiHelper.GanNguon(_grid, t, "-MaDatPhong", "-MaKhachHang", "-MaPhong", "HoTen|Khách hàng", "SoPhong|Phòng", "Tang|Tầng",
-                    "NgayDen|Ngày đến|dd/MM/yyyy", "NgayDi|Ngày đi|dd/MM/yyyy", "TienCoc|Tiền cọc|N0", "TrangThai|Trạng thái");
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không tải được danh sách đặt phòng", ex); }
-            finally { _dangTai = false; }
+            get { return _grid.CurrentRow == null ? null : Convert.ToString(_grid.CurrentRow.Cells["TrangThai"].Value); }
         }
 
-        private DataGridViewRow Dong()
+        public void HienKhach(DataTable khach, int? chon)
         {
-            if (_grid.CurrentRow == null)
-            {
-                MessageBox.Show(this, "Hãy chọn một dòng đặt phòng.", "Chưa chọn", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return null;
-            }
-            return _grid.CurrentRow;
+            _khach.DisplayMember = "HoTen";
+            _khach.ValueMember = "MaKhachHang";
+            _khach.DataSource = khach;
+            if (chon.HasValue) _khach.SelectedValue = chon.Value;
         }
 
-        private void Luu_Click(object sender, EventArgs e)
+        public void HienPhongTrong(DataTable phong)
         {
-            if (_khach.SelectedValue == null || _phong.SelectedValue == null)
-            {
-                MessageBox.Show(this, "Chọn khách hàng và phòng.", "Thiếu dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            try
-            {
-                _bll.Them(new DatPhong
-                {
-                    MaKhachHang = Convert.ToInt32(_khach.SelectedValue),
-                    MaPhong = Convert.ToInt32(_phong.SelectedValue),
-                    MaNguoiDung = _user.MaNguoiDung,
-                    NgayDen = _den.Value.Date,
-                    NgayDi = _di.Value.Date,
-                    TienCoc = _coc.Value
-                });
-                _coc.Value = 0;
-                TaiGrid();
-                TaiPhongTrongKhoang();
-                UiHelper.ThongBaoThanhCong(this, "Đã tạo đặt phòng.");
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không thể đặt phòng", ex); }
+            object dangChon = _phong.SelectedValue;
+            _phong.DataSource = phong;
+            if (dangChon != null)
+                foreach (DataRow r in phong.Rows)
+                    if (Convert.ToInt32(r["MaPhong"]) == Convert.ToInt32(dangChon)) { _phong.SelectedValue = dangChon; break; }
+            _phong.Enabled = phong.Rows.Count > 0;
         }
 
-        private void Huy_Click(object sender, EventArgs e)
+        public void HienDanhSachDat(DataTable dat)
         {
-            DataGridViewRow r = Dong();
-            if (r == null || !UiHelper.XacNhan(this, "Hủy đặt phòng này? Phòng sẽ được giải phóng cho khoảng ngày đó.")) return;
-            try { _bll.Huy(Convert.ToInt32(r.Cells["MaDatPhong"].Value)); TaiGrid(); TaiPhongTrongKhoang(); }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không thể hủy", ex); }
+            UiHelper.GanNguon(_grid, dat, "-MaDatPhong", "-MaKhachHang", "-MaPhong", "HoTen|Khách hàng", "SoPhong|Phòng", "Tang|Tầng",
+                "NgayDen|Ngày đến|dd/MM/yyyy", "NgayDi|Ngày đi|dd/MM/yyyy", "TienCoc|Tiền cọc|N0", "TrangThai|Trạng thái");
         }
 
-        private void KhongDen_Click(object sender, EventArgs e)
-        {
-            DataGridViewRow r = Dong();
-            if (r == null || !UiHelper.XacNhan(this, "Đánh dấu khách không đến? Phòng sẽ được giải phóng.")) return;
-            try { _bll.DanhDauKhongDen(Convert.ToInt32(r.Cells["MaDatPhong"].Value)); TaiGrid(); TaiPhongTrongKhoang(); }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không thể cập nhật", ex); }
-        }
+        public void DatChoPhepDat(bool duocDat) { _taoDatPhong.Enabled = duocDat; }
+        public void DatGoiY(string noiDung) { _goiY.Text = noiDung; }
+        public void XoaTienCoc() { _coc.Value = 0; }
 
-        private void NhanPhong_Click(object sender, EventArgs e)
+        public void MoNhanPhong(int maDatPhong)
         {
-            DataGridViewRow r = Dong();
-            if (r == null) return;
-            if (Convert.ToString(r.Cells["TrangThai"].Value) != "Đã đặt")
-            {
-                MessageBox.Show(this, "Chỉ đặt phòng ở trạng thái 'Đã đặt' mới nhận phòng được.", "Không thể nhận", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            using (var f = new FrmNhanPhong(_user, Convert.ToInt32(r.Cells["MaDatPhong"].Value)))
+            using (var f = new FrmNhanPhong(_user, maDatPhong))
                 f.ShowDialog(this);
-            TaiGrid();
-            TaiPhongTrongKhoang();
         }
+
+        public void HienThongBao(string tieuDe, string noiDung, MucThongBao muc)
+        {
+            UiHelper.HienThongBao(this, tieuDe, noiDung, muc);
+        }
+
+        public bool XacNhan(string noiDung) { return UiHelper.XacNhan(this, noiDung); }
     }
 }

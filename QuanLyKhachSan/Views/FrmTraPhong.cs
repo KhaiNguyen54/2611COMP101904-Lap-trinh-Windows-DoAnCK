@@ -2,16 +2,17 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using QuanLyKhachSan.Presenters;
 using QuanLyKhachSan.Services;
 using QuanLyKhachSan.Models;
 
 namespace QuanLyKhachSan.Views
 {
     /// <summary>Trả phòng, tính tiền và lập hóa đơn (NV05, NV06).</summary>
-    public sealed class FrmTraPhong : Form
+    public sealed class FrmTraPhong : Form, ITraPhongView
     {
-        private readonly NguoiDung _user;
         private readonly LuuTruService _bll = new LuuTruService();
+        private readonly TraPhongPresenter _presenter;
         private readonly ComboBox _phieu = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList };
         private readonly DateTimePicker _ngayTra = new DateTimePicker { Format = DateTimePickerFormat.Custom, CustomFormat = "dd/MM/yyyy HH:mm" };
         private readonly NumericUpDown _giam = new NumericUpDown { Maximum = 1000000000, Increment = 10000, ThousandsSeparator = true };
@@ -25,11 +26,10 @@ namespace QuanLyKhachSan.Views
         private readonly Label _tong = TaoGiaTri(true);
         private readonly Label _ghiChu = new Label { AutoSize = true, ForeColor = GiaoDien.Phu, MaximumSize = new Size(520, 0) };
         private readonly Button _tra;
-        private BaoGiaHoaDon _baoGia;
 
         public FrmTraPhong(NguoiDung user)
         {
-            _user = user;
+            _presenter = new TraPhongPresenter(this, _bll, user);
             Text = "Trả phòng";
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -63,7 +63,7 @@ namespace QuanLyKhachSan.Views
             Dong(kq, "Giảm giá", _giamLb);
             Dong(kq, "KHÁCH CẦN THANH TOÁN", _tong, true);
 
-            _tra = GiaoDien.TaoNut("Trả phòng và lập hóa đơn", Tra_Click, true);
+            _tra = GiaoDien.TaoNut("Trả phòng và lập hóa đơn", delegate { _presenter.Tra(); }, true);
             var dong = GiaoDien.TaoNut("Đóng");
             dong.DialogResult = DialogResult.Cancel;
             var nut = GiaoDien.HangNut(FlowDirection.RightToLeft);
@@ -81,10 +81,10 @@ namespace QuanLyKhachSan.Views
             Controls.Add(goc);
             CancelButton = dong;
 
-            _phieu.SelectedIndexChanged += delegate { TinhLai(); };
-            _ngayTra.ValueChanged += delegate { TinhLai(); };
-            _giam.ValueChanged += delegate { HienTong(); };
-            Load += delegate { TaiPhieu(); };
+            _phieu.SelectedIndexChanged += delegate { _presenter.TinhLai(); };
+            _ngayTra.ValueChanged += delegate { _presenter.TinhLai(); };
+            _giam.ValueChanged += delegate { _presenter.HienTong(); };
+            Load += delegate { _presenter.TaiPhieu(); };
             GiaoDien.ApDung(this);
         }
 
@@ -109,98 +109,70 @@ namespace QuanLyKhachSan.Views
             b.Controls.Add(gia, 1, r);
         }
 
-        private void TaiPhieu()
+        // ----- ITraPhongView -----
+        public int? PhieuChon { get { return _phieu.SelectedValue == null ? (int?)null : Convert.ToInt32(_phieu.SelectedValue); } }
+        public DateTime NgayTra { get { return _ngayTra.Value; } }
+        public decimal GiamGia { get { return _giam.Value; } }
+        public string HinhThuc { get { return Convert.ToString(_hinhThuc.SelectedItem); } }
+
+        public void HienPhieu(DataTable phieu)
         {
-            try
-            {
-                DataTable t = _bll.LayPhieuDangO();
-                t.Columns.Add("Nhan", typeof(string));
-                foreach (DataRow r in t.Rows)
-                    r["Nhan"] = string.Format("Phòng {0} · {1} · từ {2:dd/MM}", r["SoPhong"], r["HoTen"], r["NgayNhan"]);
-                _phieu.DisplayMember = "Nhan";
-                _phieu.ValueMember = "MaPhieuThue";
-                _phieu.DataSource = t;
-                _tra.Enabled = t.Rows.Count > 0;
-                if (t.Rows.Count == 0) _ghiChu.Text = "Chưa có phòng nào đang có khách.";
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không tải được phòng đang ở", ex); }
+            _phieu.DisplayMember = "Nhan";
+            _phieu.ValueMember = "MaPhieuThue";
+            _phieu.DataSource = phieu;
         }
 
-        private void TinhLai()
+        public void HienBaoGia(string soDem, string tienPhong, string tienDichVu, string phuThu, string tienCoc)
         {
-            if (_phieu.SelectedValue == null) return;
-            try
+            _soDem.Text = soDem;
+            _tienPhong.Text = tienPhong;
+            _tienDv.Text = tienDichVu;
+            _phuThu.Text = phuThu;
+            _coc.Text = tienCoc;
+        }
+
+        public void DatGiamToiDa(decimal toiDa) { _giam.Maximum = toiDa; }
+
+        public void HienGiamVaTong(string giam, string tong)
+        {
+            _giamLb.Text = giam;
+            _tong.Text = tong;
+        }
+
+        public void DatGhiChu(string noiDung) { _ghiChu.Text = noiDung; }
+        public void DatChoPhepTra(bool duocTra) { _tra.Enabled = duocTra; }
+
+        public int? YeuCauQuanLyDuyet()
+        {
+            using (var duyet = new FrmDuyetGiamGia(_bll))
             {
-                _baoGia = _bll.TinhTamTinh(Convert.ToInt32(_phieu.SelectedValue), _ngayTra.Value);
-                _soDem.Text = _baoGia.SoDem.ToString();
-                _tienPhong.Text = Tien(_baoGia.TienPhong);
-                _tienDv.Text = Tien(_baoGia.TienDichVu);
-                _phuThu.Text = Tien(_baoGia.PhuThu);
-                _coc.Text = (_baoGia.TienCoc > 0 ? "-" : string.Empty) + Tien(_baoGia.TienCoc);
-                decimal co = QuyTacTinhTien.CoSoGiamGia(_baoGia.TienPhong, _baoGia.TienDichVu, _baoGia.PhuThu);
-                _giam.Maximum = Math.Max(0, co);
-                _ghiChu.Text = "Trả sau 12:00: ≤1 giờ miễn phí, 1–3 giờ 30%, 3–6 giờ 50%, trên 6 giờ 100% giá một đêm. " +
-                               "Giảm giá tối đa 10% tiền hàng; vượt mức cần Quản lý duyệt" +
-                               (_user.VaiTro == VaiTroNguoiDung.QuanLy ? " (bạn là Quản lý nên được ghi là người duyệt)." : " (nhập tài khoản Quản lý khi trả phòng).");
-                _tra.Enabled = true;
-                HienTong();
-            }
-            catch (Exception ex)
-            {
-                _tra.Enabled = false;
-                _baoGia = null;
-                _ghiChu.Text = ex.Message;
+                if (duyet.ShowDialog(this) != DialogResult.OK) return null;
+                return duyet.MaNguoiDuyet;
             }
         }
 
-        private void HienTong()
-        {
-            if (_baoGia == null) return;
-            _giamLb.Text = (_giam.Value > 0 ? "-" : string.Empty) + Tien(_giam.Value);
-            decimal tong = QuyTacTinhTien.TinhTongThanhToan(_baoGia.TienPhong, _baoGia.TienDichVu, _baoGia.PhuThu, _giam.Value, _baoGia.TienCoc);
-            _tong.Text = Tien(tong);
-        }
-
-        private static string Tien(decimal v) { return v.ToString("N0") + " đ"; }
-
-        private void Tra_Click(object sender, EventArgs e)
-        {
-            if (_phieu.SelectedValue == null) return;
-            if (!UiHelper.XacNhan(this, "Xác nhận trả phòng và lập hóa đơn? Thao tác này không hoàn tác được.")) return;
-            try
-            {
-                int maPhieu = Convert.ToInt32(_phieu.SelectedValue);
-                bool laQuanLy = _user.VaiTro == VaiTroNguoiDung.QuanLy;
-                int? nguoiDuyet = null;
-                if (_baoGia != null && !laQuanLy && QuyTacTinhTien.CanQuanLyDuyet(_giam.Value,
-                        QuyTacTinhTien.CoSoGiamGia(_baoGia.TienPhong, _baoGia.TienDichVu, _baoGia.PhuThu)))
-                {
-                    using (var duyet = new FrmDuyetGiamGia(_bll))
-                    {
-                        if (duyet.ShowDialog(this) != DialogResult.OK) return;
-                        nguoiDuyet = duyet.MaNguoiDuyet;
-                    }
-                }
-                int maHd = _bll.TraPhong(maPhieu, _user.MaNguoiDung, _ngayTra.Value, _giam.Value,
-                    Convert.ToString(_hinhThuc.SelectedItem), laQuanLy, nguoiDuyet);
-
-                if (UiHelper.XacNhan(this, "Đã lập hóa đơn số " + maHd + ". In hóa đơn ngay?"))
-                    InHoaDon(maHd, maPhieu);
-                DialogResult = DialogResult.OK;
-                Close();
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không thể trả phòng", ex); }
-        }
-
-        private void InHoaDon(int maHd, int maPhieu)
+        public void MoBanIn(int maHoaDon, int maPhieu)
         {
             try
             {
-                DataTable hd = new HoaDonService().TimKiem(DateTime.Today.AddDays(-1), DateTime.Today, maHd.ToString());
+                DataTable hd = new HoaDonService().TimKiem(DateTime.Today.AddDays(-1), DateTime.Today, maHoaDon.ToString());
                 if (hd.Rows.Count == 0) return;
                 HoaDonPrinter.XemTruoc(this, hd.Rows[0], _bll.LayDichVu(maPhieu));
             }
             catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không thể mở bản in", ex); }
         }
+
+        public void DongThanhCong()
+        {
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+
+        public void HienThongBao(string tieuDe, string noiDung, MucThongBao muc)
+        {
+            UiHelper.HienThongBao(this, tieuDe, noiDung, muc);
+        }
+
+        public bool XacNhan(string noiDung) { return UiHelper.XacNhan(this, noiDung); }
     }
 }

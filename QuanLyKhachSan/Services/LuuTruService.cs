@@ -6,7 +6,7 @@ using QuanLyKhachSan.Models;
 namespace QuanLyKhachSan.Services
 {
     /// <summary>Nghiệp vụ lưu trú: nhận phòng, ghi dịch vụ, trả phòng.</summary>
-    public class LuuTruService
+    public class LuuTruService : ILuuTruService
     {
         private readonly PhieuThueRepository _phieuThueDal = new PhieuThueRepository();
         private readonly ChiTietDichVuRepository _dichVuDal = new ChiTietDichVuRepository();

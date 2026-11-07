@@ -1,6 +1,6 @@
 # 1.1 – Phạm vi và danh sách chức năng
 
-Đề tài 12: Quản lý Khách sạn (Windows Forms, C#, SQL Server, mô hình 3 lớp).
+Đề tài 12: Quản lý Khách sạn (Windows Forms, C#, SQL Server, mô hình MVP: View – Presenter – Service/Repository – Model).
 
 ## 1. Phạm vi
 

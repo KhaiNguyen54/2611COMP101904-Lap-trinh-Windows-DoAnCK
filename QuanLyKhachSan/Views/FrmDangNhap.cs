@@ -2,21 +2,20 @@ using System;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
+using QuanLyKhachSan.Presenters;
 using QuanLyKhachSan.Services;
 using QuanLyKhachSan.Models;
 
 namespace QuanLyKhachSan.Views
 {
 
-    public class FrmDangNhap : Form
+    public class FrmDangNhap : Form, IDangNhapView
     {
         private readonly TextBox txtTenDangNhap = new TextBox();
         private readonly TextBox txtMatKhau = new TextBox();
         private readonly Button btnDangNhap = new Button();
         private readonly Button btnThoat = new Button();
-        private readonly NguoiDungService _nguoiDungService = new NguoiDungService();
-        private int _soLanSai;
-        private DateTime _khoaDen = DateTime.MinValue;
+        private readonly DangNhapPresenter _presenter;
         private readonly CancellationTokenSource _dangNhapCancellation = new CancellationTokenSource();
 
         public NguoiDung NguoiDungDangNhap { get; private set; }
@@ -24,6 +23,7 @@ namespace QuanLyKhachSan.Views
         public FrmDangNhap()
         {
             KhoiTaoGiaoDien();
+            _presenter = new DangNhapPresenter(this, new NguoiDungService());
             GiaoDien.ApDung(this);
             FormClosed += (sender, e) => _dangNhapCancellation.Cancel();
         }
@@ -104,57 +104,40 @@ namespace QuanLyKhachSan.Views
 
         private async void BtnDangNhap_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtTenDangNhap.Text) || string.IsNullOrEmpty(txtMatKhau.Text))
-            {
-                MessageBox.Show("Vui lòng nhập tên đăng nhập và mật khẩu.", "Thiếu dữ liệu",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            await _presenter.DangNhapAsync(_dangNhapCancellation.Token);
+        }
 
-            if (DateTime.Now < _khoaDen)
-            {
-                MessageBox.Show("Đã nhập sai quá nhiều lần. Vui lòng thử lại sau " + (int)Math.Ceiling((_khoaDen - DateTime.Now).TotalSeconds) + " giây.",
-                    "Tạm khóa đăng nhập", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+        string IDangNhapView.TenDangNhap { get { return txtTenDangNhap.Text; } }
+        string IDangNhapView.MatKhau { get { return txtMatKhau.Text; } }
 
-            btnDangNhap.Enabled = false;
-            btnDangNhap.Text = "Đang đăng nhập...";
-            try
-            {
-                NguoiDungDangNhap = await _nguoiDungService.DangNhapAsync(
-                    txtTenDangNhap.Text, txtMatKhau.Text, _dangNhapCancellation.Token);
-                if (IsDisposed) return;
-                if (NguoiDungDangNhap == null)
-                {
-                    if (++_soLanSai >= 5)
-                    {
-                        _soLanSai = 0;
-                        _khoaDen = DateTime.Now.AddSeconds(30);
-                    }
-                    MessageBox.Show("Tên đăng nhập hoặc mật khẩu không đúng, hoặc tài khoản đã bị khóa.",
-                        "Không thể đăng nhập", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtMatKhau.Clear();
-                    txtMatKhau.Focus();
-                    return;
-                }
-                DialogResult = DialogResult.OK;
-                Close();
-            }
-            catch (Exception ex)
-            {
-                if (IsDisposed || _dangNhapCancellation.IsCancellationRequested) return;
-                MessageBox.Show("Không thể đăng nhập. Hãy kiểm tra cấu hình và kết nối cơ sở dữ liệu.\n" + ex.Message,
-                    "Lỗi đăng nhập", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                if (!IsDisposed)
-                {
-                    btnDangNhap.Enabled = true;
-                    btnDangNhap.Text = "Đăng nhập";
-                }
-            }
+        public void DatDangXuLy(bool dangXuLy)
+        {
+            if (IsDisposed) return;
+            btnDangNhap.Enabled = !dangXuLy;
+            btnDangNhap.Text = dangXuLy ? "Đang đăng nhập..." : "Đăng nhập";
+        }
+
+        public void XoaMatKhau()
+        {
+            txtMatKhau.Clear();
+            txtMatKhau.Focus();
+        }
+
+        public void DongThanhCong(NguoiDung nguoiDung)
+        {
+            NguoiDungDangNhap = nguoiDung;
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+
+        public void HienThongBao(string tieuDe, string noiDung, MucThongBao muc)
+        {
+            if (!IsDisposed) UiHelper.HienThongBao(this, tieuDe, noiDung, muc);
+        }
+
+        public bool XacNhan(string noiDung)
+        {
+            return UiHelper.XacNhan(this, noiDung);
         }
     }
 }

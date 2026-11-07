@@ -5,7 +5,7 @@ namespace QuanLyKhachSan.Services
 {
     /// <summary>
     /// Bộ tạo mã QR tự cài đặt (chế độ byte UTF-8, mức sửa lỗi M, phiên bản 1–10, tối đa 213 byte)
-    /// để không phụ thuộc gói NuGet ngoài. Chỉ trả về ma trận mô-đun; việc vẽ ảnh do tầng GUI đảm nhiệm.
+    /// để không phụ thuộc gói NuGet ngoài. Chỉ trả về ma trận mô-đun; việc vẽ ảnh do lớp View đảm nhiệm.
     /// </summary>
     public static class QrCode
     {

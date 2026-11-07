@@ -6,7 +6,7 @@ using QuanLyKhachSan.Models;
 
 namespace QuanLyKhachSan.Services
 {
-    public class KhachHangService
+    public class KhachHangService : IKhachHangService
     {
         private readonly KhachHangRepository _dal=new KhachHangRepository();
         public DataTable TimKiem(string tuKhoa=null)=>_dal.TimKiem(tuKhoa);

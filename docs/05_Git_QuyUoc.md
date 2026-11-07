@@ -18,10 +18,10 @@
 ├── docs/                    # tài liệu yêu cầu, thiết kế và kiểm thử
 ├── Latex/                   # báo cáo LaTeX (bao_cao_full.tex), ảnh minh họa
 ├── QuanLyKhachSan/          # project WinForms
-│   ├── DTO/  DAL/  BLL/  GUI/  Resources/  Scripts/
+│   ├── Models/  Repositories/  Services/  Presenters/  Views/  Resources/  Scripts/
 │   ├── Program.cs
 │   └── QuanLyKhachSan.csproj
-├── QuanLyKhachSan.Web/      # cổng web tra cứu (ASP.NET Core), dùng chung DTO/DAL/BLL
+├── QuanLyKhachSan.Web/      # cổng web tra cứu (ASP.NET Core), dùng chung Models/Repositories/Services
 └── QuanLyKhachSan.Tests/    # kiểm thử logic tự động
 ```
 
@@ -79,7 +79,7 @@ Phạm vi: `dto`, `dal`, `bll`, `gui`, `sql`, `docs`, `web` (cổng web tra cứ
 
 Ví dụ:
 ```text
-feat(dal): thêm PhongDAL với các hàm CRUD
+feat(dal): thêm PhongRepository với các hàm CRUD
 feat(bll): kiểm tra giao nhau khoảng ngày khi đặt phòng
 fix(gui): sửa lỗi không tải lại lưới sau khi xóa khách
 docs: bổ sung quy tắc phụ thu trả muộn
@@ -98,10 +98,10 @@ Quy tắc:
 
 | Đối tượng | Quy ước | Ví dụ |
 |---|---|---|
-| Namespace | `QuanLyKhachSan.<Tầng>` | `QuanLyKhachSan.DAL` |
-| Lớp DTO | PascalCase, tên thực thể | `Phong`, `KhachHang`, `PhieuThue` |
-| Lớp DAL | `<Thực thể>DAL` | `PhongDAL` |
-| Lớp BLL | `<Thực thể>BLL` | `PhongBLL` |
+| Namespace | `QuanLyKhachSan.<Tầng>` | `QuanLyKhachSan.Repository` |
+| Lớp Model | PascalCase, tên thực thể | `Phong`, `KhachHang`, `PhieuThue` |
+| Lớp Repository | `<Thực thể>Repository` | `PhongRepository` |
+| Lớp Service | `<Thực thể>Service` | `PhongService` |
 | Form | `Frm<ChứcNăng>` | `FrmDatPhong`, `FrmTraPhong` |
 | UserControl | `Uc<Tên>` | `UcSoDoPhong` |
 | Phương thức | PascalCase, động từ | `LayTatCa()`, `Them()`, `KiemTraTrungLich()` |
@@ -113,7 +113,7 @@ Quy tắc:
 | Stored Procedure | `sp_<ĐộngTừ><ĐốiTượng>` | `sp_TraPhong`, `sp_KiemTraTrungLich` |
 
 - Tên **tiếng Việt không dấu** nhất quán cho thực thể nghiệp vụ; từ kỹ thuật dùng tiếng Anh (`Database`, `Connection`).
-- GUI chỉ gọi **BLL**; BLL chỉ gọi **DAL**; DAL chỉ làm việc với CSDL. Không để GUI gọi thẳng DAL.
+- View chỉ gọi **Presenter**; Presenter gọi **Service**; Service gọi **Repository**; Repository chỉ làm việc với CSDL. View không chứa nghiệp vụ và không gọi thẳng Service/Repository ở các luồng chính.
 - Câu lệnh SQL luôn dùng **tham số**, không nối chuỗi.
 
 ## 5. Quy trình làm việc hằng ngày

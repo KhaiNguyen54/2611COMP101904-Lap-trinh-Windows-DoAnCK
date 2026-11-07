@@ -2,15 +2,16 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using QuanLyKhachSan.Presenters;
 using QuanLyKhachSan.Services;
 using QuanLyKhachSan.Models;
 
 namespace QuanLyKhachSan.Views
 {
     /// <summary>Ghi nhận và xóa dịch vụ phát sinh cho phiếu thuê đang ở (NV04).</summary>
-    public sealed class FrmGhiDichVu : Form
+    public sealed class FrmGhiDichVu : Form, IGhiDichVuView
     {
-        private readonly LuuTruService _bll = new LuuTruService();
+        private readonly GhiDichVuPresenter _presenter;
         private readonly ComboBox _phieu = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList };
         private readonly ComboBox _dichVu = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList };
         private readonly NumericUpDown _soLuong = new NumericUpDown { DecimalPlaces = 0, Minimum = 1, Maximum = 999, Value = 1 };
@@ -19,6 +20,7 @@ namespace QuanLyKhachSan.Views
 
         public FrmGhiDichVu(NguoiDung user)
         {
+            _presenter = new GhiDichVuPresenter(this, new LuuTruService(), new DichVuService());
             Text = "Ghi dịch vụ";
             ClientSize = new Size(900, 560);
             MinimumSize = new Size(680, 420);
@@ -32,8 +34,8 @@ namespace QuanLyKhachSan.Views
             nhap.Controls.Add(GiaoDien.Nhom("Dịch vụ", _dichVu, 220));
             nhap.Controls.Add(GiaoDien.Nhom("Số lượng", _soLuong, 80));
             var nut = new FlowLayoutPanel { AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, WrapContents = false, Margin = new Padding(0, 16, 0, 6) };
-            nut.Controls.Add(GiaoDien.TaoNut("Ghi dịch vụ", Ghi_Click, true));
-            nut.Controls.Add(GiaoDien.TaoNut("Xóa dòng đã chọn", Xoa_Click));
+            nut.Controls.Add(GiaoDien.TaoNut("Ghi dịch vụ", delegate { _presenter.Ghi(); }, true));
+            nut.Controls.Add(GiaoDien.TaoNut("Xóa dòng đã chọn", delegate { _presenter.Xoa(); }));
             nhap.Controls.Add(nut);
 
             var chan = GiaoDien.ThanhNgang(DockStyle.Bottom);
@@ -42,87 +44,50 @@ namespace QuanLyKhachSan.Views
             Controls.Add(_grid);
             Controls.Add(chan);
             Controls.Add(nhap);
-            _phieu.SelectedIndexChanged += delegate { TaiDong(); };
-            Load += delegate { TaiPhieu(); TaiDichVu(); };
+            _phieu.SelectedIndexChanged += delegate { _presenter.TaiChiTiet(); };
+            Load += delegate { _presenter.TaiBanDau(); };
             GiaoDien.ApDung(this);
         }
 
-        private void TaiPhieu()
+        // ----- IGhiDichVuView -----
+        public int? PhieuChon { get { return _phieu.SelectedValue == null ? (int?)null : Convert.ToInt32(_phieu.SelectedValue); } }
+        public int? DichVuChon { get { return _dichVu.SelectedValue == null ? (int?)null : Convert.ToInt32(_dichVu.SelectedValue); } }
+        public decimal SoLuong { get { return _soLuong.Value; } }
+
+        public int? ChiTietChon
         {
-            try
-            {
-                DataTable t = _bll.LayPhieuDangO();
-                t.Columns.Add("Nhan", typeof(string));
-                foreach (DataRow r in t.Rows)
-                    r["Nhan"] = string.Format("Phòng {0} · {1} · từ {2:dd/MM}", r["SoPhong"], r["HoTen"], r["NgayNhan"]);
-                _phieu.DisplayMember = "Nhan";
-                _phieu.ValueMember = "MaPhieuThue";
-                _phieu.DataSource = t;
-                if (t.Rows.Count == 0) _tong.Text = "Chưa có phòng nào đang có khách.";
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không tải được phòng đang ở", ex); }
+            get { return _grid.CurrentRow == null ? (int?)null : Convert.ToInt32(_grid.CurrentRow.Cells["MaChiTietDichVu"].Value); }
         }
 
-        private void TaiDichVu()
+        public void HienPhieu(DataTable phieu)
         {
-            try
-            {
-                DataTable t = new DichVuService().TimKiem(null, true);
-                t.Columns.Add("Nhan", typeof(string));
-                foreach (DataRow r in t.Rows)
-                    r["Nhan"] = string.Format("{0} — {1:N0} đ/{2}", r["TenDichVu"], r["DonGia"], r["DonViTinh"]);
-                _dichVu.DisplayMember = "Nhan";
-                _dichVu.ValueMember = "MaDichVu";
-                _dichVu.DataSource = t;
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không tải được dịch vụ", ex); }
+            _phieu.DisplayMember = "Nhan";
+            _phieu.ValueMember = "MaPhieuThue";
+            _phieu.DataSource = phieu;
         }
 
-        private void TaiDong()
+        public void HienDichVu(DataTable dichVu)
         {
-            if (_phieu.SelectedValue == null)
-            {
-                _grid.DataSource = null;
-                return;
-            }
-            try
-            {
-                DataTable t = _bll.LayDichVu(Convert.ToInt32(_phieu.SelectedValue));
-                UiHelper.GanNguon(_grid, t, "-MaChiTietDichVu", "-MaDichVu", "TenDichVu|Dịch vụ", "SoLuong|Số lượng|0.##",
-                    "DonGia|Đơn giá|N0", "ThoiDiemSuDung|Thời điểm|dd/MM/yyyy HH:mm", "ThanhTien|Thành tiền|N0");
-                decimal tong = 0;
-                foreach (DataRow r in t.Rows) tong += Convert.ToDecimal(r["ThanhTien"]);
-                _tong.Text = "Tổng dịch vụ: " + tong.ToString("N0") + " đ (" + t.Rows.Count + " dòng)";
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không tải được dịch vụ đã ghi", ex); }
+            _dichVu.DisplayMember = "Nhan";
+            _dichVu.ValueMember = "MaDichVu";
+            _dichVu.DataSource = dichVu;
         }
 
-        private void Ghi_Click(object sender, EventArgs e)
+        public void HienChiTiet(DataTable chiTiet)
         {
-            if (_phieu.SelectedValue == null || _dichVu.SelectedValue == null)
-            {
-                MessageBox.Show(this, "Chọn phòng đang ở và dịch vụ.", "Thiếu dữ liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            try
-            {
-                _bll.GhiDichVu(Convert.ToInt32(_phieu.SelectedValue), Convert.ToInt32(_dichVu.SelectedValue), _soLuong.Value);
-                _soLuong.Value = 1;
-                TaiDong();
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không thể ghi dịch vụ", ex); }
+            if (chiTiet == null) { _grid.DataSource = null; return; }
+            UiHelper.GanNguon(_grid, chiTiet, "-MaChiTietDichVu", "-MaDichVu", "TenDichVu|Dịch vụ", "SoLuong|Số lượng|0.##",
+                "DonGia|Đơn giá|N0", "ThoiDiemSuDung|Thời điểm|dd/MM/yyyy HH:mm", "ThanhTien|Thành tiền|N0");
         }
 
-        private void Xoa_Click(object sender, EventArgs e)
+        public void DatTong(string noiDung) { _tong.Text = noiDung; }
+        public void DatLaiSoLuong() { _soLuong.Value = 1; }
+
+        public void HienThongBao(string tieuDe, string noiDung, MucThongBao muc)
         {
-            if (_grid.CurrentRow == null) return;
-            if (!UiHelper.XacNhan(this, "Xóa dòng dịch vụ đã chọn?")) return;
-            try
-            {
-                _bll.XoaDichVu(Convert.ToInt32(_grid.CurrentRow.Cells["MaChiTietDichVu"].Value));
-                TaiDong();
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không thể xóa", ex); }
+            UiHelper.HienThongBao(this, tieuDe, noiDung, muc);
         }
+
+        public bool XacNhan(string noiDung) { return UiHelper.XacNhan(this, noiDung); }
     }
 }

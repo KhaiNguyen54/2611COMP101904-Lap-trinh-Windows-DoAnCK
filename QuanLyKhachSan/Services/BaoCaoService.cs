@@ -14,7 +14,7 @@ namespace QuanLyKhachSan.Services
         LoaiPhong
     }
 
-    public class BaoCaoService
+    public class BaoCaoService : IBaoCaoService
     {
         private const int SoNgayToiDa = 366;
         private readonly BaoCaoRepository _dal = new BaoCaoRepository();

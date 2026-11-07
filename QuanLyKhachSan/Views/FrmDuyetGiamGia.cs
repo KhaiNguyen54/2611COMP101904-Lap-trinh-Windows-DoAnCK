@@ -1,14 +1,15 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using QuanLyKhachSan.Presenters;
 using QuanLyKhachSan.Services;
 
 namespace QuanLyKhachSan.Views
 {
     /// <summary>Quản lý nhập tài khoản để duyệt mức giảm giá trên 10% khi Lễ tân trả phòng.</summary>
-    public class FrmDuyetGiamGia : Form
+    public class FrmDuyetGiamGia : Form, IDuyetGiamGiaView
     {
-        private readonly LuuTruService _bll;
+        private readonly DuyetGiamGiaPresenter _presenter;
         private readonly TextBox _ten = new TextBox();
         private readonly TextBox _matKhau = new TextBox { UseSystemPasswordChar = true };
 
@@ -16,7 +17,7 @@ namespace QuanLyKhachSan.Views
 
         public FrmDuyetGiamGia(LuuTruService bll)
         {
-            _bll = bll ?? throw new ArgumentNullException(nameof(bll));
+            _presenter = new DuyetGiamGiaPresenter(this, bll ?? throw new ArgumentNullException(nameof(bll)));
             Text = "Quản lý duyệt giảm giá";
             ClientSize = new Size(440, 200);
             StartPosition = FormStartPosition.CenterParent;
@@ -42,7 +43,7 @@ namespace QuanLyKhachSan.Views
             Truong(layout, 2, "Mật khẩu", _matKhau);
 
             var duyet = new Button { Tag = GiaoDien.NutChinhTag, Text = "Duyệt", AutoSize = true, MinimumSize = new Size(95, 32) };
-            duyet.Click += Duyet_Click;
+            duyet.Click += delegate { _presenter.Duyet(); };
             var huy = new Button { Text = "Hủy", AutoSize = true, MinimumSize = new Size(90, 32), DialogResult = DialogResult.Cancel };
             var nut = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.RightToLeft, WrapContents = false, AutoSize = true };
             nut.Controls.Add(huy);
@@ -64,19 +65,23 @@ namespace QuanLyKhachSan.Views
             layout.Controls.Add(o, 1, hang);
         }
 
-        private void Duyet_Click(object sender, EventArgs e)
+        // ----- IDuyetGiamGiaView -----
+        string IDuyetGiamGiaView.TenDangNhap { get { return _ten.Text; } }
+        string IDuyetGiamGiaView.MatKhau { get { return _matKhau.Text; } }
+        public void XoaMatKhau() { _matKhau.Clear(); }
+
+        public void DongThanhCong(int maNguoiDuyet)
         {
-            try
-            {
-                MaNguoiDuyet = _bll.XacThucNguoiDuyet(_ten.Text, _matKhau.Text);
-                DialogResult = DialogResult.OK;
-                Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Không thể duyệt", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                _matKhau.Clear();
-            }
+            MaNguoiDuyet = maNguoiDuyet;
+            DialogResult = DialogResult.OK;
+            Close();
         }
+
+        public void HienThongBao(string tieuDe, string noiDung, MucThongBao muc)
+        {
+            UiHelper.HienThongBao(this, tieuDe, noiDung, muc);
+        }
+
+        public bool XacNhan(string noiDung) { return UiHelper.XacNhan(this, noiDung); }
     }
 }

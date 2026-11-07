@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using QuanLyKhachSan.Presenters;
 using QuanLyKhachSan.Services;
 
 namespace QuanLyKhachSan.Views
 {
     /// <summary>Báo cáo doanh thu (BC01–BC03) và công suất phòng (BC04), có biểu đồ, in và xuất CSV.</summary>
-    public sealed class FrmBaoCao : Form
+    public sealed class FrmBaoCao : Form, IBaoCaoView
     {
-        private readonly BaoCaoService _bll = new BaoCaoService();
+        private readonly BaoCaoPresenter _presenter;
         private readonly TabControl _tab = new TabControl { Dock = DockStyle.Fill };
 
         // Doanh thu
@@ -32,6 +33,7 @@ namespace QuanLyKhachSan.Views
 
         public FrmBaoCao(int tabBanDau = 0)
         {
+            _presenter = new BaoCaoPresenter(this, new BaoCaoService());
             Text = "Báo cáo";
             ClientSize = new Size(1040, 700);
             MinimumSize = new Size(780, 520);
@@ -46,11 +48,11 @@ namespace QuanLyKhachSan.Views
             _tab.TabPages.Add(trangCs);
             _tab.SelectedIndex = Math.Max(0, Math.Min(1, tabBanDau));
             Controls.Add(_tab);
-            Load += delegate { if (_tab.SelectedIndex == 0) TaiDoanhThu(); else TaiCongSuat(); };
+            Load += delegate { if (_tab.SelectedIndex == 0) _presenter.TaiDoanhThu(); else _presenter.TaiCongSuat(); };
             _tab.SelectedIndexChanged += delegate
             {
-                if (_tab.SelectedIndex == 1 && _csData == null) TaiCongSuat();
-                if (_tab.SelectedIndex == 0 && _dtData == null) TaiDoanhThu();
+                if (_tab.SelectedIndex == 1 && _csData == null) _presenter.TaiCongSuat();
+                if (_tab.SelectedIndex == 0 && _dtData == null) _presenter.TaiDoanhThu();
             };
             GiaoDien.ApDung(this);
         }
@@ -73,7 +75,7 @@ namespace QuanLyKhachSan.Views
             thanh.Controls.Add(GiaoDien.Nhom("Từ ngày", _dtTu, 120));
             thanh.Controls.Add(GiaoDien.Nhom("Đến ngày", _dtDen, 120));
             thanh.Controls.Add(GiaoDien.Nhom("Gom theo", _kieu, 140));
-            thanh.Controls.Add(Nut(GiaoDien.TaoNut("Thống kê", delegate { TaiDoanhThu(); }, true),
+            thanh.Controls.Add(Nut(GiaoDien.TaoNut("Thống kê", delegate { _presenter.TaiDoanhThu(); }, true),
                 GiaoDien.TaoNut("In báo cáo", delegate { InDoanhThu(); }),
                 GiaoDien.TaoNut("Xuất CSV", delegate { UiHelper.XuatCsv(this, _dtGrid, "DoanhThu"); })));
 
@@ -98,7 +100,7 @@ namespace QuanLyKhachSan.Views
             var thanh = GiaoDien.ThanhNgang();
             thanh.Controls.Add(GiaoDien.Nhom("Từ ngày", _csTu, 120));
             thanh.Controls.Add(GiaoDien.Nhom("Đến ngày", _csDen, 120));
-            thanh.Controls.Add(Nut(GiaoDien.TaoNut("Thống kê", delegate { TaiCongSuat(); }, true),
+            thanh.Controls.Add(Nut(GiaoDien.TaoNut("Thống kê", delegate { _presenter.TaiCongSuat(); }, true),
                 GiaoDien.TaoNut("In báo cáo", delegate { InCongSuat(); }),
                 GiaoDien.TaoNut("Xuất CSV", delegate { UiHelper.XuatCsv(this, _csGrid, "CongSuat"); })));
             var chan = GiaoDien.ThanhNgang(DockStyle.Bottom);
@@ -115,57 +117,50 @@ namespace QuanLyKhachSan.Views
             trang.HandleCreated += delegate { if (giua.Height > 300) giua.SplitterDistance = Math.Max(120, giua.Height * 55 / 100); };
         }
 
-        private KieuGomDoanhThu Kieu()
+        // ----- IBaoCaoView -----
+        public DateTime DoanhThuTu { get { return _dtTu.Value; } }
+        public DateTime DoanhThuDen { get { return _dtDen.Value; } }
+        public DateTime CongSuatTu { get { return _csTu.Value; } }
+        public DateTime CongSuatDen { get { return _csDen.Value; } }
+
+        public KieuGomDoanhThu KieuGom
         {
-            switch (_kieu.SelectedIndex)
+            get
             {
-                case 1: return KieuGomDoanhThu.Thang;
-                case 2: return KieuGomDoanhThu.LoaiPhong;
-                default: return KieuGomDoanhThu.Ngay;
+                switch (_kieu.SelectedIndex)
+                {
+                    case 1: return KieuGomDoanhThu.Thang;
+                    case 2: return KieuGomDoanhThu.LoaiPhong;
+                    default: return KieuGomDoanhThu.Ngay;
+                }
             }
         }
 
-        private void TaiDoanhThu()
+        public void HienDoanhThu(DataTable bang, IList<string> nhan, IList<double> giaTri, string tong)
         {
-            try
-            {
-                _dtData = _bll.DoanhThu(_dtTu.Value.Date, _dtDen.Value.Date, Kieu());
-                UiHelper.GanNguon(_dtGrid, _dtData, "Nhan|" + _kieu.SelectedItem, "SoHoaDon|Số hóa đơn|N0", "DoanhThu|Doanh thu (đ)|N0");
-                var nhan = new List<string>();
-                var gt = new List<double>();
-                foreach (DataRow r in _dtData.Rows)
-                {
-                    string n = Convert.ToString(r["Nhan"]);
-                    nhan.Add(Kieu() == KieuGomDoanhThu.Ngay && n.Length >= 5 ? n.Substring(0, 5) : n);
-                    gt.Add(Convert.ToDouble(r["DoanhThu"]));
-                }
-                _dtChart.TieuDe = "Doanh thu " + ((string)_kieu.SelectedItem).ToLower();
-                _dtChart.Kieu = Kieu() == KieuGomDoanhThu.Ngay ? KieuBieuDo.Duong : KieuBieuDo.Cot;
-                _dtChart.DatDuLieu(nhan, gt);
-                _dtTong.Text = "Tổng doanh thu: " + BaoCaoService.TongDoanhThu(_dtData).ToString("N0") + " đ · " + BaoCaoService.TongSoHoaDon(_dtData) + " hóa đơn";
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không thể thống kê doanh thu", ex); }
+            _dtData = bang;
+            UiHelper.GanNguon(_dtGrid, bang, "Nhan|" + _kieu.SelectedItem, "SoHoaDon|Số hóa đơn|N0", "DoanhThu|Doanh thu (đ)|N0");
+            _dtChart.TieuDe = "Doanh thu " + ((string)_kieu.SelectedItem).ToLower();
+            _dtChart.Kieu = KieuGom == KieuGomDoanhThu.Ngay ? KieuBieuDo.Duong : KieuBieuDo.Cot;
+            _dtChart.DatDuLieu(new List<string>(nhan), new List<double>(giaTri));
+            _dtTong.Text = tong;
         }
 
-        private void TaiCongSuat()
+        public void HienCongSuat(DataTable bang, IList<string> nhan, IList<double> giaTri, string tong)
         {
-            try
-            {
-                _csData = _bll.CongSuat(_csTu.Value.Date, _csDen.Value.Date);
-                UiHelper.GanNguon(_csGrid, _csData, "Ngay|Ngày|dd/MM/yyyy", "SoPhongCoKhach|Phòng có khách|0", "TongPhong|Tổng phòng|0", "TyLe|Tỷ lệ lấp đầy (%)|0.##");
-                var nhan = new List<string>();
-                var gt = new List<double>();
-                foreach (DataRow r in _csData.Rows)
-                {
-                    nhan.Add(Convert.ToDateTime(r["Ngay"]).ToString("dd/MM"));
-                    gt.Add(Convert.ToDouble(r["TyLe"]));
-                }
-                _csChart.TieuDe = "Công suất phòng theo ngày";
-                _csChart.DatDuLieu(nhan, gt);
-                _csTong.Text = "Tỷ lệ lấp đầy trung bình: " + BaoCaoService.TyLeTrungBinh(_csData).ToString("0.##") + "%";
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không thể thống kê công suất", ex); }
+            _csData = bang;
+            UiHelper.GanNguon(_csGrid, bang, "Ngay|Ngày|dd/MM/yyyy", "SoPhongCoKhach|Phòng có khách|0", "TongPhong|Tổng phòng|0", "TyLe|Tỷ lệ lấp đầy (%)|0.##");
+            _csChart.TieuDe = "Công suất phòng theo ngày";
+            _csChart.DatDuLieu(new List<string>(nhan), new List<double>(giaTri));
+            _csTong.Text = tong;
         }
+
+        public void HienThongBao(string tieuDe, string noiDung, MucThongBao muc)
+        {
+            UiHelper.HienThongBao(this, tieuDe, noiDung, muc);
+        }
+
+        public bool XacNhan(string noiDung) { return UiHelper.XacNhan(this, noiDung); }
 
         private void InDoanhThu()
         {

@@ -10,7 +10,7 @@ namespace QuanLyKhachSan.Tests
     /// Kiểm thử tự động cho các quy tắc nghiệp vụ thuần (không cần CSDL):
     /// chạy bằng "dotnet run --project QuanLyKhachSan.Tests"; thoát mã 1 nếu có ca lỗi.
     /// </summary>
-    internal static class Program
+    internal static partial class Program
     {
         private static int _dat, _loi;
 
@@ -44,6 +44,7 @@ namespace QuanLyKhachSan.Tests
             TrangWeb();
             LocPhongWeb();
             DoiPhong();
+            PresenterTests();
 
             Console.WriteLine("Đạt " + _dat + ", lỗi " + _loi);
             return _loi == 0 ? 0 : 1;

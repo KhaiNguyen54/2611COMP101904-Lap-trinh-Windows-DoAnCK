@@ -5,7 +5,7 @@ using QuanLyKhachSan.Models;
 
 namespace QuanLyKhachSan.Services
 {
-    public class DatPhongService
+    public class DatPhongService : IDatPhongService
     {
         private readonly DatPhongRepository _dal = new DatPhongRepository();
 

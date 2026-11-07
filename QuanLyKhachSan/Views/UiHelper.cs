@@ -66,6 +66,13 @@ namespace QuanLyKhachSan.Views
             }
         }
 
+        public static void HienThongBao(IWin32Window chu, string tieuDe, string noiDung, MucThongBao muc)
+        {
+            MessageBoxIcon bieuTuong = muc == MucThongBao.Loi ? MessageBoxIcon.Error
+                : muc == MucThongBao.CanhBao ? MessageBoxIcon.Warning : MessageBoxIcon.Information;
+            MessageBox.Show(chu, noiDung, tieuDe, MessageBoxButtons.OK, bieuTuong);
+        }
+
         public static void ThongBaoLoi(IWin32Window chu, string tieuDe, Exception ex)
         {
             MessageBox.Show(chu, ex.Message, tieuDe, MessageBoxButtons.OK, MessageBoxIcon.Warning);

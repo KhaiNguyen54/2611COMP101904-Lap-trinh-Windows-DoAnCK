@@ -8,7 +8,7 @@ using QuanLyKhachSan.Models;
 
 namespace QuanLyKhachSan.Services
 {
-    public class NguoiDungService
+    public class NguoiDungService : INguoiDungService
     {
         private readonly NguoiDungRepository _dal;
         public NguoiDungService() : this(new NguoiDungRepository()) { }

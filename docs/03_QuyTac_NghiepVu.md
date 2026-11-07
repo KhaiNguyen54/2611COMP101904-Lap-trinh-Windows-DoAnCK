@@ -19,7 +19,7 @@
 | QT12 | **Hai khoảng [a1, a2) và [b1, b2) giao nhau khi `a1 < b2 AND b1 < a2`.** Một phòng không được có hai khoảng giao nhau trong các đặt phòng (Đã đặt) và phiếu thuê (Đang ở) |
 | QT13 | Khi sửa một đặt phòng, kiểm tra giao nhau và **loại trừ chính nó** |
 | QT14 | Đặt phòng đã hủy hoặc không đến thì không tính vào kiểm tra giao nhau |
-| QT15 | Tiền cọc là tùy chọn, tối đa bằng tiền phòng 1 đêm × số đêm; trừ vào hóa đơn khi trả phòng. Source đã áp mức tối đa này ở BLL. |
+| QT15 | Tiền cọc là tùy chọn, tối đa bằng tiền phòng 1 đêm × số đêm; trừ vào hóa đơn khi trả phòng. Source đã áp mức tối đa này ở Service. |
 | QT16 | Một đặt phòng gắn một khách đại diện (bắt buộc có thông tin khách) |
 
 ## 3. Nhận phòng
@@ -126,7 +126,7 @@ WHERE MaPhong = @MaPhong
 | Quy tắc | Hành vi trong source | Còn thiếu / lưu ý |
 |---|---|---|
 | QT05 | Phòng Bảo trì không đặt/nhận được; chỉ Quản lý đưa phòng Trống vào/ra bảo trì (sơ đồ phòng) | – |
-| QT10–QT14 | BLL chặn ngày đến quá khứ và ngày đến không trước ngày đi; DAL kiểm tra giao nhau trong transaction Serializable, từ chối phòng không tồn tại/ngừng/bảo trì | Không có giao diện sửa đặt phòng để xác minh QT13 |
+| QT10–QT14 | Service chặn ngày đến quá khứ và ngày đến không trước ngày đi; Repository kiểm tra giao nhau trong transaction Serializable, từ chối phòng không tồn tại/ngừng/bảo trì | Không có giao diện sửa đặt phòng để xác minh QT13 |
 | QT15 | Cọc ≤ giá 1 đêm × số đêm (`QuyTacTinhTien.TienCocToiDa`), cọc được trừ khi trả phòng; tổng phải trả không âm | – |
 | QT20–QT24 | Nhận phòng kiểm tra ngày đi dự kiến, phòng hoạt động/sẵn sàng, đặt phòng tương ứng, xung đột; lưu snapshot giá phòng | – |
 | QT30–QT33 | Số lượng dịch vụ dương; đơn giá lưu theo chi tiết; xóa dòng dịch vụ chỉ khi phiếu còn "Đang ở" | Chưa có sửa số lượng (xóa rồi ghi lại) |
@@ -136,7 +136,7 @@ WHERE MaPhong = @MaPhong
 | QT65–QT70 | Mã QR chỉ chứa đường dẫn; `Web:BaseUrl` có mặc định; giới hạn 213 byte; QR chỉ cho phòng hoạt động; trang web chỉ đọc, ẩn tên khách, kiểm tra ngày; giao diện sáng/tối lưu theo máy (`TraCuuUrl`, `QrCode`, `TraCuuService`, `GiaoDien`) | Web chưa có xác thực/HTTPS; chưa có giới hạn tần suất truy cập |
 | QT60–QT64 | Kiểm tra giấy tờ, điện thoại, email, mật khẩu mạnh, băm PBKDF2; tài khoản tự khóa bị chặn; luôn còn một Quản lý hoạt động (khóa trong transaction Serializable) | Chưa xác minh điều kiện email ở CSDL |
 
-Quy tắc SQL kiểm tra giao nhau ở mục 9 chỉ là truy vấn minh họa. Source hiện dùng `sp_KiemTraTrungLich` và transaction ở DAL để kiểm tra trước khi tạo đặt phòng.
+Quy tắc SQL kiểm tra giao nhau ở mục 9 chỉ là truy vấn minh họa. Source hiện dùng `sp_KiemTraTrungLich` và transaction ở Repository để kiểm tra trước khi tạo đặt phòng.
 
 ## 11. Tra cứu công khai, mã QR và giao diện
 

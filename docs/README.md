@@ -19,7 +19,7 @@ Thư mục này lưu yêu cầu, mô hình nghiệp vụ, quy tắc tính toán,
 | [03 — Quy tắc nghiệp vụ](03_QuyTac_NghiepVu.md) | Quy tắc ngày, trùng lịch, dữ liệu khách, giá, phụ thu, giảm giá, phân quyền; tra cứu công khai và mã QR (QT65–QT70) | Viết/đánh giá validation và tính tiền |
 | [04 — Use Case](04_UseCase.md) | Tác nhân (gồm Khách), 22 use case, luồng chính/ngoại lệ và ma trận quyền | Thiết kế giao diện hoặc kiểm tra quyền |
 | [05 — Git và quy ước](05_Git_QuyUoc.md) | Nhánh, commit, đặt tên và tích hợp nhóm | Làm việc nhóm hoặc chuẩn bị pull request |
-| [06 — ERD và review CSDL](06_ERD_Review.md) | ERD, quyết định thiết kế, khóa và ràng buộc; ghi chú cổng web không đổi schema | Sửa schema, DTO hoặc DAL |
+| [06 — ERD và review CSDL](06_ERD_Review.md) | ERD, quyết định thiết kế, khóa và ràng buộc; ghi chú cổng web không đổi schema | Sửa schema, Model hoặc Repository |
 | [07 — Kịch bản kiểm thử](07_KichBanKiemThu.md) | Kết quả xác minh SQL/build, kiểm thử giao diện và chức năng mở rộng | Kiểm tra trước khi tích hợp/nộp bài |
 | [08 — Lỗi đã sửa](08_Loi_Da_Sua.md) | Danh sách lỗi và cách sửa | Review, báo cáo |
 | [09 — Hướng dẫn và demo](09_HuongDan_Demo.md) | Cài đặt, phím tắt (gồm Ctrl+D), kịch bản demo kèm mã QR | Chuẩn bị demo |
@@ -31,7 +31,7 @@ Kế hoạch và timeline gốc nằm tại [`../KeHoach_QuanLyKhachSan.xlsx`](.
 
 ## Phạm vi triển khai hiện tại
 
-Đối chiếu source WinForms hiện có: ứng dụng dùng SQL Server, các tầng GUI → BLL → DAL và DTO. Source có đăng nhập/đổi mật khẩu/quản lý tài khoản, danh mục, tạo và hủy đặt phòng, nhận phòng, ghi dịch vụ, trả phòng/lập hóa đơn trong transaction, tra cứu/xem trước/in hóa đơn, sơ đồ trạng thái phòng và báo cáo doanh thu dạng bảng/biểu đồ. Ngoài ra có ba chức năng mở rộng: giao diện sáng/tối, tạo mã QR phòng/giá và cổng web tra cứu chỉ đọc (`QuanLyKhachSan.Web`).
+Đối chiếu source WinForms hiện có: ứng dụng dùng SQL Server, các lớp View → Service → Repository và Model. Source có đăng nhập/đổi mật khẩu/quản lý tài khoản, danh mục, tạo và hủy đặt phòng, nhận phòng, ghi dịch vụ, trả phòng/lập hóa đơn trong transaction, tra cứu/xem trước/in hóa đơn, sơ đồ trạng thái phòng và báo cáo doanh thu dạng bảng/biểu đồ. Ngoài ra có ba chức năng mở rộng: giao diện sáng/tối, tạo mã QR phòng/giá và cổng web tra cứu chỉ đọc (`QuanLyKhachSan.Web`).
 
 | Tình trạng | Hạng mục |
 |---|---|

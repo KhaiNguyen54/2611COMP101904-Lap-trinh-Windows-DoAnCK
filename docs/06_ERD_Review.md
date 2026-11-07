@@ -39,19 +39,19 @@ erDiagram
 - Loại phòng, phòng và dịch vụ được ngừng hoạt động bằng cờ `HoatDong`, không xóa lịch sử được tham chiếu bởi khóa ngoại.
 - Mật khẩu mẫu dùng PBKDF2-SHA256, salt riêng, 100000 vòng; không lưu mật khẩu rõ. Tài khoản mẫu tạm dùng `Admin@123` và phải đổi trước khi dùng thật.
 - Đã đặt `UNIQUE`, `CHECK`, FK cho mã/tên/số phòng, vai trò/trạng thái, giá, ngày, số lượng, số giấy tờ và điện thoại.
-- Kiểm tra trùng lịch cần nằm cùng transaction ghi ở DAL (SERIALIZABLE); SP kiểm tra dùng khoảng `[đến, đi)` cho đặt chỗ và phiếu đang ở. `CHECK` không thể đảm bảo bất biến liên bảng trong SQL Server.
+- Kiểm tra trùng lịch cần nằm cùng transaction ghi ở Repository (SERIALIZABLE); SP kiểm tra dùng khoảng `[đến, đi)` cho đặt chỗ và phiếu đang ở. `CHECK` không thể đảm bảo bất biến liên bảng trong SQL Server.
 
-`Database.sql` có thể chạy nhiều lần mà không xóa dữ liệu; script tạo ba loại phòng, tám phòng trên ba tầng, hai khách, ba dịch vụ và hai tài khoản. DTO tương ứng nằm trong `QuanLyKhachSan/DTO`, bao gồm `DatPhong` là bảng nghiệp vụ cần có thêm.
+`Database.sql` có thể chạy nhiều lần mà không xóa dữ liệu; script tạo ba loại phòng, tám phòng trên ba tầng, hai khách, ba dịch vụ và hai tài khoản. Model tương ứng nằm trong `QuanLyKhachSan/Model`, bao gồm `DatPhong` là bảng nghiệp vụ cần có thêm.
 
 ## Ràng buộc cần lưu ý
 
 - ERD phản ánh schema trong `QuanLyKhachSan/Scripts/Database.sql`; `SoDienThoai` cũng có unique index dù không khai báo inline trong `CREATE TABLE`.
 - `PhieuThue.MaDatPhong` nullable và unique: khách vãng lai không cần đặt trước; mỗi đặt phòng chỉ chuyển thành tối đa một phiếu thuê.
 - `HoaDon.MaPhieuThue` unique: mỗi phiếu thuê có tối đa một hóa đơn. Trạng thái đặt phòng/phiếu thuê và phương thức thanh toán có `CHECK` constraint.
-- Khoảng thời gian giao nhau là ràng buộc liên bản ghi, không được bảo đảm bởi `CHECK` hoặc index unique thông thường. Stored procedure và transaction ở DAL thực hiện kiểm tra khi ghi.
+- Khoảng thời gian giao nhau là ràng buộc liên bản ghi, không được bảo đảm bởi `CHECK` hoặc index unique thông thường. Stored procedure và transaction ở Repository thực hiện kiểm tra khi ghi.
 - Bảng `Phong` lưu `TrangThai`, nhưng trạng thái hiển thị `Đang ở` và `Đã đặt` được suy ra từ phiếu thuê/đặt phòng khi tra cứu; không xem ERD như một bản sao toàn bộ logic hiển thị.
 - Script dùng `CREATE OR ALTER` cho stored procedure và tạo database nếu chưa tồn tại. Chạy lần đầu cần quyền tạo database; chạy lại trên database có dữ liệu cần được kiểm soát như mọi thay đổi schema.
 
 ## Ghi chú: cổng web tra cứu và schema
 
-Cổng web `QuanLyKhachSan.Web` (chỉ đọc) và mã QR **không thêm bảng hay cột nào**. Cổng web dùng lại `LoaiPhong`, `Phong` và, để suy ra trạng thái hiển thị/phòng trống, `DatPhong` và `PhieuThue` qua `PhongDAL.TimKiem`/`TimKiemTrongKhoang`. Không đọc `KhachHang`, `HoaDon`, `NguoiDung`; không dùng `PhongDAL.LaySoDo` vì kết quả chứa tên khách. Tài khoản SQL dùng cho cổng web nên chỉ có quyền SELECT trên các bảng trên khi triển khai thực tế.
+Cổng web `QuanLyKhachSan.Web` (chỉ đọc) và mã QR **không thêm bảng hay cột nào**. Cổng web dùng lại `LoaiPhong`, `Phong` và, để suy ra trạng thái hiển thị/phòng trống, `DatPhong` và `PhieuThue` qua `PhongRepository.TimKiem`/`TimKiemTrongKhoang`. Không đọc `KhachHang`, `HoaDon`, `NguoiDung`; không dùng `PhongRepository.LaySoDo` vì kết quả chứa tên khách. Tài khoản SQL dùng cho cổng web nên chỉ có quyền SELECT trên các bảng trên khi triển khai thực tế.

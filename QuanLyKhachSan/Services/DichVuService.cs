@@ -5,7 +5,7 @@ using QuanLyKhachSan.Models;
 
 namespace QuanLyKhachSan.Services
 {
-    public class DichVuService
+    public class DichVuService : IDichVuService
     {
         private readonly DichVuRepository _dal=new DichVuRepository();
         public DataTable TimKiem(string tuKhoa=null,bool dangHoatDong=false)=>_dal.TimKiem(tuKhoa,dangHoatDong);
