@@ -1,5 +1,5 @@
-﻿-- KiemThu.sql - Kiểm thử SQL tự động cho Database.sql (SQL Server).
--- Chạy sau Database.sql trên database THỬ NGHIỆM trống dữ liệu nghiệp vụ (chỉ có dữ liệu mẫu).
+﻿-- KiemThu.sql - Kiểm thử SQL tự động cho 01_CreateDatabase.sql và 02_InsertSampleData.sql (SQL Server).
+-- Chạy sau hai script trên trên database THỬ NGHIỆM trống dữ liệu nghiệp vụ (chỉ có dữ liệu mẫu).
 -- In kết quả ĐẠT/LỖI từng ca; có ca lỗi thì kết thúc với mã lỗi (dùng sqlcmd -b).
 -- Script tự dọn dữ liệu đã tạo và trả các phòng thử về trạng thái Trống.
 

@@ -8,7 +8,7 @@ Các thao tác tạo dữ liệu kiểm thử được bao trong transaction và
 
 | ID | Kịch bản | Kết quả |
 |---|---|---|
-| DB-01 | Chạy `Scripts/Database.sql` trên database thử nghiệm chưa tồn tại | Tạo database, 10 bảng, 6 stored procedure và dữ liệu mẫu; chạy lại lần hai không lỗi |
+| DB-01 | Chạy `Scripts/01_CreateDatabase.sql` rồi `02_InsertSampleData.sql` trên database thử nghiệm chưa tồn tại | Tạo database, 10 bảng, 6 stored procedure và dữ liệu mẫu; chạy lại lần hai không lỗi |
 | DB-02 | Chạy lại script trên database thử nghiệm | Đạt (GitHub Actions): chạy lại lần hai không lỗi, không tạo trùng object/seed |
 | DB-03 | Kiểm tra lịch của phiếu thuê đang ở | Đạt (DB-03a/b/c): `sp_KiemTraTrungLich` báo trùng khi giao nhau, không báo khi liền kề |
 | DB-04 | Thêm dịch vụ và trả phòng trong transaction thử nghiệm | Đạt (DB-04a–f): hóa đơn tính đủ tiền phòng theo số đêm và dịch vụ, phòng sang Dọn dẹp |
@@ -70,7 +70,7 @@ Workflow `.github/workflows/kiem-thu.yml` chạy mỗi lần push lên `main`, k
 
 | Job | Môi trường | Nội dung |
 |---|---|---|
-| Kiểm thử SQL Server | Ubuntu, SQL Server 2022 (container) | Chạy `Database.sql` hai lần (tạo mới, chạy lại), rồi `Scripts/KiemThu.sql` |
+| Kiểm thử SQL Server | Ubuntu, SQL Server 2022 (container) | Chạy 01 và 02 hai lần (tạo mới, chạy lại), rồi `Scripts/KiemThu.sql` |
 | Build và kiểm thử logic (.NET) | Windows, .NET 10 | `dotnet build` toàn bộ solution (WinForms, Web, Tests), chạy bộ test 208 ca |
 
 `Scripts/KiemThu.sql` gồm **34 ca**, in ĐẠT/LỖI từng ca và thoát với mã lỗi nếu có ca lỗi; script tự dọn dữ liệu thử và trả các phòng thử về Trống.
@@ -87,7 +87,7 @@ Workflow `.github/workflows/kiem-thu.yml` chạy mỗi lần push lên `main`, k
 | Giảm giá cần duyệt (DB-11) | 4 | Giảm 20% không người duyệt bị từ chối (50016) và phiếu vẫn Đang ở; người duyệt không hợp lệ bị từ chối; có Quản lý duyệt thì lập hóa đơn và ghi người duyệt; giảm đúng 10% không cần duyệt |
 | Công suất khi đổi phòng (DB-10) | 2 | Phiếu đổi phòng được tách đoạn: các đêm trước ngày đổi tính cho phòng cũ (hai phòng cùng có khách), từ ngày đổi chỉ tính phòng mới, ngày trả phòng không tính |
 
-Chạy thủ công trên database thử nghiệm: `sqlcmd -S . -E -C -b -f 65001 -i QuanLyKhachSan\Scripts\Database.sql`, rồi `-i QuanLyKhachSan\Scripts\KiemThu.sql`.
+Chạy thủ công trên database thử nghiệm: `sqlcmd -S . -E -C -b -f 65001 -i QuanLyKhachSan\Scripts\01_CreateDatabase.sql`, `-i QuanLyKhachSan\Scripts\02_InsertSampleData.sql`, rồi `-i QuanLyKhachSan\Scripts\KiemThu.sql`.
 
 ## Kiểm thử chức năng mở rộng (mã QR, cổng web, giao diện tối)
 

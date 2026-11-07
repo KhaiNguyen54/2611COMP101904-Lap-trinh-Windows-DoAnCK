@@ -7,7 +7,7 @@ Thư mục này lưu yêu cầu, mô hình nghiệp vụ, quy tắc tính toán,
 1. Đọc [phạm vi và danh sách chức năng](01_PhamVi_ChucNang.md) để biết yêu cầu và vai trò.
 2. Đọc [quy trình nghiệp vụ](02_QuyTrinh_NghiepVu.md), sau đó đối chiếu [quy tắc nghiệp vụ](03_QuyTac_NghiepVu.md) trước khi thay đổi xử lý.
 3. Dùng [Use Case](04_UseCase.md) để tra luồng chính, ngoại lệ và quyền truy cập.
-4. Đối chiếu [ERD và review database](06_ERD_Review.md) với `QuanLyKhachSan/Scripts/Database.sql`.
+4. Đối chiếu [ERD và review database](06_ERD_Review.md) với `QuanLyKhachSan/Scripts/01_CreateDatabase.sql`.
 5. Chạy theo hướng dẫn trong [README dự án](../README.md); dùng [kịch bản kiểm thử](07_KichBanKiemThu.md) để xác nhận thay đổi.
 
 ## Danh mục tài liệu

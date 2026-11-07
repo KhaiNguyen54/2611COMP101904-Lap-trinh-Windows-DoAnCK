@@ -127,6 +127,6 @@ Quy tắc:
 
 ## 6. Xử lý xung đột
 
-- File dễ xung đột: `*.csproj`, `*.Designer.cs`, `Database.sql`. Hạn chế nhiều người cùng sửa một form; tách việc theo module (B: phòng, C: khách và dịch vụ, D: hệ thống).
-- `Database.sql`: chỉ trưởng nhóm (A) sửa; người khác cần đổi CSDL thì báo A hoặc gửi đoạn script để A gộp.
+- File dễ xung đột: `*.csproj`, `*.Designer.cs`, `01_CreateDatabase.sql`. Hạn chế nhiều người cùng sửa một form; tách việc theo module (B: phòng, C: khách và dịch vụ, D: hệ thống).
+- `01_CreateDatabase.sql` và `02_InsertSampleData.sql`: chỉ trưởng nhóm (A) sửa; người khác cần đổi CSDL thì báo A hoặc gửi đoạn script để A gộp.
 - Khi xung đột: người mở Pull Request tự giải quyết, build lại rồi mới push.

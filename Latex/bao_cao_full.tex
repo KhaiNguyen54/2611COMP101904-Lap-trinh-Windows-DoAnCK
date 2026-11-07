@@ -367,7 +367,7 @@ Mở rộng & Giao diện sáng/tối (Ctrl+D, ghi nhớ); tạo mã QR phòng/g
 Đồ án được thực hiện bởi nhóm \textbf{3 thành viên}. Do quy mô nhóm nhỏ hơn mô hình 5 người thường gặp ở các dự án tham khảo, nhóm không chia theo kiểu "mỗi người một chương tài liệu" mà chia theo \textbf{trục kỹ thuật dọc}, để mỗi thành viên nắm trọn một phần của hệ thống từ cơ sở dữ liệu đến giao diện, giảm phụ thuộc chờ nhau giữa các lớp kiến trúc. Vai trò cụ thể như sau:
 
 \begin{itemize}
-  \item \textbf{Thành viên 1 -- Phụ trách Dữ liệu và Nghiệp vụ lõi}: thiết kế CSDL, viết script `Database.sql` (bảng, ràng buộc, stored procedure), xây lớp Repository và Service cho các nghiệp vụ lõi (Đặt phòng, Nhận phòng, Trả phòng, Quy tắc tính tiền).
+  \item \textbf{Thành viên 1 -- Phụ trách Dữ liệu và Nghiệp vụ lõi}: thiết kế CSDL, viết hai script \texttt{01\_CreateDatabase.sql} (bảng, ràng buộc, stored procedure) và \texttt{02\_InsertSampleData.sql} (dữ liệu mẫu), xây lớp Repository và Service cho các nghiệp vụ lõi (Đặt phòng, Nhận phòng, Trả phòng, Quy tắc tính tiền).
   \item \textbf{Thành viên 2 -- Phụ trách Danh mục, Tài khoản và Báo cáo}: xây Repository/Service/View cho các màn hình danh mục (Loại phòng, Phòng, Khách hàng, Dịch vụ), màn hình quản lý tài khoản, đăng nhập/phân quyền, và toàn bộ phân hệ báo cáo thống kê (doanh thu, công suất, biểu đồ, in ấn, xuất CSV).
   \item \textbf{Thành viên 3 -- Phụ trách Giao diện tổng thể, Kiểm thử và Tài liệu}: xây dựng khung giao diện chính (`FrmMain`, điều hướng, sơ đồ phòng theo tầng), chuẩn hóa style dùng chung (`GiaoDien`), viết kịch bản kiểm thử thủ công và tự động, tổng hợp tài liệu đặc tả và báo cáo.
 \end{itemize}
@@ -1852,7 +1852,7 @@ Kiểm thử tự động & Project \texttt{QuanLyKhachSan.Tests}, chạy bằng
 \subsection{Các bước triển khai}
 
 \begin{enumerate}
-  \item Chạy \texttt{QuanLyKhachSan/Scripts/Database.sql} trên SQL Server (khuyến nghị dùng \texttt{sqlcmd -f 65001 -i Database.sql} để giữ đúng mã hóa tiếng Việt UTF-8).
+  \item Chạy lần lượt \texttt{QuanLyKhachSan/Scripts/01\_CreateDatabase.sql} (tạo database, bảng, ràng buộc, stored procedure) rồi \texttt{02\_InsertSampleData.sql} (dữ liệu mẫu và tài khoản demo) trên SQL Server; khuyến nghị dùng \texttt{sqlcmd -f 65001 -i <tên script>} để giữ đúng mã hóa tiếng Việt UTF-8.
   \item Kiểm tra \texttt{appsettings.json} trỏ đúng tới instance SQL Server đang chạy.
   \item Mở \texttt{QuanLyKhachSan.sln} bằng Visual Studio, build và chạy project \texttt{QuanLyKhachSan}.
   \item Đăng nhập bằng tài khoản mẫu đã seed sẵn trong script (một tài khoản Quản lý, một tài khoản Lễ tân).
@@ -1888,7 +1888,7 @@ BUILD-01 & \texttt{dotnet build} toàn bộ solution & build thành công trên 
 
 \subsection{Kiểm thử SQL và build tự động}
 
-Tệp \texttt{.github/workflows/kiem-thu.yml} cấu hình GitHub Actions chạy mỗi lần đẩy mã lên nhánh chính với hai công việc. Công việc thứ nhất dùng SQL Server 2022 trong container, chạy \texttt{Database.sql} hai lần (tạo mới và chạy lại) rồi chạy \texttt{Scripts/KiemThu.sql}. Script này gồm 34 ca: đủ 10 bảng, 6 thủ tục và các index; ràng buộc CHECK; kiểm tra trùng lịch; nhận phòng, ghi dịch vụ, trả phòng và hóa đơn; đổi phòng (các mã lỗi 50012 đến 50015, trạng thái phòng, lịch sử, dịch vụ giữ nguyên, tính tiền theo đơn giá ban đầu); thống kê doanh thu , công suất theo từng chặng phòng khi có đổi phòng và duyệt giảm giá trên 10\%. Công việc thứ hai trên Windows với .NET 10 biên dịch toàn bộ solution và chạy bộ kiểm thử logic 208 ca. Kết quả: cả hai công việc đạt, 34/34 ca SQL và 208/208 ca logic.
+Tệp \texttt{.github/workflows/kiem-thu.yml} cấu hình GitHub Actions chạy mỗi lần đẩy mã lên nhánh chính với hai công việc. Công việc thứ nhất dùng SQL Server 2022 trong container, chạy hai script \texttt{01\_CreateDatabase.sql} và \texttt{02\_InsertSampleData.sql} hai lần (tạo mới và chạy lại) rồi chạy \texttt{Scripts/KiemThu.sql}. Script này gồm 34 ca: đủ 10 bảng, 6 thủ tục và các index; ràng buộc CHECK; kiểm tra trùng lịch; nhận phòng, ghi dịch vụ, trả phòng và hóa đơn; đổi phòng (các mã lỗi 50012 đến 50015, trạng thái phòng, lịch sử, dịch vụ giữ nguyên, tính tiền theo đơn giá ban đầu); thống kê doanh thu , công suất theo từng chặng phòng khi có đổi phòng và duyệt giảm giá trên 10\%. Công việc thứ hai trên Windows với .NET 10 biên dịch toàn bộ solution và chạy bộ kiểm thử logic 208 ca. Kết quả: cả hai công việc đạt, 34/34 ca SQL và 208/208 ca logic.
 
 Quá trình này phát hiện và khắc phục một lỗi thiết kế: ràng buộc \texttt{UNIQUE} trên cột \texttt{MaDatPhong} (cho phép NULL) chỉ cho phép một phiếu thuê không có đặt phòng, làm khách vãng lai thứ hai không nhận được phòng. Ràng buộc được thay bằng unique index có điều kiện \texttt{WHERE MaDatPhong IS NOT NULL}; script tự chuyển đổi cơ sở dữ liệu cũ.
 
@@ -2136,8 +2136,8 @@ CREATE TABLE Phong (
 
 \chapter{Danh sách tài khoản mẫu}
 
-Script khởi tạo CSDL tạo sẵn hai tài khoản mẫu để phục vụ demo và kiểm thử: một tài khoản vai trò Quản lý (\texttt{admin}) và một tài khoản vai trò Lễ tân (\texttt{letan}), mật khẩu tương ứng được thiết lập trong \texttt{Database.sql} và nên được đổi lại trước khi triển khai môi trường thật, theo đúng khuyến nghị bảo mật tại Mục~8.4.
-Bảng~\ref{tab:taikhoan-mau} liệt kê hai tài khoản được script \texttt{Database.sql} tự động khởi tạo (chỉ chèn nếu tên đăng nhập chưa tồn tại), dùng để đăng nhập lần đầu khi demo hoặc kiểm thử hệ thống.
+Script khởi tạo CSDL tạo sẵn hai tài khoản mẫu để phục vụ demo và kiểm thử: một tài khoản vai trò Quản lý (\texttt{admin}) và một tài khoản vai trò Lễ tân (\texttt{letan}), mật khẩu tương ứng được thiết lập trong \texttt{02\_InsertSampleData.sql} và nên được đổi lại trước khi triển khai môi trường thật, theo đúng khuyến nghị bảo mật tại Mục~8.4.
+Bảng~\ref{tab:taikhoan-mau} liệt kê hai tài khoản được script \texttt{02\_InsertSampleData.sql} tự động khởi tạo (chỉ chèn nếu tên đăng nhập chưa tồn tại), dùng để đăng nhập lần đầu khi demo hoặc kiểm thử hệ thống.
 
 \begin{table}[H]
 \centering

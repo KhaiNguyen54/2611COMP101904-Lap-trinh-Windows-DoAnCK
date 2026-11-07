@@ -41,11 +41,11 @@ erDiagram
 - Đã đặt `UNIQUE`, `CHECK`, FK cho mã/tên/số phòng, vai trò/trạng thái, giá, ngày, số lượng, số giấy tờ và điện thoại.
 - Kiểm tra trùng lịch cần nằm cùng transaction ghi ở Repository (SERIALIZABLE); SP kiểm tra dùng khoảng `[đến, đi)` cho đặt chỗ và phiếu đang ở. `CHECK` không thể đảm bảo bất biến liên bảng trong SQL Server.
 
-`Database.sql` có thể chạy nhiều lần mà không xóa dữ liệu; script tạo ba loại phòng, tám phòng trên ba tầng, hai khách, ba dịch vụ và hai tài khoản. Model tương ứng nằm trong `QuanLyKhachSan/Model`, bao gồm `DatPhong` là bảng nghiệp vụ cần có thêm.
+`01_CreateDatabase.sql` và `02_InsertSampleData.sql` có thể chạy nhiều lần mà không xóa dữ liệu; script tạo ba loại phòng, tám phòng trên ba tầng, hai khách, ba dịch vụ và hai tài khoản. Model tương ứng nằm trong `QuanLyKhachSan/Models`, bao gồm `DatPhong` là bảng nghiệp vụ cần có thêm.
 
 ## Ràng buộc cần lưu ý
 
-- ERD phản ánh schema trong `QuanLyKhachSan/Scripts/Database.sql`; `SoDienThoai` cũng có unique index dù không khai báo inline trong `CREATE TABLE`.
+- ERD phản ánh schema trong `QuanLyKhachSan/Scripts/01_CreateDatabase.sql`; `SoDienThoai` cũng có unique index dù không khai báo inline trong `CREATE TABLE`.
 - `PhieuThue.MaDatPhong` nullable và unique: khách vãng lai không cần đặt trước; mỗi đặt phòng chỉ chuyển thành tối đa một phiếu thuê.
 - `HoaDon.MaPhieuThue` unique: mỗi phiếu thuê có tối đa một hóa đơn. Trạng thái đặt phòng/phiếu thuê và phương thức thanh toán có `CHECK` constraint.
 - Khoảng thời gian giao nhau là ràng buộc liên bản ghi, không được bảo đảm bởi `CHECK` hoặc index unique thông thường. Stored procedure và transaction ở Repository thực hiện kiểm tra khi ghi.

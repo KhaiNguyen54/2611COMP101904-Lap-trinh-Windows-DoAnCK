@@ -34,16 +34,17 @@ NuGet dependency được khai báo trong project: `Microsoft.Data.SqlClient` 5.
 Mở `QuanLyKhachSan.sln` trong Visual Studio, hoặc chạy từ thư mục chứa solution:
 
 ```powershell
-sqlcmd -S localhost -E -C -b -f 65001 -i .\QuanLyKhachSan\Scripts\Database.sql
+sqlcmd -S localhost -E -C -b -f 65001 -i .\QuanLyKhachSan\Scripts\01_CreateDatabase.sql
+sqlcmd -S localhost -E -C -b -f 65001 -i .\QuanLyKhachSan\Scripts\02_InsertSampleData.sql
 ```
 
-Có thể mở `QuanLyKhachSan/Scripts/Database.sql` bằng SQL Server Management Studio và chọn **Execute**. Script tạo database `QuanLyKhachSan`, schema, stored procedure, index và dữ liệu mẫu; script được thiết kế để chạy lại mà không xóa dữ liệu hiện có.
+Có thể mở lần lượt `QuanLyKhachSan/Scripts/01_CreateDatabase.sql` rồi `02_InsertSampleData.sql` bằng SQL Server Management Studio và chọn **Execute**. Script 01 tạo database `QuanLyKhachSan`, bảng, khóa, ràng buộc, index và stored procedure; script 02 chèn dữ liệu mẫu và hai tài khoản demo. Cả hai được thiết kế để chạy lại mà không xóa dữ liệu hiện có; phải chạy 01 trước 02.
 
-Nếu đã tạo CSDL từ phiên bản trước, chạy lại `Database.sql` để bổ sung bảng `LichSuDoiPhong` và `sp_DoiPhong` (đổi phòng khi đang ở); script không xóa dữ liệu hiện có.
+Nếu đã tạo CSDL từ phiên bản trước, chạy lại `01_CreateDatabase.sql` để bổ sung bảng `LichSuDoiPhong` và `sp_DoiPhong` (đổi phòng khi đang ở); script không xóa dữ liệu hiện có.
 
 Bộ test case dạng bảng tính (giao diện, cổng web, CSDL và nhóm kiểm thử tự động): [`TestCases/TestCase.xlsx`](TestCases/TestCase.xlsx).
 
-Kiểm thử tự động trên GitHub Actions (`.github/workflows/kiem-thu.yml`): chạy `Database.sql` hai lần trên SQL Server 2022, 34 ca trong `Scripts/KiemThu.sql`, build toàn bộ solution trên Windows và bộ test 208 ca.
+Kiểm thử tự động trên GitHub Actions (`.github/workflows/kiem-thu.yml`): chạy hai script 01 và 02 hai lần trên SQL Server 2022, 34 ca trong `Scripts/KiemThu.sql`, build toàn bộ solution trên Windows và bộ test 208 ca.
 
 ### 2. Cấu hình kết nối
 
@@ -123,7 +124,8 @@ QuanLyKhachSan/
     ├── Services/                 # Nghiệp vụ và interface IXxxService; QrCode.cs, TraCuuUrl.cs cho mã QR
     ├── Repositories/             # Truy vấn SQL, stored procedure, transaction
     ├── Models/                   # Đối tượng dữ liệu
-    ├── Scripts/Database.sql      # Schema, dữ liệu mẫu, index, stored procedure
+    ├── Scripts/01_CreateDatabase.sql   # Database, bảng, khóa, index, stored procedure
+    ├── Scripts/02_InsertSampleData.sql # Dữ liệu mẫu và tài khoản demo
     ├── appsettings.json          # Kết nối CSDL và Web:BaseUrl cho mã QR
     ├── Program.cs
     └── QuanLyKhachSan.csproj

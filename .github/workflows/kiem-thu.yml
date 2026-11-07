@@ -28,14 +28,19 @@ jobs:
 
       - name: Chép script vào container
         run: |
-          docker cp QuanLyKhachSan/Scripts/Database.sql mssql:/tmp/Database.sql
+          docker cp QuanLyKhachSan/Scripts/01_CreateDatabase.sql mssql:/tmp/01_CreateDatabase.sql
+          docker cp QuanLyKhachSan/Scripts/02_InsertSampleData.sql mssql:/tmp/02_InsertSampleData.sql
           docker cp QuanLyKhachSan/Scripts/KiemThu.sql mssql:/tmp/KiemThu.sql
 
-      - name: Chạy Database.sql lần 1 (tạo mới)
-        run: docker exec mssql $SQLCMD -i /tmp/Database.sql
+      - name: Chạy 01 và 02 lần 1 (tạo mới)
+        run: |
+          docker exec mssql $SQLCMD -i /tmp/01_CreateDatabase.sql
+          docker exec mssql $SQLCMD -i /tmp/02_InsertSampleData.sql
 
-      - name: Chạy Database.sql lần 2 (chạy lại không lỗi)
-        run: docker exec mssql $SQLCMD -i /tmp/Database.sql
+      - name: Chạy 01 và 02 lần 2 (chạy lại không lỗi)
+        run: |
+          docker exec mssql $SQLCMD -i /tmp/01_CreateDatabase.sql
+          docker exec mssql $SQLCMD -i /tmp/02_InsertSampleData.sql
 
       - name: Kiểm thử SQL (KiemThu.sql)
         run: docker exec mssql $SQLCMD -W -s " | " -i /tmp/KiemThu.sql
