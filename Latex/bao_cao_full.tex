@@ -1841,7 +1841,7 @@ Việc trình bày các hình minh họa giao diện trong chương này dưới
 \textbf{Thành phần} & \textbf{Phiên bản / Ghi chú} \\\hline
 Ngôn ngữ & C\#, target \texttt{net10.0-windows} \\\hline
 Giao diện & Windows Forms \\\hline
-IDE & Visual Studio 2022 trở lên \\\hline
+IDE & Visual Studio 2026 (18.0 trở lên) với .NET 10 SDK \\\hline
 Cơ sở dữ liệu & Microsoft SQL Server (Express/Developer Edition) \\\hline
 Cổng web (mở rộng) & ASP.NET Core, target \texttt{net10.0}, dự án \texttt{QuanLyKhachSan.Web}; cổng mặc định 5080 \\\hline
 Cấu hình kết nối & \texttt{appsettings.json} (chỉ chứa cấu hình máy phát triển, không commit mật khẩu thật) \\\hline
@@ -2002,7 +2002,7 @@ Ngoài phạm vi đặc tả ban đầu, nhóm đã bổ sung ba tính năng m�
 
 \begin{itemize}
   \item Khi đổi phòng giữa hai loại phòng khác giá, đơn giá phiếu thuê được giữ nguyên và chênh lệch xử lý thủ công khi trả phòng.
-  \item Các kịch bản kiểm thử giao diện (UI-01 đến UI-12) là kiểm thử thủ công, chưa được tự động hóa bằng công cụ kiểm thử giao diện chuyên dụng.
+  \item Các kịch bản kiểm thử giao diện (UI-01 đến UI-19) là kiểm thử thủ công, chưa được tự động hóa bằng công cụ kiểm thử giao diện chuyên dụng.
   \item Ứng dụng hiện chỉ hỗ trợ một máy trạm kết nối trực tiếp tới một CSDL tập trung, chưa tính tới kịch bản nhiều chi nhánh hoặc truy cập đồng thời ở quy mô lớn.
   \item Chưa có chức năng xuất báo cáo ra định dạng Excel (.xlsx), hiện chỉ hỗ trợ xuất CSV.
   \item Cổng web hiện chỉ cho tra cứu (chưa cho khách tự đặt phòng) và chưa có xác thực hay HTTPS; muốn điện thoại quét được mã QR cần cấu hình địa chỉ mạng nội bộ (\texttt{Web:BaseUrl}) và mở cổng trên tường lửa.

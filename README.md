@@ -21,8 +21,8 @@ Phạm vi đã triển khai có thể thay đổi theo phiên bản source hiệ
 ## Công nghệ và yêu cầu
 
 - Windows 10/11.
-- .NET 10 SDK (project target `net10.0-windows`) hoặc Visual Studio có hỗ trợ .NET 10 và workload **.NET desktop development**.
-- SQL Server Express, LocalDB hoặc SQL Server có quyền tạo database và bảng.
+- Visual Studio 2026 (phiên bản 18.0 trở lên) với workload **.NET desktop development**; Visual Studio 2022 (17.x) không build được project target `net10.0`. Có thể dùng riêng .NET 10 SDK (project target `net10.0-windows`) và chạy bằng dòng lệnh.
+- SQL Server Express, LocalDB hoặc SQL Server có quyền tạo database và bảng; bộ kiểm thử tự động chạy trên SQL Server 2022.
 - Kết nối Windows Authentication theo mặc định; máy chạy ứng dụng cần truy cập được SQL Server.
 
 NuGet dependency được khai báo trong project: `Microsoft.Data.SqlClient` 5.2.2 (cả ứng dụng desktop và cổng web). Cổng web dùng ASP.NET Core đi kèm .NET 10 SDK; mã QR do bộ mã hóa tự viết trong `Services/QrCode.cs` nên không cần thư viện QR. Khi restore/build lần đầu cần có kết nối NuGet.
@@ -40,6 +40,8 @@ sqlcmd -S localhost -E -C -b -f 65001 -i .\QuanLyKhachSan\Scripts\Database.sql
 Có thể mở `QuanLyKhachSan/Scripts/Database.sql` bằng SQL Server Management Studio và chọn **Execute**. Script tạo database `QuanLyKhachSan`, schema, stored procedure, index và dữ liệu mẫu; script được thiết kế để chạy lại mà không xóa dữ liệu hiện có.
 
 Nếu đã tạo CSDL từ phiên bản trước, chạy lại `Database.sql` để bổ sung bảng `LichSuDoiPhong` và `sp_DoiPhong` (đổi phòng khi đang ở); script không xóa dữ liệu hiện có.
+
+Bộ test case dạng bảng tính (giao diện, cổng web, CSDL và nhóm kiểm thử tự động): [`TestCases/TestCase.xlsx`](TestCases/TestCase.xlsx).
 
 Kiểm thử tự động trên GitHub Actions (`.github/workflows/kiem-thu.yml`): chạy `Database.sql` hai lần trên SQL Server 2022, 34 ca trong `Scripts/KiemThu.sql`, build toàn bộ solution trên Windows và bộ test 208 ca.
 
