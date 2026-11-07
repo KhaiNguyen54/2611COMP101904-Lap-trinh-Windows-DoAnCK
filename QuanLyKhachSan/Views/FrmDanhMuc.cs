@@ -4,6 +4,7 @@ using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
+using QuanLyKhachSan.Presenters;
 using QuanLyKhachSan.Services;
 using QuanLyKhachSan.Models;
 
@@ -13,9 +14,10 @@ namespace QuanLyKhachSan.Views
     /// Màn hình danh mục dùng chung: Khách hàng, Loại phòng, Phòng, Dịch vụ.
     /// Lễ tân chỉ được sửa Khách hàng; các danh mục còn lại chỉ xem (ma trận quyền ở docs/04).
     /// </summary>
-    public class FrmDanhMuc : Form
+    public class FrmDanhMuc : Form, IDanhMucView
     {
-        private readonly string _loai;
+        private readonly LoaiDanhMuc _loai;
+        private readonly DanhMucPresenter _presenter;
         private readonly bool _chiXem;
         private readonly TextBox _tuKhoa = new TextBox();
         private readonly DataGridView _grid = UiHelper.TaoLuoi();
@@ -26,14 +28,14 @@ namespace QuanLyKhachSan.Views
         private readonly Button _ngung = GiaoDien.TaoNut("Ngừng sử dụng");
         private readonly Label _trangThai = new Label { AutoSize = true, ForeColor = GiaoDien.Phu, Margin = new Padding(8, 6, 0, 0) };
         private int _ma;
-        private DataTable _dsLoaiPhong;
 
-        public FrmDanhMuc(string loai, NguoiDung nguoiDung)
+        public FrmDanhMuc(LoaiDanhMuc loai, NguoiDung nguoiDung)
         {
             _loai = loai;
-            _chiXem = loai != "Khách hàng" && (nguoiDung == null || nguoiDung.VaiTro != VaiTroNguoiDung.QuanLy);
+            _presenter = new DanhMucPresenter(this, loai, new LoaiPhongService(), new PhongService(), new KhachHangService(), new DichVuService());
+            _chiXem = DanhMucPresenter.ChiXem(loai, nguoiDung);
 
-            Text = "Danh mục " + loai.ToLower() + (_chiXem ? " (chỉ xem)" : string.Empty);
+            Text = "Danh mục " + DanhMucPresenter.Ten(loai).ToLower() + (_chiXem ? " (chỉ xem)" : string.Empty);
             ClientSize = new Size(980, 640);
             MinimumSize = new Size(720, 520);
             StartPosition = FormStartPosition.CenterParent;
@@ -41,15 +43,15 @@ namespace QuanLyKhachSan.Views
 
             switch (loai)
             {
-                case "Loại phòng":
+                case LoaiDanhMuc.LoaiPhong:
                     _nhan = new[] { "Tên loại", "Mô tả", "Giá mỗi đêm (đ)", "Sức chứa (người)" };
                     _cot = new[] { "TenLoaiPhong", "MoTa", "GiaMoiDem", "SucChua" };
                     break;
-                case "Phòng":
+                case LoaiDanhMuc.Phong:
                     _nhan = new[] { "Số phòng", "Tầng", "Loại phòng", "Ghi chú" };
                     _cot = new[] { "SoPhong", "Tang", "MaLoaiPhong", "GhiChu" };
                     break;
-                case "Khách hàng":
+                case LoaiDanhMuc.KhachHang:
                     _nhan = new[] { "Họ tên (*)", "Số giấy tờ (*)", "Điện thoại", "Email", "Địa chỉ" };
                     _cot = new[] { "HoTen", "SoGiayTo", "SoDienThoai", "Email", "DiaChi" };
                     break;
@@ -65,8 +67,8 @@ namespace QuanLyKhachSan.Views
 
             var tim = GiaoDien.ThanhNgang();
             tim.Controls.Add(GiaoDien.Nhom("Tìm kiếm", _tuKhoa, 260));
-            tim.Controls.Add(Hang(GiaoDien.TaoNut("Tìm", delegate { TaiDuLieu(); }, true)));
-            _tuKhoa.KeyDown += delegate (object s, KeyEventArgs e) { if (e.KeyCode == Keys.Enter) { e.SuppressKeyPress = true; TaiDuLieu(); } };
+            tim.Controls.Add(Hang(GiaoDien.TaoNut("Tìm", delegate { _presenter.TaiDuLieu(); }, true)));
+            _tuKhoa.KeyDown += delegate (object s, KeyEventArgs e) { if (e.KeyCode == Keys.Enter) { e.SuppressKeyPress = true; _presenter.TaiDuLieu(); } };
 
             var nhap = new TableLayoutPanel
             {
@@ -82,16 +84,16 @@ namespace QuanLyKhachSan.Views
             nhap.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             var truong = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, WrapContents = true, Margin = new Padding(0) };
             for (int i = 0; i < _o.Length; i++)
-                truong.Controls.Add(GiaoDien.Nhom(_nhan[i], _o[i], i == 1 && loai == "Loại phòng" || _cot[i] == "DiaChi" || _cot[i] == "GhiChu" ? 260 : 170));
+                truong.Controls.Add(GiaoDien.Nhom(_nhan[i], _o[i], i == 1 && loai == LoaiDanhMuc.LoaiPhong || _cot[i] == "DiaChi" || _cot[i] == "GhiChu" ? 260 : 170));
             nhap.Controls.Add(truong, 0, 0);
 
             var nut = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, WrapContents = true, Margin = new Padding(0, 4, 0, 0) };
-            nut.Controls.Add(GiaoDien.TaoNut("Tạo mới", delegate { Moi(); }));
-            _luu.Click += Luu_Click;
+            nut.Controls.Add(GiaoDien.TaoNut("Tạo mới", delegate { LamMoiFormNhap(); }));
+            _luu.Click += delegate { _presenter.Luu(); };
             nut.Controls.Add(_luu);
-            if (loai != "Khách hàng")
+            if (loai != LoaiDanhMuc.KhachHang)
             {
-                _ngung.Click += Ngung_Click;
+                _ngung.Click += delegate { _presenter.Ngung(); };
                 nut.Controls.Add(_ngung);
             }
             nut.Controls.Add(_trangThai);
@@ -109,7 +111,7 @@ namespace QuanLyKhachSan.Views
             Controls.Add(nhap);
             Controls.Add(tim);
             _grid.SelectionChanged += ChonDong;
-            Load += delegate { NapLoaiPhong(); TaiDuLieu(); };
+            Load += delegate { _presenter.TaiBanDau(); };
             GiaoDien.ApDung(this);
         }
 
@@ -133,50 +135,46 @@ namespace QuanLyKhachSan.Views
             return new TextBox();
         }
 
-        private void NapLoaiPhong()
+        // ----- IDanhMucView -----
+        public string TuKhoa { get { return _tuKhoa.Text; } }
+        public int MaDangSua { get { return _ma; } }
+
+        public string DocChu(int viTri) { return _o[viTri].Text; }
+        public decimal DocSo(int viTri) { return ((NumericUpDown)_o[viTri]).Value; }
+        public int? DocChon(int viTri)
         {
-            if (_loai != "Phòng") return;
-            try
-            {
-                var cb = (ComboBox)_o[2];
-                _dsLoaiPhong = new LoaiPhongService().TimKiem();
-                _dsLoaiPhong.DefaultView.RowFilter = "HoatDong = true";
-                cb.DisplayMember = "TenLoaiPhong";
-                cb.ValueMember = "MaLoaiPhong";
-                cb.DataSource = _dsLoaiPhong.DefaultView;
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không tải được loại phòng", ex); }
+            object v = ((ComboBox)_o[viTri]).SelectedValue;
+            return v == null ? (int?)null : Convert.ToInt32(v);
         }
 
-        private void TaiDuLieu()
+        public void HienLoaiPhong(DataTable loaiPhong)
         {
-            try
-            {
-                DataTable t;
-                switch (_loai)
-                {
-                    case "Loại phòng":
-                        t = new LoaiPhongService().TimKiem(_tuKhoa.Text);
-                        UiHelper.GanNguon(_grid, t, "-MaLoaiPhong", "TenLoaiPhong|Tên loại", "MoTa|Mô tả", "GiaMoiDem|Giá/đêm (đ)|N0", "SucChua|Sức chứa|0", "HoatDong|Hoạt động");
-                        break;
-                    case "Phòng":
-                        t = new PhongService().TimKiem(_tuKhoa.Text);
-                        UiHelper.GanNguon(_grid, t, "-MaPhong", "-MaLoaiPhong", "SoPhong|Số phòng", "Tang|Tầng", "TenLoaiPhong|Loại phòng", "TrangThai|Trạng thái", "GhiChu|Ghi chú", "HoatDong|Hoạt động");
-                        break;
-                    case "Khách hàng":
-                        t = new KhachHangService().TimKiem(_tuKhoa.Text);
-                        UiHelper.GanNguon(_grid, t, "-MaKhachHang", "HoTen|Họ tên", "SoGiayTo|Số giấy tờ", "SoDienThoai|Điện thoại", "Email|Email", "DiaChi|Địa chỉ");
-                        break;
-                    default:
-                        t = new DichVuService().TimKiem(_tuKhoa.Text);
-                        UiHelper.GanNguon(_grid, t, "-MaDichVu", "TenDichVu|Tên dịch vụ", "DonGia|Đơn giá (đ)|N0", "DonViTinh|Đơn vị", "HoatDong|Hoạt động");
-                        break;
-                }
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không tải được dữ liệu", ex); }
+            var cb = (ComboBox)_o[2];
+            cb.DisplayMember = "TenLoaiPhong";
+            cb.ValueMember = "MaLoaiPhong";
+            cb.DataSource = loaiPhong.DefaultView;
         }
 
-        private void Moi()
+        public void HienDanhSach(DataTable t)
+        {
+            switch (_loai)
+            {
+                case LoaiDanhMuc.LoaiPhong:
+                    UiHelper.GanNguon(_grid, t, "-MaLoaiPhong", "TenLoaiPhong|Tên loại", "MoTa|Mô tả", "GiaMoiDem|Giá/đêm (đ)|N0", "SucChua|Sức chứa|0", "HoatDong|Hoạt động");
+                    break;
+                case LoaiDanhMuc.Phong:
+                    UiHelper.GanNguon(_grid, t, "-MaPhong", "-MaLoaiPhong", "SoPhong|Số phòng", "Tang|Tầng", "TenLoaiPhong|Loại phòng", "TrangThai|Trạng thái", "GhiChu|Ghi chú", "HoatDong|Hoạt động");
+                    break;
+                case LoaiDanhMuc.KhachHang:
+                    UiHelper.GanNguon(_grid, t, "-MaKhachHang", "HoTen|Họ tên", "SoGiayTo|Số giấy tờ", "SoDienThoai|Điện thoại", "Email|Email", "DiaChi|Địa chỉ");
+                    break;
+                default:
+                    UiHelper.GanNguon(_grid, t, "-MaDichVu", "TenDichVu|Tên dịch vụ", "DonGia|Đơn giá (đ)|N0", "DonViTinh|Đơn vị", "HoatDong|Hoạt động");
+                    break;
+            }
+        }
+
+        public void LamMoiFormNhap()
         {
             _ma = 0;
             _grid.ClearSelection();
@@ -188,6 +186,15 @@ namespace QuanLyKhachSan.Views
             if (!_chiXem) _trangThai.Text = "Đang tạo bản ghi mới.";
             if (_o.Length > 0) _o[0].Focus();
         }
+
+        public void DatTrangThai(string noiDung) { _trangThai.Text = noiDung; }
+
+        public void HienThongBao(string tieuDe, string noiDung, MucThongBao muc)
+        {
+            UiHelper.HienThongBao(this, tieuDe, noiDung, muc);
+        }
+
+        public bool XacNhan(string noiDung) { return UiHelper.XacNhan(this, noiDung); }
 
         private void ChonDong(object sender, EventArgs e)
         {
@@ -220,74 +227,10 @@ namespace QuanLyKhachSan.Views
             }
             if (!_chiXem) _trangThai.Text = "Đang sửa bản ghi đã chọn.";
         }
-
-        private string Chu(int i) { return _o[i].Text; }
-        private decimal So(int i) { return ((NumericUpDown)_o[i]).Value; }
-
-        private void Luu_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                switch (_loai)
-                {
-                    case "Loại phòng":
-                        {
-                            var x = new LoaiPhong { MaLoaiPhong = _ma, TenLoaiPhong = Chu(0), MoTa = Chu(1), GiaMoiDem = So(2), SucChua = (int)So(3) };
-                            if (_ma == 0) new LoaiPhongService().Them(x); else new LoaiPhongService().CapNhat(x);
-                            break;
-                        }
-                    case "Phòng":
-                        {
-                            var cb = (ComboBox)_o[2];
-                            if (cb.SelectedValue == null) throw new ArgumentException("Chọn loại phòng.");
-                            var x = new Phong { MaPhong = _ma, SoPhong = Chu(0), Tang = (int)So(1), MaLoaiPhong = Convert.ToInt32(cb.SelectedValue), GhiChu = Chu(3) };
-                            if (_ma == 0) new PhongService().Them(x); else new PhongService().CapNhat(x);
-                            break;
-                        }
-                    case "Khách hàng":
-                        {
-                            var x = new KhachHang { MaKhachHang = _ma, HoTen = Chu(0), SoGiayTo = Chu(1), SoDienThoai = Chu(2), Email = Chu(3), DiaChi = Chu(4) };
-                            if (_ma == 0) new KhachHangService().Them(x); else new KhachHangService().CapNhat(x);
-                            break;
-                        }
-                    default:
-                        {
-                            var x = new DichVu { MaDichVu = _ma, TenDichVu = Chu(0), DonGia = So(1), DonViTinh = Chu(2) };
-                            if (_ma == 0) new DichVuService().Them(x); else new DichVuService().CapNhat(x);
-                            break;
-                        }
-                }
-                Moi();
-                TaiDuLieu();
-                _trangThai.Text = "Đã lưu lúc " + DateTime.Now.ToString("HH:mm:ss");
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không thể lưu", ex); }
-        }
-
-        private void Ngung_Click(object sender, EventArgs e)
-        {
-            if (_ma == 0)
-            {
-                MessageBox.Show(this, "Chọn một dòng cần ngừng sử dụng.", "Chưa chọn", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            if (!UiHelper.XacNhan(this, "Ngừng sử dụng bản ghi đã chọn?")) return;
-            try
-            {
-                int kq = _loai == "Loại phòng" ? new LoaiPhongService().NgungSuDung(_ma)
-                       : _loai == "Phòng" ? new PhongService().NgungSuDung(_ma)
-                       : new DichVuService().NgungSuDung(_ma);
-                if (kq == 0)
-                    MessageBox.Show(this, "Không thể ngừng: bản ghi đang được sử dụng (còn phòng/đặt phòng/khách liên quan) hoặc không tồn tại.", "Không thể ngừng", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                Moi();
-                TaiDuLieu();
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không thể ngừng sử dụng", ex); }
-        }
     }
 
-    public sealed class FrmLoaiPhong : FrmDanhMuc { public FrmLoaiPhong(NguoiDung u) : base("Loại phòng", u) { } }
-    public sealed class FrmPhong : FrmDanhMuc { public FrmPhong(NguoiDung u) : base("Phòng", u) { } }
-    public sealed class FrmKhachHang : FrmDanhMuc { public FrmKhachHang(NguoiDung u) : base("Khách hàng", u) { } }
-    public sealed class FrmDichVu : FrmDanhMuc { public FrmDichVu(NguoiDung u) : base("Dịch vụ", u) { } }
+    public sealed class FrmLoaiPhong : FrmDanhMuc { public FrmLoaiPhong(NguoiDung u) : base(LoaiDanhMuc.LoaiPhong, u) { } }
+    public sealed class FrmPhong : FrmDanhMuc { public FrmPhong(NguoiDung u) : base(LoaiDanhMuc.Phong, u) { } }
+    public sealed class FrmKhachHang : FrmDanhMuc { public FrmKhachHang(NguoiDung u) : base(LoaiDanhMuc.KhachHang, u) { } }
+    public sealed class FrmDichVu : FrmDanhMuc { public FrmDichVu(NguoiDung u) : base(LoaiDanhMuc.DichVu, u) { } }
 }

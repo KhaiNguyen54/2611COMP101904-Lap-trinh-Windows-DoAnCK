@@ -57,6 +57,12 @@ namespace QuanLyKhachSan.Tests
             DoiPhongPresenterTests();
             DuyetGiamGiaPresenterTests();
             BaoCaoPresenterTests();
+            DanhMucPresenterTests();
+            TaiKhoanPresenterTests();
+            KhachNhanhPresenterTests();
+            DoiMatKhauPresenterTests();
+            HoaDonPresenterTests();
+            KhachDangOPresenterTests();
         }
 
         // ---------- Đăng nhập ----------
@@ -77,6 +83,25 @@ namespace QuanLyKhachSan.Tests
             public NguoiDung TraVe;
             public Exception Loi;
             public int SoLanGoi;
+            public NguoiDung DaTao;
+            public string MatKhauTao, VaiTroTao, MatKhauDatLai, MatKhauCuDoi, MatKhauMoiDoi;
+            public int? DaDatLai, DaKhoa;
+            public Exception LoiTao;
+            public DataTable DanhSach = new DataTable();
+            public void TaoTaiKhoan(NguoiDung nguoiQuanLy, string tenDangNhap, string hoTen, string vaiTro, string matKhau)
+            {
+                if (LoiTao != null) throw LoiTao;
+                DaTao = new NguoiDung { TenDangNhap = tenDangNhap, HoTen = hoTen };
+                VaiTroTao = vaiTro; MatKhauTao = matKhau;
+            }
+            public DataTable LayDanhSach(NguoiDung nguoiQuanLy) { return DanhSach; }
+            public void DatLaiMatKhau(NguoiDung nguoiQuanLy, int ma, string matKhauMoi) { DaDatLai = ma; MatKhauDatLai = matKhauMoi; }
+            public void KhoaTaiKhoan(NguoiDung nguoiQuanLy, int ma) { DaKhoa = ma; }
+            public void DoiMatKhau(NguoiDung nguoiDung, string matKhauCu, string matKhauMoi)
+            {
+                if (LoiTao != null) throw LoiTao;
+                MatKhauCuDoi = matKhauCu; MatKhauMoiDoi = matKhauMoi;
+            }
             public Task<NguoiDung> DangNhapAsync(string tenDangNhap, string matKhau, CancellationToken cancellationToken = default(CancellationToken))
             {
                 SoLanGoi++;
@@ -162,13 +187,26 @@ namespace QuanLyKhachSan.Tests
 
         private sealed class KhachGia : IKhachHangService
         {
-            public DataTable TimKiem(string tuKhoa = null) { return new DataTable(); }
+            public DataTable KetQuaTim = new DataTable();
+            public string TuKhoaTim;
+            public KhachHang DaThem, DaCapNhat;
+            public Exception LoiThem;
+            public DataTable TimKiem(string tuKhoa = null) { TuKhoaTim = tuKhoa; return KetQuaTim; }
+            public int Them(KhachHang x) { if (LoiThem != null) throw LoiThem; DaThem = x; return 1; }
+            public int CapNhat(KhachHang x) { DaCapNhat = x; return 1; }
         }
 
         private sealed class PhongGia : IPhongService
         {
             public DataTable KetQua = new DataTable();
+            public Phong DaThem, DaCapNhat;
+            public int KetQuaNgung = 1;
+            public int? DaNgung;
+            public DataTable TimKiem(string tuKhoa = null, int? tang = null, int? maLoai = null, string trangThai = null) { return new DataTable(); }
             public DataTable TimKiemTrongKhoang(DateTime ngayDen, DateTime ngayDi) { return KetQua; }
+            public int Them(Phong x) { DaThem = x; return 1; }
+            public int CapNhat(Phong x) { DaCapNhat = x; return 1; }
+            public int NgungSuDung(int ma) { DaNgung = ma; return KetQuaNgung; }
         }
 
         private static DatPhongViewGia ViewDatPhong()
@@ -269,6 +307,8 @@ namespace QuanLyKhachSan.Tests
             public void XoaDichVu(int maChiTietDichVu) { DaXoaDichVu = maChiTietDichVu; }
             public DataTable LayDichVu(int maPhieuThue) { return ChiTiet; }
             public DataTable LayPhieuDangO() { return PhieuDangO; }
+            public DataTable KhachDangO = new DataTable();
+            public DataTable LayKhachDangO() { return KhachDangO; }
             public DataTable LayPhongCoTheDoi(int maPhongHienTai, DateTime ngayDiDuKien) { return PhongDoi; }
             public DataTable PhongDoi = new DataTable();
             public void DoiPhong(int maPhieuThue, int maPhongMoi, int maNguoiDung, string lyDo) { DaDoiPhong = new object[] { maPhieuThue, maPhongMoi, maNguoiDung, lyDo }; }
@@ -358,7 +398,13 @@ namespace QuanLyKhachSan.Tests
 
         private sealed class DichVuGia : IDichVuService
         {
+            public DichVu DaThem, DaCapNhat;
+            public int KetQuaNgung = 1;
+            public int? DaNgung;
             public DataTable TimKiem(string tuKhoa = null, bool dangHoatDong = false) { return new DataTable(); }
+            public int Them(DichVu x) { DaThem = x; return 1; }
+            public int CapNhat(DichVu x) { DaCapNhat = x; return 1; }
+            public int NgungSuDung(int ma) { DaNgung = ma; return KetQuaNgung; }
         }
 
         private static void GhiDichVuPresenterTests()
@@ -603,6 +649,293 @@ namespace QuanLyKhachSan.Tests
             view = new BaoCaoViewGia { KieuGom = KieuGomDoanhThu.Ngay };
             new BaoCaoPresenter(view, new BaoCaoGia { Loi = new InvalidOperationException("Lỗi kết nối") }).TaiDoanhThu();
             Kiem("MVP-BC03 lỗi khi thống kê: báo cho người dùng, không văng lỗi", view.CuoiCung != null && view.CuoiCung.NoiDung == "Lỗi kết nối");
+        }
+
+        // ---------- Danh mục ----------
+        private sealed class LoaiPhongGia : ILoaiPhongService
+        {
+            public LoaiPhong DaThem, DaCapNhat;
+            public int KetQuaNgung = 1;
+            public int? DaNgung;
+            public DataTable DanhSach = new DataTable();
+            public DataTable TimKiem(string tuKhoa = null) { return DanhSach; }
+            public int Them(LoaiPhong x) { DaThem = x; return 1; }
+            public int CapNhat(LoaiPhong x) { DaCapNhat = x; return 1; }
+            public int NgungSuDung(int ma) { DaNgung = ma; return KetQuaNgung; }
+        }
+
+        private sealed class DanhMucViewGia : ViewGia, IDanhMucView
+        {
+            public string TuKhoa { get; set; }
+            public int MaDangSua { get; set; }
+            public string[] Chu = new string[6];
+            public decimal[] So = new decimal[6];
+            public int? Chon;
+            public int SoLanHienDanhSach, SoLanLamMoi, SoLanHienLoaiPhong;
+            public string TrangThai;
+            public string DocChu(int viTri) { return Chu[viTri]; }
+            public decimal DocSo(int viTri) { return So[viTri]; }
+            public int? DocChon(int viTri) { return Chon; }
+            public void HienDanhSach(DataTable bang) { SoLanHienDanhSach++; }
+            public void HienLoaiPhong(DataTable loaiPhong) { SoLanHienLoaiPhong++; }
+            public void LamMoiFormNhap() { SoLanLamMoi++; }
+            public void DatTrangThai(string noiDung) { TrangThai = noiDung; }
+        }
+
+        private static void DanhMucPresenterTests()
+        {
+            Kiem("MVP-DM01 Lễ tân chỉ được sửa Khách hàng, các danh mục khác chỉ xem",
+                !DanhMucPresenter.ChiXem(LoaiDanhMuc.KhachHang, NguoiLeTan()) && DanhMucPresenter.ChiXem(LoaiDanhMuc.Phong, NguoiLeTan())
+                && DanhMucPresenter.ChiXem(LoaiDanhMuc.DichVu, NguoiLeTan()) && DanhMucPresenter.ChiXem(LoaiDanhMuc.LoaiPhong, null));
+            Kiem("MVP-DM02 Quản lý sửa được mọi danh mục", !DanhMucPresenter.ChiXem(LoaiDanhMuc.LoaiPhong, NguoiQuanLy()) && !DanhMucPresenter.ChiXem(LoaiDanhMuc.Phong, NguoiQuanLy()));
+
+            var gio = new DateTime(2026, 11, 7, 9, 5, 3);
+            var view = new DanhMucViewGia { MaDangSua = 0 };
+            view.Chu[0] = "Nguyễn Văn A"; view.Chu[1] = "012345678901"; view.Chu[2] = "0901234567"; view.Chu[3] = "a@x.vn"; view.Chu[4] = "Hà Nội";
+            var khach = new KhachGia();
+            var pr = new DanhMucPresenter(view, LoaiDanhMuc.KhachHang, null, null, khach, null, () => gio);
+            pr.Luu();
+            Kiem("MVP-DM03 khách hàng mới: gọi Them với đủ 5 trường, làm mới form, ghi giờ lưu",
+                khach.DaThem != null && khach.DaThem.HoTen == "Nguyễn Văn A" && khach.DaThem.DiaChi == "Hà Nội" && khach.DaCapNhat == null
+                && view.SoLanLamMoi == 1 && view.TrangThai == "Đã lưu lúc 09:05:03");
+            view.MaDangSua = 7;
+            pr.Luu();
+            Kiem("MVP-DM04 đang sửa bản ghi: gọi CapNhat với đúng mã", khach.DaCapNhat != null && khach.DaCapNhat.MaKhachHang == 7);
+
+            view = new DanhMucViewGia { Chon = null };
+            view.Chu[0] = "101"; view.So[1] = 1;
+            var phong = new PhongGia();
+            new DanhMucPresenter(view, LoaiDanhMuc.Phong, null, phong, null, null).Luu();
+            Kiem("MVP-DM05 phòng chưa chọn loại: báo 'Chọn loại phòng', không lưu", phong.DaThem == null && view.CuoiCung.NoiDung == "Chọn loại phòng." && view.CuoiCung.Muc == MucThongBao.CanhBao);
+            view.Chon = 3; view.So[1] = 2; view.Chu[3] = "Gần thang máy";
+            new DanhMucPresenter(view, LoaiDanhMuc.Phong, null, phong, null, null).Luu();
+            Kiem("MVP-DM06 phòng hợp lệ: truyền số phòng, tầng, loại, ghi chú", phong.DaThem != null && phong.DaThem.SoPhong == "101" && phong.DaThem.Tang == 2 && phong.DaThem.MaLoaiPhong == 3 && phong.DaThem.GhiChu == "Gần thang máy");
+
+            view = new DanhMucViewGia();
+            view.Chu[0] = "Deluxe"; view.Chu[1] = "View biển"; view.So[2] = 900000m; view.So[3] = 3;
+            var loai = new LoaiPhongGia();
+            new DanhMucPresenter(view, LoaiDanhMuc.LoaiPhong, loai, null, null, null).Luu();
+            Kiem("MVP-DM07 loại phòng: giá và sức chứa lấy từ ô số", loai.DaThem != null && loai.DaThem.GiaMoiDem == 900000m && loai.DaThem.SucChua == 3 && loai.DaThem.TenLoaiPhong == "Deluxe");
+
+            view = new DanhMucViewGia();
+            view.Chu[0] = "Giặt ủi"; view.So[1] = 50000m; view.Chu[2] = "kg";
+            var dv = new DichVuGia();
+            new DanhMucPresenter(view, LoaiDanhMuc.DichVu, null, null, null, dv).Luu();
+            Kiem("MVP-DM08 dịch vụ: tên, đơn giá, đơn vị", dv.DaThem != null && dv.DaThem.DonGia == 50000m && dv.DaThem.DonViTinh == "kg");
+
+            view = new DanhMucViewGia();
+            var khachLoi = new KhachGia { LoiThem = new ArgumentException("Số giấy tờ đã tồn tại.") };
+            new DanhMucPresenter(view, LoaiDanhMuc.KhachHang, null, null, khachLoi, null).Luu();
+            Kiem("MVP-DM09 lỗi nghiệp vụ khi lưu: báo cảnh báo, không làm mới form", view.CuoiCung.Muc == MucThongBao.CanhBao && view.CuoiCung.NoiDung == "Số giấy tờ đã tồn tại." && view.SoLanLamMoi == 0);
+
+            view = new DanhMucViewGia { MaDangSua = 0 };
+            dv = new DichVuGia();
+            var pn = new DanhMucPresenter(view, LoaiDanhMuc.DichVu, null, null, null, dv);
+            pn.Ngung();
+            Kiem("MVP-DM10 ngừng khi chưa chọn dòng: nhắc chọn, không gọi Service", dv.DaNgung == null && view.CuoiCung.TieuDe == "Chưa chọn");
+            view.MaDangSua = 4; view.TraLoiXacNhan = false;
+            pn.Ngung();
+            Kiem("MVP-DM11 không xác nhận thì không ngừng", dv.DaNgung == null);
+            view.TraLoiXacNhan = true;
+            pn.Ngung();
+            Kiem("MVP-DM12 xác nhận thì ngừng đúng mã và làm mới", dv.DaNgung == 4 && view.SoLanLamMoi == 1);
+            dv.KetQuaNgung = 0;
+            pn.Ngung();
+            Kiem("MVP-DM13 bản ghi đang được dùng (kết quả 0): báo không thể ngừng", view.CuoiCung.TieuDe == "Không thể ngừng");
+
+            view = new DanhMucViewGia();
+            loai = new LoaiPhongGia();
+            loai.DanhSach.Columns.Add("HoatDong", typeof(bool));
+            new DanhMucPresenter(view, LoaiDanhMuc.Phong, loai, new PhongGia(), null, null).TaiBanDau();
+            Kiem("MVP-DM14 danh mục Phòng nạp thêm danh sách loại phòng; loại khác thì không", view.SoLanHienLoaiPhong == 1 && view.SoLanHienDanhSach == 1);
+            view = new DanhMucViewGia();
+            new DanhMucPresenter(view, LoaiDanhMuc.DichVu, null, null, null, new DichVuGia()).TaiBanDau();
+            Kiem("MVP-DM15 danh mục Dịch vụ chỉ nạp danh sách", view.SoLanHienLoaiPhong == 0 && view.SoLanHienDanhSach == 1);
+        }
+
+        // ---------- Tài khoản ----------
+        private sealed class TaiKhoanViewGia : ViewGia, ITaiKhoanView
+        {
+            public string TenDangNhap { get; set; }
+            public string HoTen { get; set; }
+            public string MatKhau { get; set; }
+            public string VaiTro { get; set; }
+            public int MaDangChon { get; set; }
+            public int SoLanHien, SoLanXoaForm, SoLanXoaMatKhau;
+            public void HienDanhSach(DataTable bang) { SoLanHien++; }
+            public void XoaFormTao() { SoLanXoaForm++; }
+            public void XoaMatKhau() { SoLanXoaMatKhau++; }
+        }
+
+        private static void TaiKhoanPresenterTests()
+        {
+            var view = new TaiKhoanViewGia { TenDangNhap = "letan2", HoTen = "Lê Tân", MatKhau = "Abcdef12", VaiTro = "LeTan" };
+            var sv = new NguoiDungGia();
+            var p = new TaiKhoanPresenter(view, sv, NguoiQuanLy());
+            p.Tao();
+            Kiem("MVP-TK01 tạo tài khoản: chuyển đúng dữ liệu, xóa form, tải lại danh sách, báo thành công",
+                sv.DaTao != null && sv.DaTao.TenDangNhap == "letan2" && sv.VaiTroTao == "LeTan" && view.SoLanXoaForm == 1 && view.SoLanHien == 1 && view.CuoiCung.Muc == MucThongBao.ThanhCong);
+
+            view = new TaiKhoanViewGia();
+            sv = new NguoiDungGia { LoiTao = new ArgumentException("Mật khẩu yếu.") };
+            new TaiKhoanPresenter(view, sv, NguoiQuanLy()).Tao();
+            Kiem("MVP-TK02 mật khẩu yếu: cảnh báo, không xóa form", view.CuoiCung.Muc == MucThongBao.CanhBao && view.SoLanXoaForm == 0);
+
+            view = new TaiKhoanViewGia { MaDangChon = 5, MatKhau = "MatKhauMoi1" };
+            sv = new NguoiDungGia();
+            p = new TaiKhoanPresenter(view, sv, NguoiQuanLy());
+            p.DatLaiMatKhau();
+            Kiem("MVP-TK03 đặt lại mật khẩu: đúng mã, xóa ô mật khẩu, báo thành công", sv.DaDatLai == 5 && sv.MatKhauDatLai == "MatKhauMoi1" && view.SoLanXoaMatKhau == 1 && view.CuoiCung.Muc == MucThongBao.ThanhCong);
+
+            view.MaDangChon = 0;
+            p = new TaiKhoanPresenter(view, sv, NguoiQuanLy());
+            p.Khoa();
+            Kiem("MVP-TK04 khóa khi chưa chọn dòng: không hỏi, không khóa", sv.DaKhoa == null && view.SoLanXacNhan == 0);
+            view.MaDangChon = 6; view.TraLoiXacNhan = false;
+            p.Khoa();
+            Kiem("MVP-TK05 không xác nhận thì không khóa", sv.DaKhoa == null && view.SoLanXacNhan == 1);
+            view.TraLoiXacNhan = true;
+            p.Khoa();
+            Kiem("MVP-TK06 xác nhận thì khóa đúng tài khoản và tải lại danh sách", sv.DaKhoa == 6 && view.SoLanHien == 1);
+        }
+
+        // ---------- Thêm nhanh khách ----------
+        private sealed class KhachNhanhViewGia : ViewGia, IKhachNhanhView
+        {
+            public string HoTen { get; set; }
+            public string SoGiayTo { get; set; }
+            public string SoDienThoai { get; set; }
+            public string Email { get; set; }
+            public string DiaChi { get; set; }
+            public int? MaDong;
+            public void DongThanhCong(int maKhach) { MaDong = maKhach; }
+        }
+
+        private static void KhachNhanhPresenterTests()
+        {
+            var view = new KhachNhanhViewGia { HoTen = "Trần B", SoGiayTo = " 079123456789 " };
+            var khach = new KhachGia();
+            khach.KetQuaTim.Columns.Add("MaKhachHang", typeof(int));
+            khach.KetQuaTim.Rows.Add(42);
+            new KhachNhanhPresenter(view, khach).Luu();
+            Kiem("MVP-KN01 thêm nhanh: tra lại theo giấy tờ đã cắt khoảng trắng và trả mã khách", khach.DaThem != null && khach.TuKhoaTim == "079123456789" && view.MaDong == 42);
+
+            view = new KhachNhanhViewGia { HoTen = "Trần B", SoGiayTo = "1" };
+            khach = new KhachGia();
+            new KhachNhanhPresenter(view, khach).Luu();
+            Kiem("MVP-KN02 không tìm lại được khách thì trả mã 0 nhưng vẫn đóng", view.MaDong == 0);
+
+            view = new KhachNhanhViewGia();
+            khach = new KhachGia { LoiThem = new ArgumentException("Họ tên bắt buộc.") };
+            new KhachNhanhPresenter(view, khach).Luu();
+            Kiem("MVP-KN03 dữ liệu sai: cảnh báo và không đóng hộp thoại", view.MaDong == null && view.CuoiCung.Muc == MucThongBao.CanhBao);
+        }
+
+        // ---------- Đổi mật khẩu ----------
+        private sealed class DoiMatKhauViewGia : ViewGia, IDoiMatKhauView
+        {
+            public string MatKhauCu { get; set; }
+            public string MatKhauMoi { get; set; }
+            public string XacNhanMatKhau { get; set; }
+            public bool DaDong;
+            public void Dong() { DaDong = true; }
+        }
+
+        private static void DoiMatKhauPresenterTests()
+        {
+            var view = new DoiMatKhauViewGia { MatKhauCu = "a", MatKhauMoi = "Abcdef12", XacNhanMatKhau = "Abcdef13" };
+            var sv = new NguoiDungGia();
+            new DoiMatKhauPresenter(view, sv, NguoiLeTan()).Luu();
+            Kiem("MVP-MK01 xác nhận không khớp: cảnh báo, không gọi Service", sv.MatKhauMoiDoi == null && view.CuoiCung.Muc == MucThongBao.CanhBao && !view.DaDong);
+
+            view.XacNhanMatKhau = "Abcdef12";
+            new DoiMatKhauPresenter(view, sv, NguoiLeTan()).Luu();
+            Kiem("MVP-MK02 đổi thành công: truyền mật khẩu cũ và mới, báo thành công, đóng hộp thoại", sv.MatKhauCuDoi == "a" && sv.MatKhauMoiDoi == "Abcdef12" && view.DaDong && view.ThongBaos.Exists(t => t.Muc == MucThongBao.ThanhCong));
+
+            view = new DoiMatKhauViewGia { MatKhauCu = "sai", MatKhauMoi = "Abcdef12", XacNhanMatKhau = "Abcdef12" };
+            sv = new NguoiDungGia { LoiTao = new InvalidOperationException("Mật khẩu hiện tại không đúng.") };
+            new DoiMatKhauPresenter(view, sv, NguoiLeTan()).Luu();
+            Kiem("MVP-MK03 mật khẩu cũ sai: báo lỗi, giữ hộp thoại mở", !view.DaDong && view.CuoiCung.NoiDung == "Mật khẩu hiện tại không đúng.");
+        }
+
+        // ---------- Hóa đơn ----------
+        private sealed class HoaDonGia : IHoaDonService
+        {
+            public DataTable KetQua = new DataTable();
+            public DateTime? TuNgay, DenNgay;
+            public string TuKhoa;
+            public DataTable TimKiem(DateTime? tuNgay = null, DateTime? denNgay = null, string tuKhoa = null) { TuNgay = tuNgay; DenNgay = denNgay; TuKhoa = tuKhoa; return KetQua; }
+        }
+
+        private sealed class HoaDonViewGia : ViewGia, IHoaDonView
+        {
+            public DateTime TuNgay { get; set; }
+            public DateTime DenNgay { get; set; }
+            public string TuKhoa { get; set; }
+            public DataRow HoaDonChon { get; set; }
+            public string Tong;
+            public DataRow DaIn;
+            public void HienDanhSach(DataTable bang, string tong) { Tong = tong; }
+            public void MoBanIn(DataRow hoaDon, DataTable dichVu) { DaIn = hoaDon; }
+        }
+
+        private static void HoaDonPresenterTests()
+        {
+            var view = new HoaDonViewGia { TuNgay = new DateTime(2026, 11, 10), DenNgay = new DateTime(2026, 11, 1) };
+            var hd = new HoaDonGia();
+            new HoaDonPresenter(view, hd, new LuuTruGia()).Tai();
+            Kiem("MVP-HD01 từ ngày sau đến ngày: cảnh báo, không tra cứu", hd.TuNgay == null && view.CuoiCung.TieuDe == "Khoảng ngày");
+
+            var bang = new DataTable();
+            bang.Columns.Add("MaPhieuThue", typeof(int));
+            bang.Columns.Add("TongThanhToan", typeof(decimal));
+            bang.Rows.Add(1, 600000m);
+            bang.Rows.Add(2, 400000m);
+            view = new HoaDonViewGia { TuNgay = new DateTime(2026, 11, 1), DenNgay = new DateTime(2026, 11, 7), TuKhoa = "101" };
+            hd = new HoaDonGia { KetQua = bang };
+            new HoaDonPresenter(view, hd, new LuuTruGia()).Tai();
+            Kiem("MVP-HD02 tra cứu: truyền khoảng ngày và từ khóa, tổng 2 hóa đơn = 1.000.000", hd.TuKhoa == "101" && view.Tong.Contains("2 hóa đơn") && view.Tong.Contains(N(1000000m)));
+
+            view = new HoaDonViewGia();
+            new HoaDonPresenter(view, new HoaDonGia(), new LuuTruGia()).In();
+            Kiem("MVP-HD03 in khi chưa chọn hóa đơn: nhắc chọn", view.DaIn == null && view.CuoiCung.TieuDe == "Chưa chọn");
+
+            view = new HoaDonViewGia { HoaDonChon = bang.Rows[1] };
+            new HoaDonPresenter(view, new HoaDonGia(), new LuuTruGia()).In();
+            Kiem("MVP-HD04 in hóa đơn đã chọn: lấy dịch vụ theo phiếu rồi mở bản in", ReferenceEquals(view.DaIn, bang.Rows[1]));
+        }
+
+        // ---------- Khách đang ở ----------
+        private sealed class KhachDangOViewGia : ViewGia, IKhachDangOView
+        {
+            public string TuKhoaLoc { get; set; }
+            public string SoLuong;
+            public void HienDanhSach(DataTable bang) { }
+            public void HienSoLuong(string noiDung) { SoLuong = noiDung; }
+        }
+
+        private static void KhachDangOPresenterTests()
+        {
+            var bang = new DataTable();
+            bang.Columns.Add("HoTen", typeof(string));
+            bang.Columns.Add("SoPhong", typeof(string));
+            bang.Rows.Add("Nguyễn Văn A", "101");
+            bang.Rows.Add("Trần Thị B", "202");
+            bang.Rows.Add("Lê C", "102");
+            var lt = new LuuTruGia { KhachDangO = bang };
+            var view = new KhachDangOViewGia { TuKhoaLoc = string.Empty };
+            var p = new KhachDangOPresenter(view, lt);
+            p.Tai();
+            Kiem("MVP-KO01 nạp danh sách: hiển thị đủ 3 khách", view.SoLuong == "3 khách đang lưu trú");
+            view.TuKhoaLoc = "10";
+            p.Loc();
+            Kiem("MVP-KO02 lọc theo số phòng '10' còn 2 khách", view.SoLuong == "2 khách đang lưu trú");
+            view.TuKhoaLoc = "trần";
+            p.Loc();
+            Kiem("MVP-KO03 lọc theo tên không phân biệt hoa thường còn 1 khách", view.SoLuong == "1 khách đang lưu trú");
+            view.TuKhoaLoc = "' OR 1=1 --";
+            p.Loc();
+            Kiem("MVP-KO04 ký tự đặc biệt không phá bộ lọc và không khớp dòng nào", view.SoLuong == "0 khách đang lưu trú");
         }
     }
 }

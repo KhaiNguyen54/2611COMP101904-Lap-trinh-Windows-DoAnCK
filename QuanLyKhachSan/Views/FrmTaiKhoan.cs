@@ -2,16 +2,16 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using QuanLyKhachSan.Presenters;
 using QuanLyKhachSan.Services;
 using QuanLyKhachSan.Models;
 
 namespace QuanLyKhachSan.Views
 {
     /// <summary>Quản lý tài khoản nhân viên (chỉ Quản lý): tạo, đặt lại mật khẩu, khóa.</summary>
-    public sealed class FrmTaiKhoan : Form
+    public sealed class FrmTaiKhoan : Form, ITaiKhoanView
     {
-        private readonly NguoiDung _user;
-        private readonly NguoiDungService _bll = new NguoiDungService();
+        private readonly TaiKhoanPresenter _presenter;
         private readonly DataGridView _grid = UiHelper.TaoLuoi();
         private readonly TextBox _login = new TextBox();
         private readonly TextBox _name = new TextBox();
@@ -20,7 +20,7 @@ namespace QuanLyKhachSan.Views
 
         public FrmTaiKhoan(NguoiDung user)
         {
-            _user = user;
+            _presenter = new TaiKhoanPresenter(this, new NguoiDungService(), user);
             Text = "Quản lý tài khoản";
             ClientSize = new Size(960, 540);
             MinimumSize = new Size(700, 400);
@@ -37,67 +37,49 @@ namespace QuanLyKhachSan.Views
             top.Controls.Add(GiaoDien.Nhom("Vai trò", _role, 110));
 
             var nut = GiaoDien.ThanhNgang();
-            nut.Controls.Add(GiaoDien.TaoNut("Tạo tài khoản", Tao_Click, true));
-            nut.Controls.Add(GiaoDien.TaoNut("Đặt lại mật khẩu", DatLai_Click));
-            nut.Controls.Add(GiaoDien.TaoNut("Khóa tài khoản", Khoa_Click));
+            nut.Controls.Add(GiaoDien.TaoNut("Tạo tài khoản", delegate { _presenter.Tao(); }, true));
+            nut.Controls.Add(GiaoDien.TaoNut("Đặt lại mật khẩu", delegate { _presenter.DatLaiMatKhau(); }));
+            nut.Controls.Add(GiaoDien.TaoNut("Khóa tài khoản", delegate { _presenter.Khoa(); }));
             nut.Controls.Add(new Label { AutoSize = true, ForeColor = GiaoDien.Phu, Margin = new Padding(8, 6, 0, 0), Text = "Mật khẩu mạnh: tối thiểu 8 ký tự, có chữ hoa, chữ thường và chữ số." });
 
             Controls.Add(_grid);
             Controls.Add(nut);
             Controls.Add(top);
-            Load += delegate { TaiDuLieu(); };
+            Load += delegate { _presenter.TaiDuLieu(); };
             GiaoDien.ApDung(this);
         }
 
-        private void TaiDuLieu()
+        // ----- ITaiKhoanView -----
+        public string TenDangNhap { get { return _login.Text; } }
+        public string HoTen { get { return _name.Text; } }
+        public string MatKhau { get { return _password.Text; } }
+        public string VaiTro { get { return Convert.ToString(_role.SelectedItem); } }
+
+        public int MaDangChon
         {
-            try
-            {
-                UiHelper.GanNguon(_grid, _bll.LayDanhSach(_user), "-MaNguoiDung", "TenDangNhap|Tên đăng nhập", "HoTen|Họ tên", "VaiTro|Vai trò",
-                    "HoatDong|Hoạt động", "NgayTao|Ngày tạo|dd/MM/yyyy HH:mm");
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không tải được danh sách tài khoản", ex); }
+            get { return _grid.CurrentRow == null ? 0 : Convert.ToInt32(_grid.CurrentRow.Cells["MaNguoiDung"].Value); }
         }
 
-        private int MaChon()
+        public void HienDanhSach(DataTable bang)
         {
-            return _grid.CurrentRow == null ? 0 : Convert.ToInt32(_grid.CurrentRow.Cells["MaNguoiDung"].Value);
+            UiHelper.GanNguon(_grid, bang, "-MaNguoiDung", "TenDangNhap|Tên đăng nhập", "HoTen|Họ tên", "VaiTro|Vai trò",
+                "HoatDong|Hoạt động", "NgayTao|Ngày tạo|dd/MM/yyyy HH:mm");
         }
 
-        private void Tao_Click(object sender, EventArgs e)
+        public void XoaFormTao()
         {
-            try
-            {
-                _bll.TaoTaiKhoan(_user, _login.Text, _name.Text, Convert.ToString(_role.SelectedItem), _password.Text);
-                _password.Clear();
-                _login.Clear();
-                _name.Clear();
-                TaiDuLieu();
-                UiHelper.ThongBaoThanhCong(this, "Đã tạo tài khoản.");
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không thể tạo tài khoản", ex); }
+            _password.Clear();
+            _login.Clear();
+            _name.Clear();
         }
 
-        private void DatLai_Click(object sender, EventArgs e)
+        public void XoaMatKhau() { _password.Clear(); }
+
+        public void HienThongBao(string tieuDe, string noiDung, MucThongBao muc)
         {
-            try
-            {
-                _bll.DatLaiMatKhau(_user, MaChon(), _password.Text);
-                _password.Clear();
-                UiHelper.ThongBaoThanhCong(this, "Đã đặt lại mật khẩu.");
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không thể đặt lại mật khẩu", ex); }
+            UiHelper.HienThongBao(this, tieuDe, noiDung, muc);
         }
 
-        private void Khoa_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (MaChon() == 0 || !UiHelper.XacNhan(this, "Khóa tài khoản đang chọn?")) return;
-                _bll.KhoaTaiKhoan(_user, MaChon());
-                TaiDuLieu();
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không thể khóa tài khoản", ex); }
-        }
+        public bool XacNhan(string noiDung) { return UiHelper.XacNhan(this, noiDung); }
     }
 }

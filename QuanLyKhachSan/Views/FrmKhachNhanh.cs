@@ -2,14 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using QuanLyKhachSan.Presenters;
 using QuanLyKhachSan.Services;
 using QuanLyKhachSan.Models;
 
 namespace QuanLyKhachSan.Views
 {
     /// <summary>Hộp thoại thêm nhanh khách hàng tại quầy (dùng khi đặt/nhận phòng cho khách mới).</summary>
-    public sealed class FrmKhachNhanh : Form
+    public sealed class FrmKhachNhanh : Form, IKhachNhanhView
     {
+        private readonly KhachNhanhPresenter _presenter;
         private readonly TextBox _ten = new TextBox();
         private readonly TextBox _giayTo = new TextBox();
         private readonly TextBox _sdt = new TextBox();
@@ -21,6 +23,7 @@ namespace QuanLyKhachSan.Views
 
         public FrmKhachNhanh()
         {
+            _presenter = new KhachNhanhPresenter(this, new KhachHangService());
             Text = "Thêm khách hàng";
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -39,7 +42,7 @@ namespace QuanLyKhachSan.Views
                 new KeyValuePair<string, Control>("Email", _email),
                 new KeyValuePair<string, Control>("Địa chỉ", _diaChi));
 
-            var luu = GiaoDien.TaoNut("Lưu", Luu_Click, true);
+            var luu = GiaoDien.TaoNut("Lưu", delegate { _presenter.Luu(); }, true);
             var huy = GiaoDien.TaoNut("Hủy");
             huy.DialogResult = DialogResult.Cancel;
             var nut = GiaoDien.HangNut(FlowDirection.RightToLeft);
@@ -59,21 +62,25 @@ namespace QuanLyKhachSan.Views
             GiaoDien.ApDung(this);
         }
 
-        private void Luu_Click(object sender, EventArgs e)
+        // ----- IKhachNhanhView -----
+        public string HoTen { get { return _ten.Text; } }
+        public string SoGiayTo { get { return _giayTo.Text; } }
+        public string SoDienThoai { get { return _sdt.Text; } }
+        public string Email { get { return _email.Text; } }
+        public string DiaChi { get { return _diaChi.Text; } }
+
+        public void DongThanhCong(int maKhach)
         {
-            try
-            {
-                var khach = new KhachHang { HoTen = _ten.Text, SoGiayTo = _giayTo.Text, SoDienThoai = _sdt.Text, Email = _email.Text, DiaChi = _diaChi.Text };
-                new KhachHangService().Them(khach);
-                var kq = new KhachHangService().TimKiem(_giayTo.Text.Trim());
-                if (kq.Rows.Count > 0) MaKhachMoi = Convert.ToInt32(kq.Rows[0]["MaKhachHang"]);
-                DialogResult = DialogResult.OK;
-                Close();
-            }
-            catch (Exception ex)
-            {
-                UiHelper.ThongBaoLoi(this, "Không thể lưu khách hàng", ex);
-            }
+            MaKhachMoi = maKhach;
+            DialogResult = DialogResult.OK;
+            Close();
         }
+
+        public void HienThongBao(string tieuDe, string noiDung, MucThongBao muc)
+        {
+            UiHelper.HienThongBao(this, tieuDe, noiDung, muc);
+        }
+
+        public bool XacNhan(string noiDung) { return UiHelper.XacNhan(this, noiDung); }
     }
 }

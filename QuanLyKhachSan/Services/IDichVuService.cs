@@ -8,5 +8,8 @@ namespace QuanLyKhachSan.Services
     public interface IDichVuService
     {
         DataTable TimKiem(string tuKhoa = null, bool dangHoatDong = false);
+        int Them(DichVu x);
+        int CapNhat(DichVu x);
+        int NgungSuDung(int ma);
     }
 }

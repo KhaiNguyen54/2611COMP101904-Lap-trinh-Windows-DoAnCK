@@ -5,7 +5,7 @@ using QuanLyKhachSan.Models;
 
 namespace QuanLyKhachSan.Services
 {
-    public class HoaDonService
+    public class HoaDonService : IHoaDonService
     {
         private readonly HoaDonRepository _dal = new HoaDonRepository();
 

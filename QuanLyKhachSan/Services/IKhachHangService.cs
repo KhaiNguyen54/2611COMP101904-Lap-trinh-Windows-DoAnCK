@@ -8,5 +8,7 @@ namespace QuanLyKhachSan.Services
     public interface IKhachHangService
     {
         DataTable TimKiem(string tuKhoa = null);
+        int Them(KhachHang x);
+        int CapNhat(KhachHang x);
     }
 }

@@ -24,6 +24,7 @@
     <Compile Include="..\QuanLyKhachSan\Services\PhongService.cs" Link="Shared\Services\PhongService.cs" />
     <Compile Include="..\QuanLyKhachSan\Services\IPhongService.cs" Link="Shared\Services\IPhongService.cs" />
     <Compile Include="..\QuanLyKhachSan\Services\LoaiPhongService.cs" Link="Shared\Services\LoaiPhongService.cs" />
+    <Compile Include="..\QuanLyKhachSan\Services\ILoaiPhongService.cs" Link="Shared\Services\ILoaiPhongService.cs" />
   </ItemGroup>
 
   <ItemGroup>

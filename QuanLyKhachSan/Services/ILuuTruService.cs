@@ -12,6 +12,7 @@ namespace QuanLyKhachSan.Services
         void XoaDichVu(int maChiTietDichVu);
         DataTable LayDichVu(int maPhieuThue);
         DataTable LayPhieuDangO();
+        DataTable LayKhachDangO();
         DataTable LayPhongCoTheDoi(int maPhongHienTai, DateTime ngayDiDuKien);
         void DoiPhong(int maPhieuThue, int maPhongMoi, int maNguoiDung, string lyDo);
         DataTable LayLichSuDoiPhong(int maPhieuThue);

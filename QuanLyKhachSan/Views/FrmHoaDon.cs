@@ -2,13 +2,15 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+using QuanLyKhachSan.Presenters;
 using QuanLyKhachSan.Services;
 
 namespace QuanLyKhachSan.Views
 {
     /// <summary>Tra cứu, in hóa đơn và xuất CSV (NV07).</summary>
-    public sealed class FrmHoaDon : Form
+    public sealed class FrmHoaDon : Form, IHoaDonView
     {
+        private readonly HoaDonPresenter _presenter;
         private readonly DateTimePicker _tu = new DateTimePicker { Format = DateTimePickerFormat.Short };
         private readonly DateTimePicker _den = new DateTimePicker { Format = DateTimePickerFormat.Short };
         private readonly TextBox _tuKhoa = new TextBox();
@@ -17,6 +19,7 @@ namespace QuanLyKhachSan.Views
 
         public FrmHoaDon()
         {
+            _presenter = new HoaDonPresenter(this, new HoaDonService(), new LuuTruService());
             Text = "Tra cứu hóa đơn";
             ClientSize = new Size(1040, 580);
             MinimumSize = new Size(760, 420);
@@ -30,8 +33,8 @@ namespace QuanLyKhachSan.Views
             thanh.Controls.Add(GiaoDien.Nhom("Đến ngày", _den, 120));
             thanh.Controls.Add(GiaoDien.Nhom("Mã HĐ / khách / phòng", _tuKhoa, 200));
             var nut = new FlowLayoutPanel { AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, WrapContents = false, Margin = new Padding(0, 16, 0, 6) };
-            nut.Controls.Add(GiaoDien.TaoNut("Tìm", delegate { Tai(); }, true));
-            nut.Controls.Add(GiaoDien.TaoNut("In hóa đơn", In_Click));
+            nut.Controls.Add(GiaoDien.TaoNut("Tìm", delegate { _presenter.Tai(); }, true));
+            nut.Controls.Add(GiaoDien.TaoNut("In hóa đơn", delegate { _presenter.In(); }));
             nut.Controls.Add(GiaoDien.TaoNut("Xuất CSV", delegate { UiHelper.XuatCsv(this, _grid, "HoaDon"); }));
             thanh.Controls.Add(nut);
 
@@ -42,45 +45,44 @@ namespace QuanLyKhachSan.Views
             Controls.Add(chan);
             Controls.Add(thanh);
             AcceptButton = null;
-            _tuKhoa.KeyDown += delegate (object s, KeyEventArgs e) { if (e.KeyCode == Keys.Enter) { e.SuppressKeyPress = true; Tai(); } };
-            Load += delegate { Tai(); };
+            _tuKhoa.KeyDown += delegate (object s, KeyEventArgs e) { if (e.KeyCode == Keys.Enter) { e.SuppressKeyPress = true; _presenter.Tai(); } };
+            Load += delegate { _presenter.Tai(); };
             GiaoDien.ApDung(this);
         }
 
-        private void Tai()
+        // ----- IHoaDonView -----
+        public DateTime TuNgay { get { return _tu.Value; } }
+        public DateTime DenNgay { get { return _den.Value; } }
+        public string TuKhoa { get { return _tuKhoa.Text; } }
+
+        public DataRow HoaDonChon
         {
-            try
+            get
             {
-                if (_tu.Value.Date > _den.Value.Date)
-                {
-                    MessageBox.Show(this, "Từ ngày phải trước hoặc bằng đến ngày.", "Khoảng ngày", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-                DataTable t = new HoaDonService().TimKiem(_tu.Value.Date, _den.Value.Date, _tuKhoa.Text);
-                UiHelper.GanNguon(_grid, t, "MaHoaDon|Mã HĐ", "-MaPhieuThue", "NgayLap|Ngày lập|dd/MM/yyyy HH:mm", "HoTen|Khách hàng", "SoPhong|Phòng",
-                    "TienPhong|Tiền phòng|N0", "TienDichVu|Dịch vụ|N0", "PhuThu|Phụ thu|N0", "GiamGia|Giảm giá|N0", "TienCoc|Cọc|N0",
-                    "TongThanhToan|Thanh toán|N0", "HinhThucThanhToan|Hình thức");
-                decimal tong = 0;
-                foreach (DataRow r in t.Rows) tong += Convert.ToDecimal(r["TongThanhToan"]);
-                _tong.Text = t.Rows.Count + " hóa đơn · Tổng thanh toán: " + tong.ToString("N0") + " đ";
+                if (_grid.CurrentRow == null) return null;
+                var dong = _grid.CurrentRow.DataBoundItem as DataRowView;
+                return dong == null ? null : dong.Row;
             }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không thể tra cứu hóa đơn", ex); }
         }
 
-        private void In_Click(object sender, EventArgs e)
+        public void HienDanhSach(DataTable t, string tong)
         {
-            if (_grid.CurrentRow == null)
-            {
-                MessageBox.Show(this, "Chọn một hóa đơn để in.", "Chưa chọn", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            try
-            {
-                DataRow hd = ((DataRowView)_grid.CurrentRow.DataBoundItem).Row;
-                DataTable dv = new LuuTruService().LayDichVu(Convert.ToInt32(hd["MaPhieuThue"]));
-                HoaDonPrinter.XemTruoc(this, hd, dv);
-            }
-            catch (Exception ex) { UiHelper.ThongBaoLoi(this, "Không thể in hóa đơn", ex); }
+            UiHelper.GanNguon(_grid, t, "MaHoaDon|Mã HĐ", "-MaPhieuThue", "NgayLap|Ngày lập|dd/MM/yyyy HH:mm", "HoTen|Khách hàng", "SoPhong|Phòng",
+                "TienPhong|Tiền phòng|N0", "TienDichVu|Dịch vụ|N0", "PhuThu|Phụ thu|N0", "GiamGia|Giảm giá|N0", "TienCoc|Cọc|N0",
+                "TongThanhToan|Thanh toán|N0", "HinhThucThanhToan|Hình thức");
+            _tong.Text = tong;
         }
+
+        public void MoBanIn(DataRow hoaDon, DataTable dichVu)
+        {
+            HoaDonPrinter.XemTruoc(this, hoaDon, dichVu);
+        }
+
+        public void HienThongBao(string tieuDe, string noiDung, MucThongBao muc)
+        {
+            UiHelper.HienThongBao(this, tieuDe, noiDung, muc);
+        }
+
+        public bool XacNhan(string noiDung) { return UiHelper.XacNhan(this, noiDung); }
     }
 }

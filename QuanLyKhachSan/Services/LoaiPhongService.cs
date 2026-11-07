@@ -5,7 +5,7 @@ using QuanLyKhachSan.Models;
 
 namespace QuanLyKhachSan.Services
 {
-    public class LoaiPhongService
+    public class LoaiPhongService : ILoaiPhongService
     {
         private readonly LoaiPhongRepository _dal=new LoaiPhongRepository();
         public DataTable TimKiem(string tuKhoa=null)=>_dal.TimKiem(tuKhoa);

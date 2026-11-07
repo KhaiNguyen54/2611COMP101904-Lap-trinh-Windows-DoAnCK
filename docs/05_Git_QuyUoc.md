@@ -113,7 +113,7 @@ Quy tắc:
 | Stored Procedure | `sp_<ĐộngTừ><ĐốiTượng>` | `sp_TraPhong`, `sp_KiemTraTrungLich` |
 
 - Tên **tiếng Việt không dấu** nhất quán cho thực thể nghiệp vụ; từ kỹ thuật dùng tiếng Anh (`Database`, `Connection`).
-- View chỉ gọi **Presenter**; Presenter gọi **Service**; Service gọi **Repository**; Repository chỉ làm việc với CSDL. View không chứa nghiệp vụ và không gọi thẳng Service/Repository ở các luồng chính.
+- View chỉ gọi **Presenter**; Presenter gọi **Service**; Service gọi **Repository**; Repository chỉ làm việc với CSDL. View không chứa nghiệp vụ và không gọi thẳng Service/Repository; ngoại lệ là khung chính, sơ đồ trạng thái phòng, hộp thoại mã QR và giới thiệu (chỉ điều hướng hoặc vẽ giao diện).
 - Câu lệnh SQL luôn dùng **tham số**, không nối chuỗi.
 
 ## 5. Quy trình làm việc hằng ngày
