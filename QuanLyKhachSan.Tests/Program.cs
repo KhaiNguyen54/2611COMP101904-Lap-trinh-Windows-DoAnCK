@@ -13,40 +13,70 @@ namespace QuanLyKhachSan.Tests
     internal static partial class Program
     {
         private static int _dat, _loi;
+        private static string _nhom = string.Empty;
+        private static readonly List<string[]> _ketQua = new List<string[]>();
+
+        /// <summary>Chạy một nhóm kiểm thử và gắn tên nhóm (tên hàm) cho các ca bên trong.</summary>
+        private static void Chay(Action nhom)
+        {
+            _nhom = nhom.Method.Name;
+            nhom();
+        }
 
         private static void Kiem(string ten, bool dieuKien)
         {
-            if (dieuKien) _dat++;
-            else
-            {
-                _loi++;
-                Console.WriteLine("LỖI: " + ten);
-            }
+            Ghi(ten, null, dieuKien);
         }
 
         private static void Bang<T>(string ten, T thucTe, T kyVong)
         {
-            Kiem(ten + " (thực tế " + thucTe + ", kỳ vọng " + kyVong + ")", EqualityComparer<T>.Default.Equals(thucTe, kyVong));
+            Ghi(ten, Convert.ToString(kyVong), EqualityComparer<T>.Default.Equals(thucTe, kyVong), Convert.ToString(thucTe));
         }
 
-        private static int Main()
+        private static void Ghi(string ten, string kyVong, bool dat, string thucTe = null)
         {
-            SoDem();
-            PhuThuTraMuon();
-            TongThanhToan();
-            Coc();
-            GomDoanhThu();
-            Csv();
-            Qr();
-            DuongDanTraCuu();
-            KhoangNgayWeb();
-            DichVuTraCuu();
-            TrangWeb();
-            LocPhongWeb();
-            DoiPhong();
+            if (dat) _dat++;
+            else
+            {
+                _loi++;
+                Console.WriteLine("LỖI: " + ten + (kyVong == null ? string.Empty : " (thực tế " + thucTe + ", kỳ vọng " + kyVong + ")"));
+            }
+            _ketQua.Add(new[] { _nhom, ten, kyVong ?? string.Empty, thucTe ?? string.Empty, dat ? "Đạt" : "Lỗi" });
+        }
+
+        /// <summary>Ghi từng ca ra tệp TSV (UTF-8) để lập bảng test case: dotnet run --project QuanLyKhachSan.Tests -- --xuat tep.tsv</summary>
+        private static void XuatKetQua(string duongDan)
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("Nhom\tMoTa\tKyVong\tThucTe\tKetQua");
+            foreach (string[] r in _ketQua)
+            {
+                for (int i = 0; i < r.Length; i++) r[i] = r[i].Replace('\t', ' ').Replace('\r', ' ').Replace('\n', ' ');
+                sb.AppendLine(string.Join("\t", r));
+            }
+            System.IO.File.WriteAllText(duongDan, sb.ToString(), new System.Text.UTF8Encoding(false));
+        }
+
+        private static int Main(string[] args)
+        {
+            Chay(SoDem);
+            Chay(PhuThuTraMuon);
+            Chay(TongThanhToan);
+            Chay(Coc);
+            Chay(GomDoanhThu);
+            Chay(Csv);
+            Chay(Qr);
+            Chay(DuongDanTraCuu);
+            Chay(KhoangNgayWeb);
+            Chay(DichVuTraCuu);
+            Chay(TrangWeb);
+            Chay(LocPhongWeb);
+            Chay(DoiPhong);
             PresenterTests();
 
             Console.WriteLine("Đạt " + _dat + ", lỗi " + _loi);
+            int viTri = Array.IndexOf(args ?? new string[0], "--xuat");
+            if (viTri >= 0 && viTri + 1 < args.Length) XuatKetQua(args[viTri + 1]);
             return _loi == 0 ? 0 : 1;
         }
 

@@ -42,7 +42,7 @@ Có thể mở lần lượt `QuanLyKhachSan/Scripts/01_CreateDatabase.sql` rồ
 
 Nếu đã tạo CSDL từ phiên bản trước, chạy lại `01_CreateDatabase.sql` để bổ sung bảng `LichSuDoiPhong` và `sp_DoiPhong` (đổi phòng khi đang ở); script không xóa dữ liệu hiện có.
 
-Bộ test case dạng bảng tính (giao diện, cổng web, CSDL và nhóm kiểm thử tự động): [`TestCases/TestCase.xlsx`](TestCases/TestCase.xlsx).
+Bộ test case dạng bảng tính, liệt kê từng ca (208 ca tự động, 39 ca CSDL/build, 27 kịch bản giao diện và web thủ công): [`TestCases/TestCase.xlsx`](TestCases/TestCase.xlsx). Khi thêm ca mới, lập lại bảng bằng `TestCases/tao_testcase.py` (hướng dẫn trong sheet HuongDan).
 
 Kiểm thử tự động trên GitHub Actions (`.github/workflows/kiem-thu.yml`): chạy hai script 01 và 02 hai lần trên SQL Server 2022, 34 ca trong `Scripts/KiemThu.sql`, build toàn bộ solution trên Windows và bộ test 208 ca.
 

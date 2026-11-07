@@ -108,3 +108,12 @@ Gồm các kịch bản giao diện (UI-13…UI-19) và kịch bản cho cổng 
 | WEB-07 | `/?loai=Deluxe&gia=800000`, `/?gia=abc`, `/?gia=-5`, `/?loai=` (quá 50 ký tự) | Lọc đúng; giá/loại sai hiện thông báo lỗi, vẫn còn form; không lỗi 500 |
 | WEB-08 | Mở `/gia` và `/phong/101` ở chế độ sáng, tối và màn hình hẹp | Hình minh họa hiển thị đủ, số giường theo sức chứa, màu theo loại phòng, chữ tên loại được mã hóa |
 | UI-17 | Mở ứng dụng, xem biểu tượng cửa sổ, thanh tác vụ và màn hình chính | Logo hiển thị ở biểu tượng exe/cửa sổ và cạnh lời chào; vẫn chạy bình thường nếu thiếu `Resources/logo.*` |
+
+## Bảng test case Excel (`TestCases/TestCase.xlsx`)
+Bảng liệt kê từng ca một: sheet `KiemThuTuDong` (208 ca của `QuanLyKhachSan.Tests`, có mã, nhóm, quy tắc, mô tả, kỳ vọng, kết quả), `CSDL_Build` (các ca `KiemThu.sql` và build), `GiaoDien_Web` (UI-xx và WEB-xx làm thủ công, có cột kết quả thực tế, người thử, ngày thử), `TongHop` (số ca đạt/lỗi/chưa chạy) và `HuongDan`.
+
+Quy ước: mỗi khi thêm hoặc sửa một ca kiểm thử (test tự động, `KiemThu.sql` hoặc kịch bản trong tài liệu này), phải lập lại bảng Excel trong cùng lần thay đổi:
+1. `dotnet run --project QuanLyKhachSan.Tests -c Release -- --xuat TestCases/ketqua_tudong.tsv`
+2. `python3 TestCases/tao_testcase.py TestCases/ketqua_tudong.tsv` (cần `openpyxl`).
+
+Script giữ nguyên phần đã điền ở sheet `GiaoDien_Web`. Tệp `.tsv` chỉ là trung gian, không đưa vào Git.

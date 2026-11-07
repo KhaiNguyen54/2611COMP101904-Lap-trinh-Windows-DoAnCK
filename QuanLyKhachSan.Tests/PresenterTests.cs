@@ -49,20 +49,20 @@ namespace QuanLyKhachSan.Tests
 
         private static void PresenterTests()
         {
-            DangNhapPresenterTests();
-            DatPhongPresenterTests();
-            NhanPhongPresenterTests();
-            GhiDichVuPresenterTests();
-            TraPhongPresenterTests();
-            DoiPhongPresenterTests();
-            DuyetGiamGiaPresenterTests();
-            BaoCaoPresenterTests();
-            DanhMucPresenterTests();
-            TaiKhoanPresenterTests();
-            KhachNhanhPresenterTests();
-            DoiMatKhauPresenterTests();
-            HoaDonPresenterTests();
-            KhachDangOPresenterTests();
+            Chay(DangNhapPresenterTests);
+            Chay(DatPhongPresenterTests);
+            Chay(NhanPhongPresenterTests);
+            Chay(GhiDichVuPresenterTests);
+            Chay(TraPhongPresenterTests);
+            Chay(DoiPhongPresenterTests);
+            Chay(DuyetGiamGiaPresenterTests);
+            Chay(BaoCaoPresenterTests);
+            Chay(DanhMucPresenterTests);
+            Chay(TaiKhoanPresenterTests);
+            Chay(KhachNhanhPresenterTests);
+            Chay(DoiMatKhauPresenterTests);
+            Chay(HoaDonPresenterTests);
+            Chay(KhachDangOPresenterTests);
         }
 
         // ---------- Đăng nhập ----------

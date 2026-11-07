@@ -108,3 +108,6 @@ build-check/
 *.glg
 *.glo
 *.gls
+
+# Tệp trung gian khi lập TestCase.xlsx
+TestCases/ketqua_tudong.tsv
