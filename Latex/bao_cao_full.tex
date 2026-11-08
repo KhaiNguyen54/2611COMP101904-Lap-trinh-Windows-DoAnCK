@@ -2025,8 +2025,9 @@ Ngoài phạm vi đặc tả ban đầu, nhóm đã bổ sung ba tính năng m�
 
 
 % ================= TÀI LIỆU THAM KHẢO =================
-\chapter*{TÀI LIỆU THAM KHẢO}
-\TieuDeDau{TÀI LIỆU THAM KHẢO}
+% thebibliography tự tạo tiêu đề chương; đặt tên để không phát sinh trang trắng
+\renewcommand{\bibname}{TÀI LIỆU THAM KHẢO}
+\clearpage\phantomsection
 \addcontentsline{toc}{chapter}{TÀI LIỆU THAM KHẢO}
 % ===== begin chuong/tai_lieu_tham_khao.tex =====
 % Danh mục theo định dạng IEEE, đánh số theo thứ tự xuất hiện trong báo cáo.
