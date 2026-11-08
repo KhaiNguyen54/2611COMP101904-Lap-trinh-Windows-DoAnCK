@@ -187,12 +187,12 @@ PBKDF2 & Password-Based Key Derivation Function 2 \\
 \section*{1. Lý do chọn đề tài}
 \addcontentsline{toc}{section}{1. Lý do chọn đề tài}
 
-Quản lý khách sạn là một bài toán nghiệp vụ điển hình, bao gồm đầy đủ các đặc trưng cần có của một đồ án môn Lập trình Windows: dữ liệu quan hệ nhiều bảng với ràng buộc chặt (không trùng lịch, không trùng số phòng, không trùng giấy tờ khách hàng), quy tắc tính toán nghiệp vụ (phụ thu trả muộn theo mốc giờ, giới hạn giảm giá theo vai trò, tiền cọc giới hạn theo số đêm), và yêu cầu toàn vẹn giao dịch khi nhiều bước ghi dữ liệu liên quan phải cùng thành công hoặc cùng thất bại. Ngoài ra, đây là bài toán giúp nhóm dễ hình dung đúng - sai của từng quy tắc nghiệp vụ thay vì chỉ lập trình theo đặc tả trừu tượng.
+Quản lý khách sạn là một bài toán nghiệp vụ điển hình, hội tụ các đặc trưng cần có của một đồ án môn Lập trình Windows: dữ liệu quan hệ nhiều bảng với ràng buộc chặt (không trùng lịch, không trùng số phòng, không trùng giấy tờ khách hàng); quy tắc tính toán nghiệp vụ (phụ thu trả muộn theo mốc giờ, giới hạn giảm giá theo vai trò, tiền cọc giới hạn theo số đêm); và yêu cầu toàn vẹn giao dịch khi nhiều bước ghi dữ liệu liên quan phải cùng thành công hoặc cùng thất bại. Bên cạnh đó, các quy tắc của bài toán đủ cụ thể để kiểm chứng tính đúng đắn bằng ca kiểm thử, thay vì chỉ lập trình theo đặc tả trừu tượng.
 
 \section*{2. Mục tiêu đồ án}
 \addcontentsline{toc}{section}{2. Mục tiêu đồ án}
 
-Đồ án hướng tới xây dựng một ứng dụng desktop hoàn chỉnh theo mô hình MVP (Model -- View -- Presenter) kết hợp các lớp Service và Repository, áp dụng đúng các nguyên lý lập trình hướng đối tượng và truy xuất dữ liệu an toàn (tham số hóa truy vấn, giao dịch, băm mật khẩu), đồng thời rèn luyện kỹ năng làm việc nhóm: phân chia công việc, thống nhất interface giữa View, Presenter và Service, kiểm thử chéo và tổng hợp tài liệu.
+Đồ án hướng tới xây dựng một ứng dụng desktop hoàn chỉnh theo mô hình MVP (Model -- View -- Presenter)~\cite{potel,fowler} kết hợp các lớp Service và Repository, áp dụng các nguyên lý lập trình hướng đối tượng và các biện pháp truy xuất dữ liệu an toàn: tham số hóa truy vấn để phòng chống SQL Injection~\cite{owasp-sqli}, sử dụng giao dịch, và lưu mật khẩu dưới dạng giá trị băm PBKDF2~\cite{rfc8018}. Đồng thời, đồ án rèn luyện kỹ năng làm việc nhóm: phân chia công việc, thống nhất interface giữa View, Presenter và Service, kiểm thử chéo và tổng hợp tài liệu.
 
 \section*{3. Đối tượng và phạm vi nghiên cứu}
 \addcontentsline{toc}{section}{3. Đối tượng và phạm vi nghiên cứu}
@@ -202,16 +202,16 @@ Quản lý khách sạn là một bài toán nghiệp vụ điển hình, bao g�
 \section*{4. Phương pháp thực hiện}
 \addcontentsline{toc}{section}{4. Phương pháp thực hiện}
 
-Nhóm thực hiện theo quy trình gồm: khảo sát và đặc tả yêu cầu (liệt kê chức năng, use case); thiết kế dữ liệu (ERD, ràng buộc, stored procedure); thiết kế quy tắc nghiệp vụ (các quy tắc QT01--QT71); xây dựng theo mô hình MVP (View, Presenter, Service, Repository, Model); kiểm thử (tự động cho logic tính tiền, thủ công cho giao diện và CSDL); và hoàn thiện dựa trên các lỗi phát hiện được. Quy trình này được lặp lại thành nhiều vòng nhỏ giữa các giai đoạn thay vì thực hiện tuần tự một lần duy nhất, đặc biệt ở giai đoạn xây dựng và kiểm thử.
+Nhóm thực hiện theo quy trình gồm: khảo sát và đặc tả yêu cầu (liệt kê chức năng, use case) dựa trên phương pháp phân tích thiết kế hệ thống thông tin~\cite{uit-ptt}; thiết kế dữ liệu (ERD, ràng buộc, stored procedure); thiết kế quy tắc nghiệp vụ (các quy tắc QT01--QT71); xây dựng theo mô hình MVP (View, Presenter, Service, Repository, Model) với các kỹ thuật lập trình Windows Forms của học phần~\cite{thoai}; kiểm thử (tự động cho logic tính tiền và Presenter, thủ công cho giao diện, kịch bản SQL cho CSDL); và hoàn thiện dựa trên các lỗi phát hiện được. Kết quả của từng giai đoạn được ghi lại trong bộ tài liệu đặc tả nội bộ~\cite{noibo}. Quy trình được lặp lại qua nhiều vòng nhỏ giữa các giai đoạn thay vì thực hiện tuần tự một lần duy nhất, đặc biệt ở giai đoạn xây dựng và kiểm thử.
 
 \section*{5. Công nghệ sử dụng}
 \addcontentsline{toc}{section}{5. Công nghệ sử dụng}
 
 \begin{itemize}
   \item Ngôn ngữ lập trình C\#, nền tảng .NET (target \texttt{net10.0-windows}).
-  \item Giao diện: Windows Forms; chế độ sáng/tối tự cài đặt bằng mã.
-  \item Cổng web tra cứu cho khách: ASP.NET Core (minimal API) dùng chung các lớp Model/Repository/Service; mã QR do bộ mã hóa tự viết, không dùng thư viện ngoài.
-  \item Cơ sở dữ liệu: Microsoft SQL Server, truy xuất qua ADO.NET với truy vấn tham số hóa và stored procedure.
+  \item Giao diện: Windows Forms~\cite{ms-winforms}; chế độ sáng/tối tự cài đặt bằng mã.
+  \item Cổng web tra cứu cho khách: ASP.NET Core (minimal API) dùng chung các lớp Model/Repository/Service; mã QR do bộ mã hóa tự viết theo đặc tả ISO/IEC 18004~\cite{iso18004}, không dùng thư viện ngoài.
+  \item Cơ sở dữ liệu: Microsoft SQL Server, truy xuất qua ADO.NET (\texttt{Microsoft.Data.SqlClient})~\cite{ms-sqlclient} với truy vấn tham số hóa và stored procedure viết bằng Transact-SQL~\cite{ms-tsql}.
   \item Kiểm thử: project kiểm thử tự động độc lập (\texttt{QuanLyKhachSan.Tests}) cho các quy tắc nghiệp vụ không phụ thuộc CSDL.
 \end{itemize}
 
@@ -231,7 +231,7 @@ Báo cáo gồm 8 chương: Chương~1 giới thiệu tổng quan hệ thống v
 
 Quản lý khách sạn là bài toán nghiệp vụ quen thuộc nhưng có nhiều ràng buộc đan xen: một phòng không được cho hai khách thuê trùng ngày, tiền phòng phải cộng đúng với dịch vụ phát sinh và phụ thu trả muộn, hóa đơn một khi đã lập thì không được sửa tùy tiện. Ở quy mô khách sạn vừa và nhỏ, các ràng buộc này thường được xử lý bằng sổ sách hoặc bảng tính, dễ dẫn đến nhầm lẫn khi số lượng phòng và giao dịch tăng lên.
 
-Đồ án xây dựng một ứng dụng \emph{desktop} theo mô hình Windows Forms, dữ liệu lưu trữ tập trung trên SQL Server, nhằm số hóa trọn vẹn quy trình nghiệp vụ của bộ phận lễ tân: từ nhận đặt phòng, nhận phòng, ghi nhận dịch vụ phát sinh trong thời gian khách lưu trú, đến trả phòng, lập hóa đơn và tổng hợp báo cáo doanh thu cho cấp quản lý. Phần mềm được thiết kế theo mô hình MVP (Model -- View -- Presenter) kết hợp các lớp Service và Repository cộng tầng Model trung gian, giúp tách bạch giao diện, quy tắc nghiệp vụ và truy xuất dữ liệu, thuận lợi cho việc bảo trì và mở rộng về sau.
+Đồ án xây dựng một ứng dụng \emph{desktop} theo mô hình Windows Forms, dữ liệu lưu trữ tập trung trên SQL Server, nhằm số hóa trọn vẹn quy trình nghiệp vụ của bộ phận lễ tân: từ nhận đặt phòng, nhận phòng, ghi nhận dịch vụ phát sinh trong thời gian khách lưu trú, đến trả phòng, lập hóa đơn và tổng hợp báo cáo doanh thu cho cấp quản lý. Phần mềm được thiết kế theo mô hình MVP (Model -- View -- Presenter)~\cite{potel}, trong đó View ở dạng bị động (\emph{Passive View}) chỉ hiển thị dữ liệu và chuyển sự kiện cho Presenter~\cite{fowler}; mô hình được kết hợp với các lớp Service, Repository và tầng Model dùng chung. Cách tổ chức này tách bạch giao diện, quy tắc nghiệp vụ và truy xuất dữ liệu, thuận lợi cho việc kiểm thử, bảo trì và mở rộng về sau.
 
 Quy mô dữ liệu mẫu dùng xuyên suốt báo cáo: khách sạn có nhiều tầng, mỗi tầng một số phòng được phân theo ba loại phòng (Tiêu chuẩn, Cao cấp, Gia đình) với mức giá và sức chứa khác nhau; danh mục dịch vụ gồm các dịch vụ phổ biến như giặt ủi, nước uống, gọi điện thoại.
 
@@ -401,7 +401,7 @@ Dự án được chia thành 8 giai đoạn (GĐ1--GĐ8), tương ứng với v
 
 \section{Sơ đồ Gantt}
 
-Hình~\ref{fig:gantt} minh họa tiến độ các giai đoạn theo thời gian cho nhóm 3 người. So với một nhóm 5 người -- nơi các công việc danh mục, báo cáo và giao diện có thể tách cho 2--3 người làm song song độc lập -- nhóm 3 người của đồ án này rút ngắn số luồng song song xuống còn 3, khiến giai đoạn xây dựng View (GĐ6) phải kéo dài hơn và một phần công việc của Thành viên 1 được bố trí hỗ trợ chéo sang View nghiệp vụ ở cuối GĐ6 để kịp tiến độ kiểm thử.
+Hình~\ref{fig:gantt} minh họa tiến độ các giai đoạn theo thời gian cho nhóm 3 người bằng sơ đồ Gantt~\cite{gantt}. So với một nhóm 5 người -- nơi các công việc danh mục, báo cáo và giao diện có thể tách cho 2--3 người làm song song độc lập -- nhóm 3 người của đồ án này rút ngắn số luồng song song xuống còn 3, khiến giai đoạn xây dựng View (GĐ6) phải kéo dài hơn và một phần công việc của Thành viên 1 được bố trí hỗ trợ chéo sang View nghiệp vụ ở cuối GĐ6 để kịp tiến độ kiểm thử.
 \begin{figure}[H]
 \centering
 \begin{ganttchart}[
@@ -1372,7 +1372,7 @@ QT71 & Bộ lọc tìm phòng trên web: loại phòng tối đa 50 ký tự (so
 
 \section{Kiến trúc tổng quan}
 
-Hệ thống được tổ chức theo mô hình \textbf{MVP (Model -- View -- Presenter)} áp dụng cho Windows Forms. Các màn hình nghiệp vụ (Đăng nhập, Đặt phòng, Nhận phòng, Ghi dịch vụ, Trả phòng, Đổi phòng, Duyệt giảm giá, Báo cáo, danh mục, tài khoản, hóa đơn) đi theo chiều:
+Hệ thống được tổ chức theo mô hình \textbf{MVP (Model -- View -- Presenter)}~\cite{potel} áp dụng cho Windows Forms~\cite{ms-winforms}. Trong biến thể này, View không chứa logic xử lý mà chỉ phơi bày dữ liệu và thao tác hiển thị qua interface, còn Presenter điều khiển View thông qua interface đó~\cite{fowler}; nhờ vậy Presenter có thể được kiểm thử độc lập với giao diện thật. Các màn hình nghiệp vụ (Đăng nhập, Đặt phòng, Nhận phòng, Ghi dịch vụ, Trả phòng, Đổi phòng, Duyệt giảm giá, Báo cáo, danh mục, tài khoản, hóa đơn) đi theo chiều:
 
 \begin{center}
 \textbf{View (Form)} $\longleftrightarrow$ \textbf{Presenter} $\longrightarrow$ \textbf{Service} $\longrightarrow$ \textbf{Repository} $\longleftrightarrow$ \textbf{SQL Server}
@@ -1467,32 +1467,32 @@ Việc tách lớp \texttt{QuyTacTinhTien} thành một lớp tiện ích tĩnh,
 
 \section{Luồng xử lý nghiệp vụ: Đặt phòng và kiểm tra trùng lịch}
 
-Để tránh race condition khi hai lễ tân cùng đặt một phòng cho khoảng ngày giao nhau tại cùng một thời điểm, việc kiểm tra trùng lịch không dừng lại ở một truy vấn SELECT đơn thuần trước khi INSERT (vốn có khoảng hở giữa kiểm tra và ghi), mà được gộp vào cùng một giao dịch mức cô lập \textbf{Serializable}:
+Khi hai lễ tân cùng đặt một phòng cho các khoảng ngày giao nhau tại cùng một thời điểm, có nguy cơ xảy ra điều kiện tranh chấp (\emph{race condition}). Vì vậy, việc kiểm tra trùng lịch không dừng lại ở một truy vấn SELECT đơn thuần trước khi INSERT (vốn có khoảng hở giữa kiểm tra và ghi), mà được gộp vào cùng một giao dịch ở mức cô lập \textbf{Serializable}. Theo tài liệu của SQL Server, mức này đặt khóa theo khoảng giá trị khóa (\emph{range lock}) trên các dòng thỏa điều kiện truy vấn và giữ đến khi giao dịch kết thúc, nên giao dịch khác không thể chèn thêm dòng thuộc khoảng đó~\cite{ms-isolation}. Quy trình gồm:
 
 \begin{enumerate}
   \item \textbf{Service} (\texttt{DatPhongService.Them}, được gọi từ \texttt{DatPhongPresenter}) kiểm tra ràng buộc dữ liệu đầu vào (ngày hợp lệ, cọc không vượt ngưỡng QT15) trước khi gọi Repository, nhằm tránh mở transaction không cần thiết với dữ liệu chắc chắn sai.
   \item \textbf{Repository} (\texttt{DatPhongRepository.KiemTraPhong}) mở một \texttt{SqlTransaction} với \texttt{IsolationLevel.Serializable}, trong đó gọi \texttt{sp\_KiemTraTrungLich}; nếu trả về trùng lịch, rollback và ném ngoại lệ; nếu không, tiếp tục INSERT bản ghi \texttt{DatPhong} mới trong cùng transaction, rồi commit.
 \end{enumerate}
 
-Mức cô lập Serializable đảm bảo không có giao dịch đặt phòng song song nào khác có thể chen vào giữa bước kiểm tra và bước ghi của giao dịch hiện tại cho cùng một phòng, loại bỏ hoàn toàn khả năng hai đặt phòng trùng lịch lọt qua kiểm tra do thực thi đồng thời.
+Nhờ cơ chế khóa nêu trên, không có giao dịch đặt phòng song song nào khác có thể chen vào giữa bước kiểm tra và bước ghi của giao dịch hiện tại đối với cùng một phòng, nên trường hợp hai đặt phòng trùng lịch cùng lọt qua kiểm tra do thực thi đồng thời được ngăn chặn ở tầng cơ sở dữ liệu.
 
 \section{Bảo mật và kiểm soát truy cập}
 
 \subsection{Băm mật khẩu}
 
-Mật khẩu không được lưu dạng rõ. Khi tạo tài khoản hoặc đổi mật khẩu, hệ thống sinh một salt ngẫu nhiên riêng cho từng tài khoản, băm mật khẩu bằng thuật toán PBKDF2 với số vòng lặp được lưu kèm (cho phép tăng độ khó trong tương lai mà không làm hỏng dữ liệu cũ), và chỉ lưu giá trị băm cùng salt vào CSDL. Khi đăng nhập, hệ thống băm lại mật khẩu nhập vào với cùng salt và số vòng lặp đã lưu, so sánh hai giá trị băm thay vì so sánh chuỗi mật khẩu gốc.
+Mật khẩu không được lưu dạng rõ. Khi tạo tài khoản hoặc đổi mật khẩu, hệ thống sinh một salt ngẫu nhiên riêng cho từng tài khoản và băm mật khẩu bằng hàm dẫn xuất khóa PBKDF2 (PBKDF2-SHA256, 100.000 vòng lặp mặc định) theo đặc tả PKCS \#5 phiên bản 2.1~\cite{rfc8018}. Số vòng lặp được lưu kèm trong CSDL, cho phép tăng độ khó trong tương lai mà không làm hỏng dữ liệu cũ; chỉ giá trị băm và salt được lưu. Khi đăng nhập, hệ thống băm lại mật khẩu nhập vào với cùng salt và số vòng lặp đã lưu rồi so sánh hai giá trị băm thay vì so sánh chuỗi mật khẩu gốc. Salt riêng cho từng tài khoản khiến hai người dùng cùng mật khẩu vẫn có giá trị băm khác nhau, còn số vòng lặp lớn làm tăng chi phí của việc dò mật khẩu hàng loạt.
 
 \subsection{Chống SQL Injection}
 
-Toàn bộ truy vấn động (đặc biệt là các ô tìm kiếm theo từ khóa) sử dụng \texttt{SqlParameter} tham số hóa thay vì nối chuỗi trực tiếp từ dữ liệu người dùng nhập vào câu lệnh SQL. Với bộ lọc phía client (\texttt{DataView.RowFilter} trong màn hình danh sách khách đang lưu trú), ký tự đặc biệt trong từ khóa tìm kiếm được thoát (escape) trước khi đưa vào biểu thức lọc, tránh lỗi cú pháp hoặc hành vi lọc không mong muốn.
+Biện pháp phòng thủ chính được khuyến nghị đối với SQL Injection là tách cấu trúc câu lệnh SQL khỏi dữ liệu và gán dữ liệu thông qua tham số~\cite{owasp-sqli}. Theo đó, toàn bộ truy vấn động (đặc biệt là các ô tìm kiếm theo từ khóa) sử dụng \texttt{SqlParameter} thay vì nối chuỗi trực tiếp từ dữ liệu người dùng nhập vào câu lệnh SQL. Với bộ lọc phía client (\texttt{DataView.RowFilter} trong màn hình danh sách khách đang lưu trú), ký tự đặc biệt trong từ khóa tìm kiếm được thoát (escape) trước khi đưa vào biểu thức lọc, tránh lỗi cú pháp hoặc hành vi lọc không mong muốn.
 
 \subsection{Giới hạn đăng nhập sai}
 
-Sau 5 lần đăng nhập sai liên tiếp cho cùng một tài khoản, hệ thống khóa tạm thời tài khoản đó trong 30 giây, hạn chế tấn công dò mật khẩu kiểu brute-force ở mức cơ bản.
+Hướng dẫn xác thực của NIST yêu cầu bên xác minh phải giới hạn số lần xác thực thất bại liên tiếp trên một tài khoản (mục~5.2.2)~\cite{nist-63b}. Hệ thống áp dụng giới hạn chặt hơn mức tối đa mà tài liệu này cho phép: sau 5 lần đăng nhập sai liên tiếp, màn hình đăng nhập khóa tạm thời trong 30 giây, hạn chế tấn công dò mật khẩu kiểu brute-force ở mức cơ bản. Trạng thái khóa hiện được giữ trong bộ nhớ của phiên làm việc (xem phần Hạn chế).
 
 \subsection{Xuất CSV an toàn}
 
-Khi xuất báo cáo ra CSV, các ô dữ liệu bắt đầu bằng ký tự \texttt{=}, \texttt{+}, \texttt{-}, \texttt{@} được thêm tiền tố an toàn trước khi ghi, nhằm ngăn chặn kiểu tấn công CSV Injection (chèn công thức) khi tệp CSV được mở lại bằng Excel.
+CSV Injection (còn gọi là Formula Injection) xảy ra khi dữ liệu không tin cậy được ghi vào tệp CSV và bảng tính diễn giải ô bắt đầu bằng các ký tự đặc biệt như \texttt{=}, \texttt{+}, \texttt{-}, \texttt{@} thành công thức~\cite{owasp-csv}. Để phòng ngừa, khi xuất báo cáo ra CSV, các ô dữ liệu bắt đầu bằng những ký tự này được thêm tiền tố an toàn trước khi ghi, nên nội dung được hiển thị như văn bản khi tệp được mở lại bằng Excel.
 
 \subsection{Thông báo lỗi}
 
@@ -1509,7 +1509,7 @@ Lớp \texttt{GiaoDien} lưu hai bộ màu (\texttt{BoSang}, \texttt{BoToi}) g�
 \section{Mã QR tra cứu phòng và giá}
 
 \subsection{Bộ mã hóa QR}
-Do môi trường phát triển không tải được thư viện QR từ NuGet và để tránh phụ thuộc ngoài, nhóm tự cài đặt bộ mã hóa trong \texttt{Services/QrCode.cs} (hàm thuần, không phụ thuộc giao diện). Bộ mã hóa dùng chế độ byte UTF-8 (hỗ trợ tiếng Việt có dấu), mức sửa lỗi M, tự chọn phiên bản nhỏ nhất đủ chứa dữ liệu trong khoảng 1--10 (tối đa 213 byte), mã sửa lỗi Reed--Solomon trên trường GF(256) với đa thức \texttt{0x11D}, thử cả 8 mặt nạ và chọn mặt nạ có điểm phạt thấp nhất, ghi thông tin định dạng bằng mã BCH và thông tin phiên bản cho phiên bản $\ge 7$. Hàm \texttt{QrCode.Tao} trả về ma trận \texttt{bool[,]}; dữ liệu rỗng hoặc quá dài làm phát sinh \texttt{ArgumentException} (QT67).
+Do môi trường phát triển không tải được thư viện QR từ NuGet và để tránh phụ thuộc ngoài, nhóm tự cài đặt bộ mã hóa trong \texttt{Services/QrCode.cs} (hàm thuần, không phụ thuộc giao diện) theo đặc tả ISO/IEC 18004~\cite{iso18004}. Bộ mã hóa dùng chế độ byte UTF-8 (hỗ trợ tiếng Việt có dấu), mức sửa lỗi M, tự chọn phiên bản nhỏ nhất đủ chứa dữ liệu trong khoảng 1--10 (tối đa 213 byte). Dữ liệu được bảo vệ bằng mã sửa lỗi Reed--Solomon~\cite{reed-solomon} trên trường GF(256) với đa thức \texttt{0x11D}; bộ mã hóa thử cả 8 mặt nạ và chọn mặt nạ có điểm phạt thấp nhất, ghi thông tin định dạng bằng mã BCH và thông tin phiên bản cho phiên bản $\ge 7$. Hàm \texttt{QrCode.Tao} trả về ma trận \texttt{bool[,]}; dữ liệu rỗng hoặc quá dài làm phát sinh \texttt{ArgumentException} (QT67).
 
 \subsection{Đường dẫn và hiển thị}
 Lớp \texttt{TraCuuUrl} ghép địa chỉ gốc (đọc bởi \texttt{CauHinhWeb} từ khóa \texttt{Web:BaseUrl}) với đường dẫn phòng hoặc bảng giá (QT65, QT66, QT68). Lớp \texttt{QrHinh} vẽ ma trận thành ảnh nền trắng có vùng đệm 4 ô, không làm mịn để các ô giữ cạnh sắc, và dựng thẻ gồm tiêu đề, mã QR, dòng mô tả và đường dẫn. Biểu mẫu \texttt{FrmQrPhong} dựng danh sách mục từ \texttt{LoaiPhongService} (bảng giá) và \texttt{PhongService} (phòng đang hoạt động), cho lưu PNG, in, xuất tất cả và sao chép liên kết.
@@ -1991,7 +1991,7 @@ Thông báo lỗi & Đạt & Chỉ hiển thị lỗi nghiệp vụ, không lộ
 \section*{1. Kết quả đạt được}
 \addcontentsline{toc}{section}{1. Kết quả đạt được}
 
-Qua quá trình thực hiện, nhóm đã xây dựng hoàn chỉnh một ứng dụng quản lý khách sạn theo mô hình MVP (View -- Presenter -- Service -- Repository, dùng chung các lớp Model), bao phủ 19/19 chức năng bắt buộc và 4/4 chức năng nâng cao đã đặc tả ở Chương~1. Hệ thống hiện thực đầy đủ chu trình nghiệp vụ từ đặt phòng, nhận phòng, ghi nhận dịch vụ, trả phòng, lập hóa đơn đến báo cáo doanh thu và công suất phòng, với các ràng buộc toàn vẹn dữ liệu quan trọng (kiểm tra trùng lịch bằng giao dịch Serializable, snapshot giá, UNIQUE trên hóa đơn theo phiếu thuê) được đảm bảo ở tầng cơ sở dữ liệu chứ không chỉ ở tầng ứng dụng. Về bảo mật, hệ thống áp dụng băm mật khẩu PBKDF2, truy vấn tham số hóa, giới hạn đăng nhập sai và phân quyền hai lớp (giao diện và Service). Bộ kiểm thử logic tự động đạt 208/208 ca (quy tắc tính tiền, báo cáo, CSV, mã QR và logic cổng web và các Presenter chạy với View giả). Mười lỗi phát hiện trong quá trình hoàn thiện (4 lỗi mức cao liên quan trực tiếp tới các quy tắc nghiệp vụ QT15, QT43 và ràng buộc trạng thái phòng) đã được khắc phục và ghi nhận đầy đủ trong Chương~8.
+Qua quá trình thực hiện, nhóm đã xây dựng hoàn chỉnh một ứng dụng quản lý khách sạn theo mô hình MVP~\cite{potel} (View -- Presenter -- Service -- Repository, dùng chung các lớp Model), bao phủ 19/19 chức năng bắt buộc và 4/4 chức năng nâng cao đã đặc tả ở Chương~1. Hệ thống hiện thực đầy đủ chu trình nghiệp vụ từ đặt phòng, nhận phòng, ghi nhận dịch vụ, trả phòng, lập hóa đơn đến báo cáo doanh thu và công suất phòng, với các ràng buộc toàn vẹn dữ liệu quan trọng (kiểm tra trùng lịch bằng giao dịch Serializable, snapshot giá, UNIQUE trên hóa đơn theo phiếu thuê) được đảm bảo ở tầng cơ sở dữ liệu chứ không chỉ ở tầng ứng dụng. Về bảo mật, hệ thống áp dụng băm mật khẩu PBKDF2, truy vấn tham số hóa, giới hạn đăng nhập sai và phân quyền hai lớp (giao diện và Service). Bộ kiểm thử logic tự động đạt 208/208 ca (quy tắc tính tiền, báo cáo, CSV, mã QR và logic cổng web và các Presenter chạy với View giả). Mười lỗi phát hiện trong quá trình hoàn thiện (4 lỗi mức cao liên quan trực tiếp tới các quy tắc nghiệp vụ QT15, QT43 và ràng buộc trạng thái phòng) đã được khắc phục và ghi nhận đầy đủ trong Chương~8.
 
 Về mặt tổ chức,  đã áp dụng cách phân chia công việc theo trục kỹ thuật dọc (mỗi người phụ trách trọn một nhóm chức năng từ CSDL đến giao diện) thay vì phân chia ngang theo lớp kiến trúc, giúp giảm phụ thuộc chờ đợi lẫn nhau và phù hợp với quy mô nhóm nhỏ.
 
@@ -2004,6 +2004,7 @@ Ngoài phạm vi đặc tả ban đầu, nhóm đã bổ sung ba tính năng m�
   \item Khi đổi phòng giữa hai loại phòng khác giá, đơn giá phiếu thuê được giữ nguyên và chênh lệch xử lý thủ công khi trả phòng.
   \item Các kịch bản kiểm thử giao diện (UI-01 đến UI-19) là kiểm thử thủ công, chưa được tự động hóa bằng công cụ kiểm thử giao diện chuyên dụng.
   \item Ứng dụng hiện chỉ hỗ trợ một máy trạm kết nối trực tiếp tới một CSDL tập trung, chưa tính tới kịch bản nhiều chi nhánh hoặc truy cập đồng thời ở quy mô lớn.
+  \item Trạng thái khóa đăng nhập sau 5 lần sai được giữ trong bộ nhớ của màn hình đăng nhập, nên khởi động lại ứng dụng sẽ xóa trạng thái này; chưa lưu số lần sai và thời điểm khóa theo tài khoản trong CSDL.
   \item Chưa có chức năng xuất báo cáo ra định dạng Excel (.xlsx), hiện chỉ hỗ trợ xuất CSV.
   \item Cổng web hiện chỉ cho tra cứu (chưa cho khách tự đặt phòng) và chưa có xác thực hay HTTPS; muốn điện thoại quét được mã QR cần cấu hình địa chỉ mạng nội bộ (\texttt{Web:BaseUrl}) và mở cổng trên tường lửa.
 \end{itemize}
@@ -2028,15 +2029,25 @@ Ngoài phạm vi đặc tả ban đầu, nhóm đã bổ sung ba tính năng m�
 \TieuDeDau{TÀI LIỆU THAM KHẢO}
 \addcontentsline{toc}{chapter}{TÀI LIỆU THAM KHẢO}
 % ===== begin chuong/tai_lieu_tham_khao.tex =====
-\begin{enumerate}[label={[\arabic*]}]
-  \item Microsoft, \textit{Windows Forms documentation}, \url{https://learn.microsoft.com/dotnet/desktop/winforms/}.
-  \item Microsoft, \textit{Microsoft.Data.SqlClient documentation}, \url{https://learn.microsoft.com/sql/connect/ado-net/microsoft-data-sqlclient}.
-  \item Microsoft, \textit{Transact-SQL (T-SQL) reference}, \url{https://learn.microsoft.com/sql/t-sql/}.
-  \item Gantt Chart, \url{https://www.sciencedirect.com/topics/computer-science/gantt-chart}
-  \item Tài liệu môn học Phân tích thiết kế hệ thống thông tin \href{https://ctgt.uit.edu.vn/sach/phan-tich-thiet-ke-he-thong-thong-tin}{(UIT - ĐHQGHCM)}
-  \item Tài liệu nội bộ dự án
-  \item Tài liệu môn học Lập trình Windows - \href{https://thoailt.com}{ThS. Lê Thanh Thoại}
-\end{enumerate}
+% Danh mục theo định dạng IEEE, đánh số theo thứ tự xuất hiện trong báo cáo.
+\begin{thebibliography}{99}
+  \bibitem{potel} M. Potel, ``MVP: Model-View-Presenter --- The Taligent programming model for C++ and Java,'' Taligent, Inc., 1996.
+  \bibitem{fowler} M. Fowler, ``Passive View,'' martinfowler.com, Jul. 18, 2006. [Online]. Available: \url{https://www.martinfowler.com/eaaDev/PassiveScreen.html}
+  \bibitem{owasp-sqli} OWASP Foundation, ``SQL injection prevention cheat sheet,'' OWASP Cheat Sheet Series. [Online]. Available: \url{https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html}
+  \bibitem{rfc8018} K. Moriarty, Ed., B. Kaliski, and A. Rusch, ``PKCS \#5: Password-based cryptography specification version 2.1,'' Internet Engineering Task Force, RFC 8018, Jan. 2017, doi: 10.17487/RFC8018.
+  \bibitem{uit-ptt} Trường Đại học Công nghệ Thông tin, ĐHQG-HCM, ``Tài liệu môn học Phân tích thiết kế hệ thống thông tin.'' [Online]. Available: \url{https://ctgt.uit.edu.vn/sach/phan-tich-thiet-ke-he-thong-thong-tin}
+  \bibitem{thoai} L. T. Thoại, ``Tài liệu môn học Lập trình Windows.'' [Online]. Available: \url{https://thoailt.com}
+  \bibitem{noibo} Nhóm thực hiện, ``Bộ tài liệu đặc tả nội bộ của dự án (thư mục \texttt{docs/}),'' tài liệu nội bộ, 2026.
+  \bibitem{ms-winforms} Microsoft, ``Windows Forms documentation,'' Microsoft Learn. [Online]. Available: \url{https://learn.microsoft.com/dotnet/desktop/winforms/}
+  \bibitem{iso18004} \emph{Information technology --- Automatic identification and data capture techniques --- QR Code bar code symbology specification}, ISO/IEC 18004:2015, 3rd ed., International Organization for Standardization, Geneva, Switzerland, 2015.
+  \bibitem{ms-sqlclient} Microsoft, ``Microsoft.Data.SqlClient documentation,'' Microsoft Learn. [Online]. Available: \url{https://learn.microsoft.com/sql/connect/ado-net/microsoft-data-sqlclient}
+  \bibitem{ms-tsql} Microsoft, ``Transact-SQL (T-SQL) reference,'' Microsoft Learn. [Online]. Available: \url{https://learn.microsoft.com/sql/t-sql/}
+  \bibitem{gantt} ``Gantt chart,'' ScienceDirect Topics. [Online]. Available: \url{https://www.sciencedirect.com/topics/computer-science/gantt-chart}
+  \bibitem{ms-isolation} Microsoft, ``SET TRANSACTION ISOLATION LEVEL (Transact-SQL),'' Microsoft Learn. [Online]. Available: \url{https://learn.microsoft.com/sql/t-sql/statements/set-transaction-isolation-level-transact-sql}
+  \bibitem{nist-63b} P. A. Grassi \emph{et al.}, ``Digital identity guidelines: Authentication and lifecycle management,'' National Institute of Standards and Technology, Gaithersburg, MD, USA, NIST Special Publication 800-63B, Jun. 2017, doi: 10.6028/NIST.SP.800-63b.
+  \bibitem{owasp-csv} OWASP Foundation, ``CSV injection,'' OWASP Community. [Online]. Available: \url{https://owasp.org/www-community/attacks/CSV_Injection}
+  \bibitem{reed-solomon} I. S. Reed and G. Solomon, ``Polynomial codes over certain finite fields,'' \emph{J. Soc. Ind. Appl. Math.}, vol. 8, no. 2, pp. 300--304, Jun. 1960.
+\end{thebibliography}
 
 % ===== end chuong/tai_lieu_tham_khao.tex =====
 
